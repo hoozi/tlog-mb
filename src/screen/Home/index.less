@@ -1,0 +1,270 @@
+@import '../../theme.less';
+
+.homeScreen {
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 16px;
+  position: static;
+  -webkit-overflow-scrolling: touch;
+}
+
+.banner {
+  position: relative;
+  width: 100%;
+}
+
+.accountCard {
+  width: 100%;
+  height: 175px;
+  background: -webkit-linear-gradient(left top, @brand-primary, @brand-primary-tap);
+  h1 {
+    font-size: 18px;
+    text-align: center;
+    color: #fff;
+    margin:0;
+    font-weight: 500;
+    line-height: 45px;
+  }
+}
+
+.gridContainer {
+  width: 100%;
+  padding: 0 16px;
+  position: relative;
+  margin-top: -128px;
+  z-index: 20;
+  .gridWrapper {
+    border-radius: 4px;
+    background-color: #fff;
+    padding:0 4px;
+    width: 100%;
+   /*  :global {
+      /* .am-grid-item:before {
+        //padding-bottom: 90%;
+      } 
+    } */
+  }
+}
+
+.indexCard {
+  background-color: #fff;
+  margin-top: 16px;
+}
+
+.indexCardHeader {
+  padding:16px;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  a {
+    display: inline-block;
+    color: @color-text-base;
+    margin-top: 2px;
+    span, svg {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    svg {
+      color: @color-text-placeholder;
+      margin-top: -1px;
+    }
+  }
+  &:after {
+    .scale-hairline-common(@border-color-secondary, auto, auto, 0, 0);
+    width: 100%;
+    height: 1px;
+  }
+}
+
+.indexCardTitle {
+  font-size: 16px;
+  font-weight: 500;
+  svg,span {
+    vertical-align: middle;
+  }
+}
+
+.indexCardBody {
+  padding:0;
+  :global {
+    .am-grid-item-content {
+      padding:8px 0 !important;
+    }
+  }
+}
+/* .cardList {
+  //padding:0 16px;
+} */
+.cardItem {
+  padding:16px;
+  color: @card-text-color;
+  position: relative;
+  &:after {
+    .scale-hairline-common(@border-color-secondary, auto, auto, 0, 0);
+    width: 100%;
+    height: 1px;
+  }
+  &:last-child:after  {
+    display: none;
+    height: 0;
+  }
+}
+
+.cardItemBody {
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #f7f7f7;
+  margin-top: 12px;
+  b {
+    font-weight: 600;
+  }
+}
+
+.cardItemExtra {
+  margin-top:12px;
+  svg {
+    vertical-align: middle;
+    margin-top:-1px;
+    color: @card-icon-color;
+  }
+}
+
+.routeName {
+  flex: auto;
+  &>span {
+    display: inline-block;
+    text-align: center;
+    b {
+      width: 100%;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: @brand-primary;
+      font-weight: 500;
+    }
+    &>i {
+      display: inline-block;
+      font-size: 12px;
+      font-style: normal;
+      margin-top: 6px;
+    }
+  }
+  .arrowLine {
+    width: 64px;
+    position: relative;
+    top: -4px;
+    overflow: visible;
+    white-space: normal;
+    margin:0 8px;
+    .routeText {
+      color: @brand-primary;
+      border-radius: 12px;
+      height:24px;
+      text-align: center;
+      background-color: @card-icon-color;
+      position: absolute;
+      bottom:-5px;
+      width: 100%;
+      font-size: 12px;
+      text-align: center;
+      font-style: normal;
+    }
+  }
+}
+
+.logisticsItem {
+  border-radius: 4px;
+  box-shadow: 0px 0px 8px rgba(0,0,0,.08);
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  padding: 12px;
+}
+
+.logisticsRoute {
+  
+  span {
+    //flex: 1;
+    display: inline-block;
+    vertical-align: middle;
+    font-weight: 600;
+    width: 45%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+  }
+  .arrowLine {
+    text-align: center;
+    width: 10%;
+  }
+}
+
+.logisticsExtra {
+  margin-top:4px;
+  color:@brand-primary;
+  font-size: 16px;
+  font-weight: 600;
+  span {
+    font-size: 12px;
+    display: inline-block;
+    margin-right: 2px;
+  }
+}
+
+.newsCardList {
+  padding:0 4px;
+}
+
+.newsList {
+  .newsItem {
+    &:last-child {
+      &:after {
+        background-color: #fff;
+      }
+    }
+  }
+}
+
+.indexNewsItem {
+  padding:8px 0 0 136px;
+  height: 80px;
+}
+
+.indexNewsImg {
+  width: 120px;
+  height: 80px;
+  overflow: hidden;
+  position: absolute;
+  left:0;
+  top: 8px;
+  img {
+    display: block;
+    width: 100%;
+  }
+}
+
+.indexNewsContent {
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.indexNewsTitle {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.indexNewsLink {
+  .indexNewsTitle {
+    color: @color-text-base;
+  }
+}
+
+.indexNewsTime {
+  color:@color-text-secondary;
+  font-size: 12px;
+  margin-bottom:4px;
+}

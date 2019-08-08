@@ -1,0 +1,30 @@
+@import '../../theme.less';
+
+.screen {
+  width: 100%;
+  height: 100%;
+  background-color: @fill-body;
+  position:absolute;
+  left:0;
+  top:0;
+  
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.screenPadding {
+  padding-top: 45px;
+  box-sizing: border-box;
+}
+
+.screenHeader {
+  width: 100%;
+  height: 45px;
+}
+.screenHeaderFixed {
+  &:extend(.screenHeader);
+  position: fixed;
+  top: 0;
+  left: 0;
+}

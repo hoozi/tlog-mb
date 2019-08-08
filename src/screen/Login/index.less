@@ -1,0 +1,65 @@
+@import '../../theme.less';
+
+@prefix: .login;
+
+@{prefix}Screen {
+  background:url('../../assets/lbg.svg') no-repeat @fill-body;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@{prefix}Box {
+  padding: 0 16px;
+  background-color: transparent;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@{prefix}Title {
+  margin: 0 auto 32px;
+  font-size: 32px;
+  font-weight: 400;
+  text-align: center;
+}
+@{prefix}Item {
+  display:flex;
+  position: relative;
+  &:after {
+    background-color: #ddd !important;
+  }
+  padding: 16px 8px;
+  &:last-of-type {
+    &:after {
+      background-color:transparent !important;
+    }
+    margin-bottom: 48px;
+  }
+}
+@{prefix}Label {
+  width: 32px;
+  color: @color-text-caption;
+}
+@{prefix}Input {
+  flex: auto;
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: transparent;
+    border:0;
+    height: 25px;
+    line-height: 25px;
+    font-size: @font-size-caption;
+    vertical-align: middle;
+  }
+}
+@{prefix}Addon{
+  color: @color-text-caption;
+}
+@{prefix}Close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  color: @color-text-caption;
+}
