@@ -1,5 +1,5 @@
-import React, { useState, lazy, Suspense } from 'react';
-import { TabBar, Icon, Button } from 'antd-mobile';
+import React, { useState } from 'react';
+import { TabBar, Icon } from 'antd-mobile';
 import color from '../../constants/color';
 import styles from './index.less';
 import Home from '@/screen/Home';

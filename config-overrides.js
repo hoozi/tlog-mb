@@ -16,8 +16,7 @@ module.exports = override(
     javascriptEnabled: true
   }),
   addWebpackAlias({
-    '@': resolve(__dirname, './src'),
-    'antd-mobile': resolve(__dirname, './node_modules/antd-mobile')
+    '@': resolve(__dirname, './src')
   }),
   config => {
     return {

@@ -38,6 +38,7 @@
     background-color: #fff;
     padding:0 4px;
     width: 100%;
+    min-height: 200px;
    /*  :global {
       /* .am-grid-item:before {
         //padding-bottom: 90%;
@@ -92,13 +93,7 @@
     }
   }
 }
-/* .cardList {
-  //padding:0 16px;
-} */
-.cardItem {
-  padding:16px;
-  color: @card-text-color;
-  position: relative;
+.bottomLine {
   &:after {
     .scale-hairline-common(@border-color-secondary, auto, auto, 0, 0);
     width: 100%;
@@ -109,68 +104,16 @@
     height: 0;
   }
 }
+/* .cardList {
+  padding:0 16px;
+} */
 
-.cardItemBody {
-  padding: 8px;
-  border-radius: 4px;
-  background-color: #f7f7f7;
-  margin-top: 12px;
-  b {
-    font-weight: 600;
-  }
+.cardList {
+
 }
 
-.cardItemExtra {
-  margin-top:12px;
-  svg {
-    vertical-align: middle;
-    margin-top:-1px;
-    color: @card-icon-color;
-  }
-}
-
-.routeName {
-  flex: auto;
-  &>span {
-    display: inline-block;
-    text-align: center;
-    b {
-      width: 100%;
-      display: inline-block;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: @brand-primary;
-      font-weight: 500;
-    }
-    &>i {
-      display: inline-block;
-      font-size: 12px;
-      font-style: normal;
-      margin-top: 6px;
-    }
-  }
-  .arrowLine {
-    width: 64px;
-    position: relative;
-    top: -4px;
-    overflow: visible;
-    white-space: normal;
-    margin:0 8px;
-    .routeText {
-      color: @brand-primary;
-      border-radius: 12px;
-      height:24px;
-      text-align: center;
-      background-color: @card-icon-color;
-      position: absolute;
-      bottom:-5px;
-      width: 100%;
-      font-size: 12px;
-      text-align: center;
-      font-style: normal;
-    }
-  }
+.cardItem {
+  
 }
 
 .logisticsItem {

@@ -3,22 +3,31 @@ import {
   Grid,
   Icon,
   ActivityIndicator,
-  Button,
   Flex
 } from 'antd-mobile';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import Screen from '@/component/Screen';
 import BannerMask from '@/component/BannerMask';
 import ArrowLine from '@/component/ArrowLine';
 import styles from './index.less';
+import card from '@/style/card.less';
 import { mapEffects, mapLoading } from '@/utils';
 import withCache from '@/hoc/withCache';
 
-const data = Array.from(new Array(8)).map((_val, i) => ({
+const data = [{
+  icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
+  text: '货盘信息',
+  url: '/cargo'
+}, {
+  icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
+  text: '货盘发布',
+  url: '/cargo-create'
+}];/* Array.from(new Array(8)).map((_val, i) => ({
   icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
   text: `功能${i}`,
-}));
+  url: '/cargo'
+})); */
 
 const NewsList = props => {
   const { data, renderItem, rowKey='', className='', loading } = props;
@@ -86,6 +95,11 @@ class Home extends PureComponent {
       </div>
     );
   }
+  handleLinkTo = el => {
+    const { history } = this.props;
+    const { url } = el;
+    history.push(url);
+  }
   render() {
     const { news:{ recordList } } = this.props
     return (
@@ -96,7 +110,7 @@ class Home extends PureComponent {
         </div>
         <div className={styles.gridContainer}>
           <div className={styles.gridWrapper}>
-            <Grid data={data} hasLine={false} activeStyle={false} />
+            <Grid data={data} hasLine={false} activeStyle={false} onClick={this.handleLinkTo}/>
           </div>
         </div>
         <div className={styles.indexCard}>
@@ -106,60 +120,102 @@ class Home extends PureComponent {
           </div>
           <div className={styles.indexCardBody}>
             <div className={styles.cardList}>
+              {
+                new Array(5).fill(0).map(item => (
+                  <div className={`${card.cardItem} ${styles.bottomLine}`}>
+                    <div className={card.cardItemHeader}>
+                      <Flex justify='between' className={card.routeName}>
+                        <span><b>测试地址地址</b><i>出发地</i></span>
+                        <span className={card.arrowLine}><ArrowLine/></span>
+                        <span><b>沙钢海力码头</b><i>目的地</i></span>
+                        <span><b>江运+装卸</b><i>作业类型</i></span>
+                      </Flex>
+                    </div>
+                    <div className={card.cardItemBody}>
+                      距离约<b>1000</b>公里, 时长约<b>3</b>天
+                    </div>
+                    <div className={card.cardItemExtra}>
+                      <Flex justify='between'>
+                        <span><Icon type='yonghu' size='xxs'/> 张三</span>
+                        <span><Icon type='dianhua' size='xxs'/> 13245543453</span>
+                        <span><Icon type='chuan' size='xxs'/> 集装箱船</span>
+                      </Flex>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
 
-              <div className={styles.cardItem}>
-                <div className={styles.cardItemHeader}>
-                  <Flex justify='between' className={styles.routeName}>
-                    <span><b>测试地址地址</b><i>出发地</i></span>
-                    <span className={styles.arrowLine}><ArrowLine/></span>
-                    <span><b>沙钢海力码头</b><i>目的地</i></span>
-                    <span><b>江运+装卸</b><i>作业类型</i></span>
-                  </Flex>
-                </div>
-                <div className={styles.cardItemBody}>
-                  距离约<b>1000</b>公里, 时长约<b>3</b>天, 船型为<b>远洋船</b>
-                </div>
-                <div className={styles.cardItemExtra}>
-                  <span><Icon type='yonghu' size='xxs'/> 张三/13245543453</span>
-                </div>
-              </div>
-              <div className={styles.cardItem}>
-                <div className={styles.cardItemHeader}>
-                  <Flex justify='between' className={styles.routeName}>
-                    <span><b>测试地址地址</b><i>出发地</i></span>
-                    <span className={styles.arrowLine}><ArrowLine/></span>
-                    <span><b>沙钢海力码头</b><i>目的地</i></span>
-                    <span className={styles.status}><b>江运</b><i>作业类型</i></span>
-                  </Flex>
-                </div>
-                <div className={styles.cardItemBody}>
-                  距离约<b>1000</b>公里, 时长约<b>3</b>天, 船型为<b>远洋船</b>
-                </div>
-                <div className={styles.cardItemExtra}>
-                  <span><Icon type='yonghu' size='xxs'/> 张三/13245543453</span>
-                </div>
-              </div>
-              <div className={styles.cardItem}>
-                <div className={styles.cardItemHeader}>
-                  <Flex justify='between' className={styles.routeName}>
-                    <span><b>测试地址地址</b><i>出发地</i></span>
-                    <span className={styles.arrowLine}><ArrowLine/></span>
-                    <span><b>沙钢海力码头</b><i>目的地</i></span>
-                    <span className={styles.status}><b>装卸</b><i>作业类型</i></span>
-                  </Flex>
-                </div>
-                <div className={styles.cardItemBody}>
-                  距离约<b>1000</b>公里, 时长约<b>3</b>天, 船型为<b>远洋船</b>
-                </div>
-                <div className={styles.cardItemExtra}>
-                  <span><Icon type='yonghu' size='xxs'/> 张三/13245543453</span>
-                </div>
-              </div>
-
+        <div className={styles.indexCard}>
+          <div className={styles.indexCardHeader}>
+            <h2 className={styles.indexCardTitle}><span>货盘信息</span></h2>
+            <Link to='/'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+          </div>
+          <div className={styles.indexCardBody}>
+            <div className={styles.cardList}>
+              {
+                new Array(5).fill(0).map(item => (
+                  <div className={`${card.cardItem} ${styles.bottomLine}`}>
+                    <div className={card.cardItemHeader}>
+                      <Flex justify='between' className={card.routeName}>
+                        <span><b>测试地址地址</b><i>出发地</i></span>
+                        <span className={card.arrowLine}><ArrowLine/></span>
+                        <span><b>沙钢海力码头</b><i>目的地</i></span>
+                        <span><b>12000</b><i>货物吨位</i></span>
+                      </Flex>
+                    </div>
+                    <div className={card.cardItemBody}>
+                      <p>客户<b>马钢</b>，货物<b>石英砂(铁矿石)</b></p>
+                      <p>有效期<b>2019-06-22～2019-06-31</b></p>
+                    </div>
+                    <div className={card.cardItemExtra}>
+                      <span><Icon type='shijian' size='xxs'/> 要求2019-06-26</span>
+                    </div>
+                  </div>
+                ))
+              }
             </div>
           </div>
         </div>
         
+        <div className={styles.indexCard}>
+          <div className={styles.indexCardHeader}>
+            <h2 className={styles.indexCardTitle}><span>运力信息</span></h2>
+            <Link to='/'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+          </div>
+          <div className={styles.indexCardBody}>
+            <div className={styles.cardList}>
+              {
+                new Array(5).fill(0).map(item => (
+                  <div className={`${card.cardItem} ${styles.bottomLine}`}>
+                    <div className={card.cardItemHeader}>
+                      <Flex justify='between' className={card.routeName}>
+                        <span><b>联合50</b><i>名称</i></span>
+                        <span><b>50000</b><i>载重吨</i></span>
+                        <span><b>沙钢海力码头</b><i>空闲地</i></span>
+                        {/* <span><b>江船</b><i>类型</i></span> */}
+                      </Flex>
+                    </div>
+                    <div className={card.cardItemBody}>
+                      服务商<b>浙江船公司</b>
+                    </div>
+                    <div className={card.cardItemExtra}>
+                      <Flex justify='between'>
+                        <span><Icon type='yonghu' size='xxs'/> 张三</span>
+                        <span><Icon type='dianhua' size='xxs'/> 13245543453</span>
+                        <span><Icon type='chuan' size='xxs'/> 江船</span>
+                      </Flex>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        
+
       </Screen>
     )
   }
@@ -175,4 +231,4 @@ class Home extends PureComponent {
               activeStyle={false}
             /> */
 
-export default Home;
+export default withRouter(Home);

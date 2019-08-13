@@ -2,10 +2,10 @@ import React, { PureComponent, Suspense } from 'react';
 import {
   Route,
   Switch,
-  withRouter,
-  HashRouter
+  withRouter
 } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { ConnectedRouter } from 'connected-react-router';
 import { ActivityIndicator } from 'antd-mobile';
 import routesConfig from './routesConfig';
 import './screenTransition.css';
@@ -39,7 +39,7 @@ const Routes = withRouter(({location, history}) => {
       className='router-wrapper'
       childFactory={child => React.cloneElement(child, {classNames})}
     >
-      <CSSTransition timeout={300} key={location.pathname}>
+      <CSSTransition timeout={300} key={location.pathname} unmountOnExit>
         <Suspense fallback={<div style={styles.fullCenter}><ActivityIndicator size='large'/></div>}>
           <Switch location={location}>
             {routesConfig.map(config => (
@@ -55,9 +55,9 @@ const Routes = withRouter(({location, history}) => {
 export default class AppRouter extends PureComponent {
   render() {
     return (
-      <HashRouter>
+      <ConnectedRouter history={this.props.history}>
         <Routes/>
-      </HashRouter>
+      </ConnectedRouter>
     )
   }
 }

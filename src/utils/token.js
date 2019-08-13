@@ -1,15 +1,24 @@
-import Cookie from 'js-cookie';
-
-const TOKENKEY = 'utoken'
+const TOKENKEY = 'utoken';
+const ANYTOKENKEY = 'any_token_key';
 
 export function setToken(token) {
-  Cookie.set(TOKENKEY, token);
+  window.localStorage.setItem(TOKENKEY, token);
 }
 
 export function getToken() {
-  return Cookie.get(TOKENKEY);
+  return window.localStorage.getItem(TOKENKEY);
 }
 
 export function removeToken() {
-  Cookie.remove(TOKENKEY);
+  window.localStorage.removeItem(TOKENKEY);
+}
+
+export function setAnyToken(token) {
+  window.sessionStorage.setItem(ANYTOKENKEY, token);
+}
+export function getAnyToken() {
+  return window.sessionStorage.getItem(ANYTOKENKEY);
+}
+export function removeAnyToken() {
+  window.sessionStorage.removeItem(ANYTOKENKEY);
 }
