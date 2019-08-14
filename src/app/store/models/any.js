@@ -19,7 +19,10 @@ const state = {
     recordCount: 0,
     recordList: [],
     size: 10
-  }
+  },
+  cargoInfo: [],
+  cargoType: [],
+  location: []
 }
 
 const reducers = {
@@ -67,17 +70,35 @@ const effects = {
     Toast.success('转订单成功');
     callback && callback();
   },
-  async fetchCargoInfo() {
-    const response = await service('queryCargoInfo');
+  async createCargo(payload, state, callback) {
+    const response = await service('cargo', {
+      crudType: 'create',
+      ...payload
+    });
     if(!response || !response.success) return;
+    Toast.success('货盘发布成功');
+    callback && callback();
+  },
+  async fetchCargoInfo(payload) {
+    const response = await service('queryCargoInfo', payload);
+    if(!response || !response.success) return;
+    this.save({
+      cargoInfo: response.data.splice(0,20)
+    })
   },
   async fetchCargoType() {
     const response = await service('queryCargoType');
     if(!response || !response.success) return;
+    this.save({
+      cargoType: response.data
+    })
   },
   async fetchLocation() {
     const response = await service('queryLocation');
     if(!response || !response.success) return;
+    this.save({
+      location: response.data
+    })
   }
 }
 

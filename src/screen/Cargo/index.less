@@ -22,6 +22,8 @@
     .scale-hairline-common(@border-color-secondary, auto, auto, 0, 0);
     width: 100%;
     height: 1px;
+    transform-origin: 50% 100%;
+    transform: scaleY(0.5);
   }
   span {
     display: inline-block;
@@ -55,10 +57,43 @@
   color: @brand-error;
 }
 
-.datePickerList {
+.createForm {
+  padding-bottom: 90px;
   :global {
     .am-list-extra {
       flex-basis: initial !important;
     }
+  }
+}
+
+.modalFullScreen {
+  height: 100%;
+  z-index: 10;
+}
+
+.searchBar {
+  
+}
+
+.required {
+  color: @brand-important;
+  margin-right: 2px;
+}
+
+.bottomButton {
+  width: 100%;
+  padding:16px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background-color: #fff;
+  //box-shadow: 0 3px 8px 4px rgba(0,0,0,.06);
+  &:before {
+    .scale-hairline-common(@border-color-secondary, 0, auto, auto, 0);
+    width: 100%;
+    height: 1px;
+    transform-origin: 50% 100%;
+    transform: scaleY(0.5);
   }
 }

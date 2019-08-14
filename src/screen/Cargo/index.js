@@ -33,7 +33,7 @@ const mapDispatchToProps = ({ any }) => ({
 const tabs = [
   { title: '待审核', status: 30 },
   { title: '已审核', status: 40 },
-  //{ title: '已拒绝', status: 90 }
+  { title: '已拒绝', status: 60 }
 ];
 
 /* const createStatusCode = (status, index) => {
@@ -153,11 +153,14 @@ class Cargo extends PureComponent {
     const { needCache } = this.state
     const map = {
       30: [<span style={{color: '#fa8c16'}}>拒绝</span>,'通过', '转订单', '失效', '取消'],
-      40: ['转订单', '失效', '取消']
+      40: ['转订单', '失效', '取消'],
+      60: ['失效', '取消']
     }
-    const status30Map = ['r', 'a', 'c', 'f'];
-    const status40Map = ['c', 'f'];
-    
+    const allStatusMap = {
+      30: ['60', '50', 'c', '90'],
+      40: ['c', '90'],
+      60: ['90']
+    }
     ActionSheet.showActionSheetWithOptions({
       options: map[status],
       destructiveButtonIndex: map[status].length - 2,
@@ -167,13 +170,12 @@ class Cargo extends PureComponent {
     },
     buttonIndex => {
       if(buttonIndex < 0) return;
-      const statusCode30 = status30Map[buttonIndex];
-      const statusCode40 = status40Map[buttonIndex];
-      const isCreate = (status === '30' && statusCode30 === 'c') || (status === '40' && statusCode40 === 'c');
+      const statusCode = allStatusMap[status][buttonIndex];
+      const isCreate = statusCode === 'c';
       const params = isCreate ? {
         operateType: 'C'
       } : {
-        statusCode: status === '30' ? status30Map[buttonIndex] : status40Map[buttonIndex]
+        status: statusCode
       }
       this.cargoService(isCreate ? 'changeCargoToBill' : 'updateCargo',{
         id,
@@ -194,20 +196,21 @@ class Cargo extends PureComponent {
       <div className={card.cardItem} style={{boxShadow: '0 3px 5px -5px rgba(0,0,0,.15)'}} key={rowID} onClick={() => this.showActionSheet(item.status, item.id)}>
         <div className={card.cardItemHeader}>
           <Flex justify='between' className={card.routeName}>
-            <span><b>{item.originName || '未知'}</b><i>出发地{rowID}</i></span>
+            <span><b>{item.originName || '未知'}</b><i>出发地</i></span>
             <span className={card.arrowLine}><ArrowLine/></span>
             <span><b>{item.terminalName || '未知'}</b><i>目的地</i></span>
             <span><b>{item.tonnage}</b><i>货物吨位</i></span>
           </Flex>
         </div>
         <div className={card.cardItemBody}>
-          <p>货物<b>{item.cargo}({item.cargoTypeName}类)</b>, 将在<b className={styles.expireDate}>{moment(item.expireDate).format('YYYY-MM-DD')}</b>失效</p>
+          <p>货物<b>{item.cargo}({item.cargoTypeName}类)</b></p>
+          <p>有效期到<b className={styles.expireDate}>{moment(item.expireDate).format('YYYY-MM-DD')}</b>,要求在<b>{moment(item.endDate).format('YYYY-MM-DD')}</b>之前出运</p>
         </div>
         <div className={card.cardItemExtra}>
           <Flex justify='between'>
-            <span><Icon type='yonghu' size='xxs'/> {item.contacts || '未知'}</span>
-            <span><Icon type='dianhua' size='xxs'/> {item.contactsPhone || '未知'}</span>
-            <span><Icon type='shijian' size='xxs'/> 要求{moment(item.endDate).format('YYYY-MM-DD')}</span>
+            <span><Icon type='yonghu' size='xxs'/> {item.contacts || '未知'}/{item.contactsPhone || '未知'}</span>
+            {/* <span><Icon type='dianhua' size='xxs'/> </span> */}
+{/*             <span><Icon type='shijian' size='xxs'/> </span> */}
           </Flex>
         </div>
       </div>
@@ -217,7 +220,7 @@ class Cargo extends PureComponent {
     const { loading, hasMore } = this.state
     return (
       <div style={{ padding: 4, paddingTop: 6, textAlign: 'center' }}>
-        { loading? '加载中' : ( hasMore ? '加载完成' : '没有更多了' ) }
+        { loading? '加载中...' : ( hasMore ? '加载完成' : '没有更多了' ) }
       </div>
     )
   }
@@ -266,7 +269,7 @@ class Cargo extends PureComponent {
             firstLoading ? 
             <ListFirstLoading/> :
             (ds && !ds.getRowCount()) ? 
-            <Empty description='暂无数据'/> : 
+            <Empty description='暂无货盘信息'/> : 
             <ListView
               dataSource={ds}
               renderBodyComponent={() => <ListBody/>}

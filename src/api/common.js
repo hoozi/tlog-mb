@@ -3,7 +3,8 @@ import request from '@/utils/request';
 export async function queryCargoInfo(params, token) {
   return request(`/ierp/kapi/app/nbg_qcwl/CargoApiPlugin?access_token=${token}`, {
     data: {
-      crudType: 'retrieve'
+      crudType: 'retrieve',
+      ...params
     }
   })
 }
