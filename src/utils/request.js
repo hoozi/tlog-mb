@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from './token';
+//import { getToken } from './token';
 import { Toast } from 'antd-mobile';
 /* import store from '@/store/index';
 import router from '@/router'; */
@@ -32,7 +32,6 @@ const service = axios.create({
 
 // 请求前认证token
 service.interceptors.request.use( request => {
-  request.method = 'POST';
   if (request.method === 'POST' || request.method === 'PUT') {
     if (!(request.data instanceof FormData)) {
       request.headers = {
@@ -64,14 +63,24 @@ service.interceptors.response.use( response => response.data, response => {
   throw response.response;
 });
 
-
-
 export default function request(url, options) {
-  return service(`${serviceUrl}${url}`, options)
+  return service(`${serviceUrl}${url}`, {
+    method: 'POST',
+    ...options
+  })
   .then(response => {
+    
+    const fail = !response || 
+    (('success' in response) && !response.success) || 
+    (('state' in response) && response.state !== 'success');
+    if(fail) {
+      Toast.fail(response.message || response.errorMsg || '请求失败');
+      throw new Error('error');
+    }
     return response;
   })
   .catch(e => {
+    console.log(e)
     /* if (e.status === 401) {
       store.dispatch('user/logout');
       return;

@@ -3,8 +3,12 @@ import { createHashHistory } from 'history';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import createLoading from '@rematch/loading';
 
-import any from './models/any';
+import common from './models/common';
 import cache from './models/cache';
+import any from './models/any';
+import user from './models/user';
+import cargo from './models/cargo';
+import transport from './models/transport';
 
 const history = createHashHistory();
 
@@ -19,8 +23,12 @@ const redux = {
 
 const store = init({
   models: {
+    common,
+    cache,
     any,
-    cache
+    user,
+    cargo,
+    transport
   },
   redux,
   plugins: [loading]

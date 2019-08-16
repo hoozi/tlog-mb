@@ -15,7 +15,7 @@
 
 .accountCard {
   width: 100%;
-  height: 175px;
+  height: 100px;
   background: -webkit-linear-gradient(left top, @brand-primary, @brand-primary-tap);
   h1 {
     font-size: 18px;
@@ -31,14 +31,14 @@
   width: 100%;
   padding: 0 16px;
   position: relative;
-  margin-top: -128px;
+  margin-top: -55px;
   z-index: 20;
   .gridWrapper {
     border-radius: 4px;
     background-color: #fff;
     padding:0 4px;
     width: 100%;
-    min-height: 200px;
+    //min-height: 200px;
    /*  :global {
       /* .am-grid-item:before {
         //padding-bottom: 90%;
@@ -108,53 +108,7 @@
   padding:0 16px;
 } */
 
-.cardList {
 
-}
-
-.cardItem {
-  
-}
-
-.logisticsItem {
-  border-radius: 4px;
-  box-shadow: 0px 0px 8px rgba(0,0,0,.08);
-  position: relative;
-  overflow: hidden;
-  text-align: left;
-  padding: 12px;
-}
-
-.logisticsRoute {
-  
-  span {
-    //flex: 1;
-    display: inline-block;
-    vertical-align: middle;
-    font-weight: 600;
-    width: 45%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-  }
-  .arrowLine {
-    text-align: center;
-    width: 10%;
-  }
-}
-
-.logisticsExtra {
-  margin-top:4px;
-  color:@brand-primary;
-  font-size: 16px;
-  font-weight: 600;
-  span {
-    font-size: 12px;
-    display: inline-block;
-    margin-right: 2px;
-  }
-}
 
 .newsCardList {
   padding:0 4px;
@@ -210,4 +164,14 @@
   color:@color-text-secondary;
   font-size: 12px;
   margin-bottom:4px;
+}
+
+.fnGrid {
+  padding-top: 24px;
+  :global {
+    .am-grid-item-content {
+      padding-top: 0 !important;
+      padding-bottom: 24px !important
+    }
+  }
 }

@@ -18,3 +18,5 @@ export function mapLoading(namespace, names) {
   }
   return loadings;
 }
+
+export const hasError = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);

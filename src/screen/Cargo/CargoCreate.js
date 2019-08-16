@@ -1,4 +1,4 @@
-import React, { PureComponent, memo } from 'react';
+import React, { PureComponent } from 'react';
 import { 
   NavBar, 
   Icon, 
@@ -21,25 +21,29 @@ import Debounce from 'lodash-decorators/debounce';
 import Screen from '@/component/Screen';
 import Empty from '@/component/Empty';
 //import { BARND_COLOR } from '@/constants/color';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
+import list from '@/style/list.less';
 
 const RadioItem = Radio.RadioItem;
 const ListItem = List.Item;
 
-const mapStateToProps = ({ any }) => {
+const mapStateToProps = ({ common }) => {
   return {
-    ...any,
-    ...mapLoading('any',{
+    ...common,
+    ...mapLoading('common',{
       fetchCargoInfoing: 'fetchCargoInfo',
       fetchCargoTyping: 'fetchCargoType',
-      fetchLocationing: 'fetchLocation',
+      fetchLocationing: 'fetchLocation'
+    }),
+    ...mapLoading('cargo', {
       createCargoing: 'createCargo'
     })
   }
 }
-const mapDispatchToProps = ({ any }) => ({
-  ...mapEffects(any, ['fetchCargoInfo', 'fetchCargoType', 'fetchLocation','createCargo'])
+const mapDispatchToProps = ({ common, cargo }) => ({
+  ...mapEffects(common, ['fetchCargoInfo', 'fetchCargoType', 'fetchLocation']),
+  ...mapEffects(cargo, ['createCargo']),
 });
 
 const SearchCargo = props => {
@@ -78,8 +82,6 @@ const SearchCargo = props => {
     </Modal>
   )
 }
-
-const hasError = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 @connect(mapStateToProps, mapDispatchToProps)
 @createForm()
@@ -150,6 +152,7 @@ class CargoCreate extends PureComponent {
         const expireDate = moment(values.expireDate).format('YYYY-MM-DD HH:mm:ss');
         this.props.createCargo({
           ...values,
+          message: '货盘发布成功',
           originId,
           terminalId,
           cargoTypeId,
@@ -197,7 +200,6 @@ class CargoCreate extends PureComponent {
     }
     return (
       <Screen
-        className={styles.cargoScreen}
         fixed
         header={() => {
           return (
@@ -224,7 +226,7 @@ class CargoCreate extends PureComponent {
               data={locations}
               extra={fetchLocationing? '加载中...' : '请选择'}
             >
-              <ListItem arrow='horizontal'><span className={styles.required}>*</span>出发地</ListItem>
+              <ListItem arrow='horizontal'><span className={list.required}>*</span>出发地</ListItem>
             </Picker>
             <Picker
               cols={1}
@@ -237,7 +239,7 @@ class CargoCreate extends PureComponent {
               data={locations}
               extra={fetchLocationing? '加载中...' : '请选择'}
             >
-              <ListItem arrow='horizontal'><span className={styles.required}>*</span>目的地</ListItem>
+              <ListItem arrow='horizontal'><span className={list.required}>*</span>目的地</ListItem>
             </Picker>
             {/* <InputItem
               placeholder='请输入'
@@ -255,13 +257,13 @@ class CargoCreate extends PureComponent {
               data={cargoTypes}
               extra={fetchCargoTyping? '加载中...' : '请选择'}
             >
-              <ListItem arrow='horizontal'><span className={styles.required}>*</span>货类</ListItem>
+              <ListItem arrow='horizontal'><span className={list.required}>*</span>货类</ListItem>
             </Picker>
             <ListItem
               arrow='horizontal'
               extra={cargoChineseName ? cargoChineseName : '请选择'}
               onClick={() => this.handleShowCargoSearch(true)}
-            ><span className={styles.required}>*</span>货名</ListItem>
+            ><span className={list.required}>*</span>货名</ListItem>
             <InputItem
               {...getFieldProps('tonnage', {
                 rules: [
@@ -271,7 +273,7 @@ class CargoCreate extends PureComponent {
               placeholder='请输入'
               clear
               extra='吨'
-            ><span className={styles.required}>*</span>货物吨位</InputItem>
+            ><span className={list.required}>*</span>货物吨位</InputItem>
           </List>
           <List renderHeader={() =>'联系'}>
             <InputItem
@@ -295,7 +297,7 @@ class CargoCreate extends PureComponent {
                 ]
               })}
             >
-              <ListItem arrow='horizontal'><span className={styles.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'><span className={list.required}>*</span>从</ListItem>
             </DatePicker>
             <DatePicker
               {...getFieldProps('endDate', {
@@ -304,7 +306,7 @@ class CargoCreate extends PureComponent {
                 ]
               })}
             >
-              <ListItem arrow='horizontal'><span className={styles.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'><span className={list.required}>*</span>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'有效期'} className={styles.datePickerList}>
@@ -315,7 +317,7 @@ class CargoCreate extends PureComponent {
                 ]
               })}
             >
-              <ListItem arrow='horizontal'><span className={styles.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'><span className={list.required}>*</span>从</ListItem>
             </DatePicker>
             <DatePicker
               {...getFieldProps('expireDate', {
@@ -324,7 +326,7 @@ class CargoCreate extends PureComponent {
                 ]
               })}
             >
-              <ListItem arrow='horizontal'><span className={styles.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'><span className={list.required}>*</span>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'其他'}>
@@ -345,7 +347,7 @@ class CargoCreate extends PureComponent {
           loading={fetchCargoInfoing}
           {...parentMethods}
         />
-        <div className={styles.bottomButton}>
+        <div className={list.bottomButton}>
           <Button 
             type='primary' 
             onClick={this.handleSubmit}

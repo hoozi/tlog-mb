@@ -1,14 +1,14 @@
-const BARND_COLOR = '#3c73f0';
+const BRAND_COLOR = '#3c73f0';
 const WHITE = '#fff';
 
 export {
-  BARND_COLOR
+  BRAND_COLOR
 }
 
 export default {
   tabBarColor: {
     unselectedTintColor: '#c3c9d5',
-    tintColor: BARND_COLOR,
+    tintColor: BRAND_COLOR,
     barTintColor: WHITE
   },
   tabsStyle: {
@@ -21,6 +21,6 @@ export default {
     tabBarTextStyle: {
       
     },
-    tabBarBackgroundColor: BARND_COLOR,
+    tabBarBackgroundColor: BRAND_COLOR,
   }
 }

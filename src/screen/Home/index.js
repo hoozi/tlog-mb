@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import {
   Grid,
   Icon,
-  ActivityIndicator,
+  //ActivityIndicator,
   Flex
 } from 'antd-mobile';
 import { connect } from 'react-redux';
@@ -13,23 +13,40 @@ import ArrowLine from '@/component/ArrowLine';
 import styles from './index.less';
 import card from '@/style/card.less';
 import { mapEffects, mapLoading } from '@/utils';
-import withCache from '@/hoc/withCache';
+import { BRAND_COLOR } from '@/constants/color';
+//import withCache from '@/hoc/withCache';
 
 const data = [{
-  icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
+  icon: <Icon type='huopan' size='f' color={BRAND_COLOR}/>,
   text: '货盘信息',
   url: '/cargo'
 }, {
-  icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
+  icon: <Icon type='huopanfabu' size='f' color='#f39927'/>,
   text: '货盘发布',
   url: '/cargo-create'
+}, {
+  icon: <Icon type='yunli' size='f' color='#f39927'/>,
+  text: '运力信息',
+  url: '/transport'
+}, {
+  icon: <Icon type='yunlifabu' size='f' color='#f15a4a'/>,
+  text: '运力发布',
+  url: '/transport-create'
+}, {
+  icon: <Icon type='xunjiahuifu' size='f' color='#f15a4a'/>,
+  text: '询价回复',
+  url: '/transport-create'
+}, {
+  icon: <Icon type='chaoxi' size='f' color={BRAND_COLOR}/>,
+  text: '潮汐信息',
+  url: '/transport-create'
 }];/* Array.from(new Array(8)).map((_val, i) => ({
   icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
   text: `功能${i}`,
   url: '/cargo'
 })); */
 
-const NewsList = props => {
+/* const NewsList = props => {
   const { data, renderItem, rowKey='', className='', loading } = props;
   return (
     loading ? 
@@ -49,7 +66,7 @@ const NewsList = props => {
       }
     </div> : null
   )
-}
+} */
 
 const AccountCard = props => {
   return <div className={styles.accountCard}><h1>首页</h1></div>
@@ -101,7 +118,7 @@ class Home extends PureComponent {
     history.push(url);
   }
   render() {
-    const { news:{ recordList } } = this.props
+   // const { news:{ recordList } } = this.props
     return (
       <Screen className={styles.homeScreen}>
         <div className={styles.banner}>
@@ -110,7 +127,14 @@ class Home extends PureComponent {
         </div>
         <div className={styles.gridContainer}>
           <div className={styles.gridWrapper}>
-            <Grid data={data} hasLine={false} activeStyle={false} onClick={this.handleLinkTo}/>
+            <Grid
+              className={styles.fnGrid} 
+              data={data} 
+              square={false} 
+              hasLine={false} 
+              activeStyle={false} 
+              onClick={this.handleLinkTo}
+            />
           </div>
         </div>
         <div className={styles.indexCard}>
@@ -121,8 +145,8 @@ class Home extends PureComponent {
           <div className={styles.indexCardBody}>
             <div className={styles.cardList}>
               {
-                new Array(5).fill(0).map(item => (
-                  <div className={`${card.cardItem} ${styles.bottomLine}`}>
+                new Array(5).fill(0).map((item, index) => (
+                  <div className={`${card.cardItem} ${styles.bottomLine}`} key={index}>
                     <div className={card.cardItemHeader}>
                       <Flex justify='between' className={card.routeName}>
                         <span><b>测试地址地址</b><i>出发地</i></span>
@@ -156,8 +180,8 @@ class Home extends PureComponent {
           <div className={styles.indexCardBody}>
             <div className={styles.cardList}>
               {
-                new Array(5).fill(0).map(item => (
-                  <div className={`${card.cardItem} ${styles.bottomLine}`}>
+                new Array(5).fill(0).map((item, index) => (
+                  <div className={`${card.cardItem} ${styles.bottomLine}`} key={index}>
                     <div className={card.cardItemHeader}>
                       <Flex justify='between' className={card.routeName}>
                         <span><b>测试地址地址</b><i>出发地</i></span>
@@ -188,8 +212,8 @@ class Home extends PureComponent {
           <div className={styles.indexCardBody}>
             <div className={styles.cardList}>
               {
-                new Array(5).fill(0).map(item => (
-                  <div className={`${card.cardItem} ${styles.bottomLine}`}>
+                new Array(5).fill(0).map((item, index) => (
+                  <div className={`${card.cardItem} ${styles.bottomLine}`} key={index}>
                     <div className={card.cardItemHeader}>
                       <Flex justify='between' className={card.routeName}>
                         <span><b>联合50</b><i>名称</i></span>

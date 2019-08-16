@@ -6,7 +6,6 @@ import moment from 'moment';
 import findIndex from 'lodash/findIndex';
 import Screen from '@/component/Screen';
 import { mapEffects, mapLoading } from '@/utils';
-import ArrowLine from '@/component/ArrowLine';
 import Empty from '@/component/Empty';
 import styles from './index.less';
 import list from '@/style/list.less';
@@ -15,24 +14,23 @@ import color from '@/constants/color';
 
 const { tabsStyle } = color;
 
-const mapStateToProps = ({ cargo }) => {
+const mapStateToProps = ({ transport }) => {
   return {
-    cargo,
-    ...mapLoading('cargo',{
-      fetchCargoing: 'fetchCargo',
-      updateCargoing: 'updateCargo',
-      changeCargoToBilling: 'createCargo'
+    transport,
+    ...mapLoading('any',{
+      fetchTransporting: 'fetchTransport',
+      updateTransporting: 'updateTransport'
     })
   }
 }
 
-const mapDispatchToProps = ({ cargo }) => ({
-  ...mapEffects(cargo, ['fetchCargo', 'updateCargo', 'createCargo'])
+const mapDispatchToProps = ({ transport }) => ({
+  ...mapEffects(transport, ['fetchTransport', 'updateTransport'])
 });
 
 const tabs = [
-  { title: '待审核', status: 30 },
-  { title: '已锁定', status: 40 },
+  { title: '待审核', status: 40 },
+  { title: '已锁定', status: 50 },
   { title: '已打回', status: 60 }
 ];
 
@@ -48,7 +46,7 @@ const ListFirstLoading = props => (
 ) 
 
 @connect(mapStateToProps, mapDispatchToProps)
-class Cargo extends PureComponent {
+class Transport extends PureComponent {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({
@@ -64,7 +62,7 @@ class Cargo extends PureComponent {
         ds,
         hasMore: true,
         current: this.current,
-        status: 30
+        status: 40
       }
     }
   }
@@ -76,12 +74,12 @@ class Cargo extends PureComponent {
     const { recordList, pageCount } = data;
     const { needCache } = this.state;
     const ds = recordList.length > 0 ? recordList.map(item => {
-      const originName = (item.originName && item.originName.length > 6) ? item.originName.substring(0,6) + '...' : item.originName;
-      const terminalName = (item.terminalName  && item.terminalName.length > 6) ? item.terminalName.substring(0,6) + '...' : item.terminalName;
+      /* const originName = (item.originName && item.originName.length > 6) ? item.originName.substring(0,6) + '...' : item.originName;
+      const terminalName = (item.terminalName  && item.terminalName.length > 6) ? item.terminalName.substring(0,6) + '...' : item.terminalName; */
       return {
         ...item,
-        originName,
-        terminalName
+       /*  originName,
+        terminalName */
       }
     }) : [];
     this.data = [...this.data, ...ds];
@@ -96,19 +94,19 @@ class Cargo extends PureComponent {
       }
     })
   }
-  cargoService(name, payload, callback) {
+  transportService(name, payload, callback) {
     const _callback = callback ? callback : () => null;
     this.props[name](payload, _callback)
   }
   componentDidMount() {
     const { needCache: { current, status } } = this.state;
-    this.cargoService('fetchCargo', {current, status} , this.callback);
+    this.transportService('fetchTransport', {current, status} , this.callback);
   }
   handleTabChange = data => {
     const { status } = data;
     const { needCache } = this.state;
     this.setState({ firstLoading: true });
-    this.cargoService('fetchCargo',{
+    this.transportService('fetchTransport',{
       status
     }, data => {
       this.reset();
@@ -132,14 +130,14 @@ class Cargo extends PureComponent {
         current: this.current
       }
     });
-    this.cargoService('fetchCargo', { status, current: 1 }, this.callback);
+    this.transportService('fetchTransport', { status, current: 1 }, this.callback);
   }
   handleEndReached = () => {
     const { loading, needCache } = this.state;
     let { status, hasMore } = needCache;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.cargoService('fetchCargo', { status, current: ++this.current }, data => {
+    this.transportService('fetchTransport', { status, current: ++this.current }, data => {
       this.setState({
         needCache: {
           ...needCache,
@@ -152,33 +150,29 @@ class Cargo extends PureComponent {
   showActionSheet(status, id) {
     const { needCache } = this.state
     const map = {
-      30: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '转订单', '失效', '取消'],
-      40: ['转订单', '失效', '取消'],
+      40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '失效', '取消'],
+      50: ['失效', '取消'],
       60: ['失效', '取消']
     }
     const allStatusMap = {
-      30: ['60', '50', 'c', '90'],
-      40: ['c', '90'],
+      40: ['60', '50', '90'],
+      50: ['90'],
       60: ['90']
     }
     ActionSheet.showActionSheetWithOptions({
       options: map[status],
       destructiveButtonIndex: map[status].length - 2,
       cancelButtonIndex: map[status].lenght - 1,
-      title: '货盘操作',
+      title: '运力操作',
       maskClosable: true
     },
     buttonIndex => {
       if(buttonIndex < 0) return;
       const statusCode = allStatusMap[status][buttonIndex];
-      const isCreate = statusCode === 'c';
-      const params = isCreate ? {
-        operateType: 'C',
-        message: '转订单成功'
-      } : {
+      const params = {
         status: statusCode
       }
-      this.cargoService(isCreate ? 'createCargo' : 'updateCargo',{
+      this.transportService('updateTransport',{
         id,
         ...params
       }, () => {
@@ -192,32 +186,33 @@ class Cargo extends PureComponent {
       })
     })
   }
-  renderCargoItem = (item, sectionID, rowID) => {
+  renderItem = (item, sectionID, rowID) => {
     return (
       <div className={card.cardItem} style={{boxShadow: '0 3px 5px -5px rgba(0,0,0,.15)'}} key={rowID} onClick={() => this.showActionSheet(item.status, item.id)}>
         <div className={card.cardItemHeader}>
           <Flex justify='between' className={card.routeName}>
-            <span><b>{item.originName || '未知'}</b><i>出发地</i></span>
-            <span className={card.arrowLine}><ArrowLine/></span>
-            <span><b>{item.terminalName || '未知'}</b><i>目的地</i></span>
-            <span><b>{item.tonnage}</b><i>货物吨位</i></span>
+            <span><b>{item.transportName || '未知'}</b><i>运力名称</i></span>
+            <span><b>{item.loadWeight || '未知'}</b><i>载重吨</i></span>
+            <span><b>{item.freePlace}</b><i>空闲地</i></span>
           </Flex>
         </div>
         <div className={card.cardItemBody}>
-          <p>货物<b>{item.cargo}({item.cargoTypeName}类)</b></p>
-          <p>有效期到<b className={styles.expireDate}>{moment(item.expireDate).format('YYYY-MM-DD')}</b>,要求在<b>{moment(item.endDate).format('YYYY-MM-DD')}</b>之前出运</p>
+          <p>服务商<b>{item.logisticsProvider || '未知'}</b></p>
+          <p>有效期到<b className={styles.expireDate}>{moment(item.invalidateTime).format('YYYY-MM-DD')}</b>,空闲日期到<b>{moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
         </div>
         <div className={card.cardItemExtra}>
           <Flex justify='between'>
-            <span><Icon type='yonghu' size='xxs'/> {item.contacts.trim() || '未知'}/{item.contactsPhone.trim() || '未知'}</span>
+            <span><Icon type='yonghu' size='xxs'/> {item.contact}</span>
+            <span><Icon type='dianhua' size='xxs'/> {item.contactTel} </span>
+            <span><Icon type='leixing' size='xxs'/> {item.transportTypeName}</span>
             {/* <span><Icon type='dianhua' size='xxs'/> </span> */}
-{/*             <span><Icon type='shijian' size='xxs'/> </span> */}
+            {/* <span><Icon type='shijian' size='xxs'/> </span> */}
           </Flex>
         </div>
       </div>
     )
   }
-  renderCargoListFooter = () => {
+  renderListFooter = () => {
     const { loading, hasMore } = this.state
     return (
       <div style={{ padding: 4, paddingTop: 6, textAlign: 'center' }}>
@@ -227,7 +222,7 @@ class Cargo extends PureComponent {
   }
   render() {
     const { refreshing, firstLoading, needCache: { status, ds } } = this.state;
-    const { history, updateCargoing, changeCargoToBilling } = this.props;
+    const { history, updateTransporting } = this.props;
     return (
       <Screen
         className={list.listScreen}
@@ -237,7 +232,7 @@ class Cargo extends PureComponent {
               icon={<Icon type='left' size='lg'/>}
               onLeftClick={() => history.goBack()}
             >
-              货盘信息
+              运力信息
             </NavBar>
           )
         }
@@ -262,7 +257,7 @@ class Cargo extends PureComponent {
             }
           </Sticky>
           {
-            (updateCargoing || changeCargoToBilling) ? 
+            updateTransporting? 
             <ActivityIndicator toast text='操作中...'/> :
             null
           }
@@ -274,8 +269,8 @@ class Cargo extends PureComponent {
             <ListView
               dataSource={ds}
               renderBodyComponent={() => <ListBody/>}
-              renderFooter={this.renderCargoListFooter}
-              renderRow={this.renderCargoItem}
+              renderFooter={this.renderListFooter}
+              renderRow={this.renderItem}
               onEndReachedThreshold={16}
               onEndReached={this.handleEndReached}
               useBodyScroll
@@ -293,4 +288,4 @@ class Cargo extends PureComponent {
   }
 }
 
-export default Cargo;
+export default Transport;

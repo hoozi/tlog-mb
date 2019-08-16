@@ -1,7 +1,8 @@
 import request from '@/utils/request';
 import { setAnyToken, getAnyToken } from '@/utils/token';
-import { cargo } from './cargo';
-import { queryCargoInfo, queryCargoType, queryLocation } from './common';
+import { crudCargo } from './cargo';
+import { crudTransport } from './transport';
+import { queryCargoInfo, queryCargoType, queryLocation, queryToken, queryDict } from './common';
 
 let token;
 
@@ -11,18 +12,14 @@ async function queryNews(params, token) {
   })
 }
 
-async function queryToken(params) {
-  return request('/ierp/api/login.do', {
-    data: params
-  })
-}
-
 const serviceList = {
   queryNews,
-  cargo,
+  crudCargo,
+  crudTransport,
   queryCargoInfo,
   queryCargoType,
-  queryLocation
+  queryLocation,
+  queryDict
 }
 
 export default async function service(name, params){
@@ -39,6 +36,5 @@ export default async function service(name, params){
   } else {
     token = getAnyToken();
   }
-  //window.sessionStorage.setItem(ANY_KEY, token);
   return token ? serviceList[name](params, token) : null;
 }
