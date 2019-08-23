@@ -1,4 +1,5 @@
 import service from '@/api/any';
+import { Toast } from 'antd-mobile';
 
 const state = {
   beginPageIndex: 1,
@@ -26,6 +27,15 @@ const effects = {
     });
     if(!response) return;
     this.save({...response.data});
+    callback && callback(response.data);
+  },
+  async comment(payload, rootState, callback) {
+    const response = await service('comment', {
+      crudType: 'create',
+      ...payload
+    });
+    if(!response) return;
+    Toast.success('订单评价成功');
     callback && callback(response.data);
   }
 }

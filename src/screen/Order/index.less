@@ -32,10 +32,79 @@
     .scale-hairline-common(@border-color-secondary, 0, auto, auto, 0);
     width: 100%;
     height: 1px;
-    transform-origin: 50% 100%;
+    transform-origin: 50% 50%;
     transform: scaleY(0.5);
   }
   a {
     display: inline-block;
+    position: relative;
+    padding: 6px 16px;
+    margin-left: 16px;
+    //color: @color-text-base;
+    &:first-child {
+      margin-left: 0;
+    }
+    &:before {
+      .scale-hairline-common(transparent, 0, auto, auto, 0);
+      width: 200%;
+      height: 200%;
+      border-radius: 28px;
+      box-sizing: border-box;
+      pointer-events: none;
+      transform-origin: 0 0;
+      border: 1px solid @brand-primary;
+      transform: scale(0.5);
+    }
+    &.comment {
+      background-color: @brand-primary;
+      border-radius: 14px;
+      span {
+        color: #fff;
+      }
+      
+    }
+  }
+}
+
+.routeCard {
+  background-color: @brand-primary;
+  height: 64px;
+  position: relative;
+}
+
+.arrowLine {
+  position: absolute;
+  width: 52px;
+  left: 50%;
+  margin-left: -26px;
+  top: 50%;
+  margin-top: -12px;
+  i {
+    background: #fff !important;
+  }
+}
+.routeContainer {
+  position: relative;
+  .arrowLine i {
+    background: @card-icon-color !important;
+  }
+}
+.routeName {
+  position: relative;
+  padding: 8px 24px;
+  background-color: @brand-primary;
+  b, i {
+    display: block;
+  }
+  b {
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+  }
+  i {
+    margin-top: 6px;
+    font-style: normal;
+    color: #a5bef8;
+    font-size:12px;
   }
 }

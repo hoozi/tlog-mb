@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Screen from '@/component/Screen';
 import StandardList from '@/component/StandardList';
 import ArrowLine from '@/component/ArrowLine';
+import { Link } from 'react-router-dom';
 import { mapEffects, mapLoading } from '@/utils';
 import styles from './index.less';
 import list from '@/style/list.less';
@@ -94,13 +95,11 @@ class Order extends PureComponent {
     });
   }
   renderListCardHeader = item => (
-    <div className={styles.routeName}>
-      <Flex justify='between'>
-        <span><b>{item.loadName || '未知'}</b><i>装货地</i></span>
-        <span className={styles.arrowLine}><ArrowLine num={4}/></span>
-        <span><b>{item.unloadName || '未知'}</b><i>卸货地</i></span>
-      </Flex>
-    </div>
+    <Flex justify='between' className={styles.routeContainer}>
+      <span><b>{item.loadName || '未知'}</b><i>装货地</i></span>
+      <span className={styles.arrowLine}><ArrowLine num={4}/></span>
+      <span><b>{item.unloadName || '未知'}</b><i>卸货地</i></span>
+    </Flex>
   )
   renderListCardBody = item => (
     <>
@@ -127,8 +126,12 @@ class Order extends PureComponent {
   renderListCardFooter = item => {
     return (
       <Flex justify='end' className={styles.buttons}>
-        <a>1</a>
-        <a>2</a>
+        <a>
+          <span>物流任务</span>
+        </a>
+        <Link to={`/order-comment?id=${item.id}`} className={styles.comment}>
+          <span>订单评价</span>
+        </Link>
       </Flex>
     )
   }
