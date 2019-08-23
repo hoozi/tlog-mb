@@ -29,8 +29,8 @@ const mapDispatchToProps = ({ cargo }) => ({
 });
 
 const tabs = [
-  { title: '待审核', status: 30 },
-  { title: '已锁定', status: 40 },
+  { title: '待审核', status: 40 },
+  { title: '已锁定', status: 50 },
   { title: '已打回', status: 60 }
 ];
 
@@ -54,7 +54,7 @@ class Cargo extends PureComponent {
       ds,
       hasMore: true,
       current: this.current,
-      status: 30
+      status: 40
     }
   }
   reset() {
@@ -129,13 +129,13 @@ class Cargo extends PureComponent {
   showActionSheet(item) {
     const { status, id } = item;
     const map = {
-      30: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '转订单', '失效', '取消'],
-      40: ['转订单', '失效', '取消'],
+      40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '转订单', '失效', '取消'],
+      50: ['转订单', '失效', '取消'],
       60: ['失效', '取消']
     }
     const allStatusMap = {
-      30: ['60', '50', 'c', '90'],
-      40: ['c', '90'],
+      40: ['60', '50', 'c', '90'],
+      50: ['c', '90'],
       60: ['90']
     }
     ActionSheet.showActionSheetWithOptions({
