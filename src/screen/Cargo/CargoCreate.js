@@ -24,6 +24,7 @@ import Empty from '@/component/Empty';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
 import list from '@/style/list.less';
+import form from '@/style/form.less';
 
 const RadioItem = Radio.RadioItem;
 const ListItem = List.Item;
@@ -146,10 +147,10 @@ class CargoCreate extends PureComponent {
         const originId = values.originId[0];
         const terminalId = values.terminalId[0];
         const cargoTypeId = values.cargoTypeId[0];
-        const beginDate = moment(values.beginDate).format('YYYY-MM-DD HH:mm:ss');
-        const endDate = moment(values.endDate).format('YYYY-MM-DD HH:mm:ss');
-        const effectiveDate = moment(values.effectiveDate).format('YYYY-MM-DD HH:mm:ss');
-        const expireDate = moment(values.expireDate).format('YYYY-MM-DD HH:mm:ss');
+        const beginDate = moment(values.beginDate).format('YYYY-MM-DD');
+        const endDate = moment(values.endDate).format('YYYY-MM-DD');
+        const effectiveDate = moment(values.effectiveDate).format('YYYY-MM-DD');
+        const expireDate = moment(values.expireDate).format('YYYY-MM-DD');
         this.props.createCargo({
           ...values,
           message: '货盘发布成功',
@@ -213,7 +214,7 @@ class CargoCreate extends PureComponent {
           )
         }}
       >
-        <div className={styles.createForm}>
+        <div className={form.createForm}>
           <List renderHeader={() =>'基本信息'}>
             <Picker
               cols={1}
@@ -226,7 +227,7 @@ class CargoCreate extends PureComponent {
               data={locations}
               extra={fetchLocationing? '加载中...' : '请选择'}
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>出发地</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>出发地</ListItem>
             </Picker>
             <Picker
               cols={1}
@@ -239,7 +240,7 @@ class CargoCreate extends PureComponent {
               data={locations}
               extra={fetchLocationing? '加载中...' : '请选择'}
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>目的地</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>目的地</ListItem>
             </Picker>
             {/* <InputItem
               placeholder='请输入'
@@ -257,13 +258,13 @@ class CargoCreate extends PureComponent {
               data={cargoTypes}
               extra={fetchCargoTyping? '加载中...' : '请选择'}
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>货类</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>货类</ListItem>
             </Picker>
             <ListItem
               arrow='horizontal'
               extra={cargoChineseName ? cargoChineseName : '请选择'}
               onClick={() => this.handleShowCargoSearch(true)}
-            ><span className={list.required}>*</span>货名</ListItem>
+            ><span className={form.required}>*</span>货名</ListItem>
             <InputItem
               {...getFieldProps('tonnage', {
                 rules: [
@@ -273,7 +274,7 @@ class CargoCreate extends PureComponent {
               placeholder='请输入'
               clear
               extra='吨'
-            ><span className={list.required}>*</span>货物吨位</InputItem>
+            ><span className={form.required}>*</span>货物吨位</InputItem>
           </List>
           <List renderHeader={() =>'联系'}>
             <InputItem
@@ -296,8 +297,9 @@ class CargoCreate extends PureComponent {
                   { required: true, message: '请选择出运开始日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>从</ListItem>
             </DatePicker>
             <DatePicker
               {...getFieldProps('endDate', {
@@ -305,8 +307,9 @@ class CargoCreate extends PureComponent {
                   { required: true, message: '请选择出运结束日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'有效期'} className={styles.datePickerList}>
@@ -316,8 +319,9 @@ class CargoCreate extends PureComponent {
                   { required: true, message: '请选择生效日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>从</ListItem>
             </DatePicker>
             <DatePicker
               {...getFieldProps('expireDate', {
@@ -325,8 +329,9 @@ class CargoCreate extends PureComponent {
                   { required: true, message: '请选择失效日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'其他'}>

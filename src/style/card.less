@@ -6,6 +6,7 @@
   position: relative;
   background-color: #fff;
   margin-bottom: 8px;
+  overflow: hidden;
   &:last-child{
     margin-bottom: 0
   }
@@ -13,6 +14,46 @@
 
 .cardItemHeader {
   padding:16px 16px 0;
+  span {
+    display: inline-block;
+    text-align: center;
+    b {
+      width: 100%;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: @brand-primary;
+      font-weight: 500;
+    }
+    &>i {
+      display: inline-block;
+      font-size: 12px;
+      font-style: normal;
+      margin-top: 4px;
+    }
+  }
+  .arrowLine {
+    width: 16px;
+    position: relative;
+    top: -4px;
+    overflow: visible;
+    white-space: normal;
+    margin:0 8px;
+    .routeText {
+      color: @brand-primary;
+      border-radius: 12px;
+      height:24px;
+      text-align: center;
+      background-color: @card-icon-color;
+      position: absolute;
+      bottom:-5px;
+      width: 100%;
+      font-size: 12px;
+      text-align: center;
+      font-style: normal;
+    }
+  }
 }
 
 .cardItemBody {
@@ -66,46 +107,23 @@
   }
 }
 
-.routeName {
-  flex: auto;
-  &>span {
-    display: inline-block;
-    text-align: center;
-    b {
-      width: 100%;
-      display: inline-block;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: @brand-primary;
-      font-weight: 500;
-    }
-    &>i {
-      display: inline-block;
-      font-size: 12px;
-      font-style: normal;
-      margin-top: 6px;
-    }
-  }
-  .arrowLine {
-    width: 16px;
-    position: relative;
-    top: -4px;
-    overflow: visible;
-    white-space: normal;
-    margin:0 8px;
-    .routeText {
-      color: @brand-primary;
-      border-radius: 12px;
-      height:24px;
-      text-align: center;
-      background-color: @card-icon-color;
-      position: absolute;
-      bottom:-5px;
-      width: 100%;
-      font-size: 12px;
-      text-align: center;
-      font-style: normal;
-    }
-  }
+.flag {
+  line-height: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  width: 100px;
+  height: 20px;
+  position: absolute;
+  color: #fff;
+  background-color: @brand-primary;
+  transform: rotate(45deg);
+  right: -32px;
+  top: 10px;
+  font-size: 11px;
+  font-weight: 500;
 }
+
+/* .routeName {
+  flex: auto;
+  
+} */

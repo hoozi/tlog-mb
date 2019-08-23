@@ -1,16 +1,12 @@
-import request from '@/utils/request';
 import { setAnyToken, getAnyToken } from '@/utils/token';
 import { crudCargo } from './cargo';
 import { crudTransport } from './transport';
 import { queryCargoInfo, queryCargoType, queryLocation, queryToken, queryDict } from './common';
+import { queryNews } from './news';
+import { crudPriceReply } from './priceReply';
+import { queryOrder } from './order';
 
 let token;
-
-async function queryNews(params, token) {
-  return request(`/ierp/kapi/app/nbg_qcwl/getAnnouncements?access_token=${token}`, {
-    data: params
-  })
-}
 
 const serviceList = {
   queryNews,
@@ -19,7 +15,9 @@ const serviceList = {
   queryCargoInfo,
   queryCargoType,
   queryLocation,
-  queryDict
+  queryDict,
+  crudPriceReply,
+  queryOrder
 }
 
 export default async function service(name, params){

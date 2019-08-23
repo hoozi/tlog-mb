@@ -1,23 +1,22 @@
 import React, { PureComponent } from 'react';
-import { NavBar, Icon, Tabs, Flex, PullToRefresh, ListView, ActionSheet, ActivityIndicator } from 'antd-mobile';
+import { NavBar, Icon, Tabs, ListView, Flex, ActionSheet, ActivityIndicator } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { StickyContainer, Sticky } from 'react-sticky';
 import moment from 'moment';
 import findIndex from 'lodash/findIndex';
 import Screen from '@/component/Screen';
+import StandardList from '@/component/StandardList';
 import { mapEffects, mapLoading } from '@/utils';
-import Empty from '@/component/Empty';
 import styles from './index.less';
 import list from '@/style/list.less';
-import card from '@/style/card.less';
 import color from '@/constants/color';
 
 const { tabsStyle } = color;
 
 const mapStateToProps = ({ transport }) => {
   return {
-    transport,
-    ...mapLoading('any',{
+    ...transport,
+    ...mapLoading('transport',{
       fetchTransporting: 'fetchTransport',
       updateTransporting: 'updateTransport'
     })
@@ -34,17 +33,6 @@ const tabs = [
   { title: '已打回', status: 60 }
 ];
 
-/* const createStatusCode = (status, index) => {
-
-} */
-
-const ListBody = props => (
-  <div className='am-list-body' style={{backgroundColor: '#f5f5f9'}}>{props.children}</div>
-)
-const ListFirstLoading = props => (
-  <div style={{display: 'flex', justifyContent: 'center', marginTop: 256}}><ActivityIndicator text='列表加载中...' {...props}/></div>
-) 
-
 @connect(mapStateToProps, mapDispatchToProps)
 class Transport extends PureComponent {
   constructor(props) {
@@ -58,12 +46,10 @@ class Transport extends PureComponent {
       loading: true,
       refreshing: true,
       firstLoading: true,
-      needCache: {
-        ds,
-        hasMore: true,
-        current: this.current,
-        status: 40
-      }
+      ds,
+      hasMore: true,
+      current: this.current,
+      status: 40
     }
   }
   reset() {
@@ -72,7 +58,6 @@ class Transport extends PureComponent {
   }
   callback = data => {
     const { recordList, pageCount } = data;
-    const { needCache } = this.state;
     const ds = recordList.length > 0 ? recordList.map(item => {
       /* const originName = (item.originName && item.originName.length > 6) ? item.originName.substring(0,6) + '...' : item.originName;
       const terminalName = (item.terminalName  && item.terminalName.length > 6) ? item.terminalName.substring(0,6) + '...' : item.terminalName; */
@@ -84,14 +69,12 @@ class Transport extends PureComponent {
     }) : [];
     this.data = [...this.data, ...ds];
     this.setState({
+      ...this.state,
       refreshing: false,
       loading: false,
       firstLoading: false,
-      needCache: {
-        ...needCache,
-        hasMore: this.current !== pageCount,
-        ds: needCache.ds.cloneWithRows(this.data)
-      }
+      hasMore: this.current !== pageCount,
+      ds: this.state.ds.cloneWithRows(this.data)
     })
   }
   transportService(name, payload, callback) {
@@ -99,56 +82,47 @@ class Transport extends PureComponent {
     this.props[name](payload, _callback)
   }
   componentDidMount() {
-    const { needCache: { current, status } } = this.state;
+    const { current, status } = this.state;
     this.transportService('fetchTransport', {current, status} , this.callback);
   }
   handleTabChange = data => {
     const { status } = data;
-    const { needCache } = this.state;
-    this.setState({ firstLoading: true });
+    this.setState({ 
+      ...this.state,
+      firstLoading: true,
+      status
+    });
     this.transportService('fetchTransport',{
       status
     }, data => {
       this.reset();
-      this.setState({
-        needCache: {
-          ...needCache,
-          status
-        }
-      });
       this.callback(data)
     })
   }
   handleRefresh = () => {
-    const { needCache } = this.state;
-    const { status } = needCache;
+    const { status } = this.state;
     this.reset();
     this.setState({
+      ...this.state,
       refreshing: true,
-      needCache: {
-        ...needCache, 
-        current: this.current
-      }
+      current: this.current
     });
     this.transportService('fetchTransport', { status, current: 1 }, this.callback);
   }
   handleEndReached = () => {
-    const { loading, needCache } = this.state;
-    let { status, hasMore } = needCache;
+    const { loading, status, hasMore } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
     this.transportService('fetchTransport', { status, current: ++this.current }, data => {
       this.setState({
-        needCache: {
-          ...needCache,
-          current: this.current,
-        }
-      })
+        ...this.state,
+        current: this.current
+      });
       this.callback(data);
     });
   }
-  showActionSheet(status, id) {
-    const { needCache } = this.state
+  showActionSheet(item) {
+    const { status, id } = item;
     const map = {
       40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '失效', '取消'],
       50: ['失效', '取消'],
@@ -178,64 +152,48 @@ class Transport extends PureComponent {
       }, () => {
         this.data = this.data.filter(item => item.id!==id)
         this.setState({
-          needCache: {
-            ...needCache,
-            ds: needCache.ds.cloneWithRows(this.data)
-          }
+          ...this.state,
+          ds: this.state.ds.cloneWithRows(this.data)
+          
         });
       })
     })
   }
-  renderItem = (item, sectionID, rowID) => {
-    return (
-      <div className={card.cardItem} style={{boxShadow: '0 3px 5px -5px rgba(0,0,0,.15)'}} key={rowID} onClick={() => this.showActionSheet(item.status, item.id)}>
-        <div className={card.cardItemHeader}>
-          <Flex justify='between' className={card.routeName}>
-            <span><b>{item.transportName || '未知'}</b><i>运力名称</i></span>
-            <span><b>{item.loadWeight || '未知'}</b><i>载重吨</i></span>
-            <span><b>{item.freePlace}</b><i>空闲地</i></span>
-          </Flex>
-        </div>
-        <div className={card.cardItemBody}>
-          <p>服务商<b>{item.logisticsProvider || '未知'}</b></p>
-          <p>有效期到<b className={styles.expireDate}>{moment(item.invalidateTime).format('YYYY-MM-DD')}</b>,空闲日期到<b>{moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
-        </div>
-        <div className={card.cardItemExtra}>
-          <Flex justify='between'>
-            <span><Icon type='yonghu' size='xxs'/> {item.contact}</span>
-            <span><Icon type='dianhua' size='xxs'/> {item.contactTel} </span>
-            <span><Icon type='leixing' size='xxs'/> {item.transportTypeName}</span>
-            {/* <span><Icon type='dianhua' size='xxs'/> </span> */}
-            {/* <span><Icon type='shijian' size='xxs'/> </span> */}
-          </Flex>
-        </div>
-      </div>
-    )
-  }
-  renderListFooter = () => {
-    const { loading, hasMore } = this.state
-    return (
-      <div style={{ padding: 4, paddingTop: 6, textAlign: 'center' }}>
-        { loading? '加载中...' : ( hasMore ? '加载完成' : '没有更多了' ) }
-      </div>
-    )
-  }
+  renderListCardHeader = item => (
+    <Flex justify='between'>
+      <span><b>{item.transportName || '未知'}</b><i>运力名称</i></span>
+      <span><b>{item.loadWeight || '未知'}</b><i>载重吨</i></span>
+      <span><b>{item.freePlace}</b><i>空闲地</i></span>
+    </Flex>
+  )
+  renderListCardBody = item => (
+    <>
+      <p>服务商<b>{item.logisticsProvider || '未知'}</b></p>
+      <p>有效期到<b className={styles.expireDate}>{moment(item.invalidateTime).format('YYYY-MM-DD')}</b>,空闲日期到<b>{moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
+    </>
+  )
+  renderListCardExtra = item => (
+    <Flex justify='between'>
+      <span><Icon type='yonghu' size='xxs'/> {item.contact}</span>
+      <span><Icon type='dianhua' size='xxs'/> {item.contactTel} </span>
+      <span><Icon type='leixing' size='xxs'/> {item.transportTypeName}</span>
+    </Flex>
+  )
   render() {
-    const { refreshing, firstLoading, needCache: { status, ds } } = this.state;
+    const { refreshing, firstLoading, loading, status, ds, hasMore } = this.state;
     const { history, updateTransporting } = this.props;
     return (
       <Screen
         className={list.listScreen}
         header={() =>(
-            <NavBar   
-              mode='dark'
-              icon={<Icon type='left' size='lg'/>}
-              onLeftClick={() => history.goBack()}
-            >
-              运力信息
-            </NavBar>
-          )
-        }
+          <NavBar   
+            mode='dark'
+            icon={<Icon type='left' size='lg'/>}
+            onLeftClick={() => history.goBack()}
+          >
+            运力信息
+          </NavBar>
+        )}
       >
         <StickyContainer className={list.stickyContainer}>
           <Sticky>
@@ -245,13 +203,6 @@ class Transport extends PureComponent {
                   <div className={list.listStatus} >
                     <Tabs initialPage={findIndex(tabs, tab => tab.status === status)} tabs={tabs} {...tabsStyle} onChange={this.handleTabChange}/>
                   </div>
-                  {/* <div className={styles.cargoFilter}>
-                    <Flex justify='between'>
-                      <span><i>有效期从</i>2019-09-04<Icon type='down' size='xxs'/></span>
-                      <span className={styles.pipe}>|</span>
-                      <span><i>到</i>2018-08-93<Icon type='down' size='xxs'/></span>
-                    </Flex>
-                  </div> */}
                 </div>
               )
             }
@@ -261,27 +212,19 @@ class Transport extends PureComponent {
             <ActivityIndicator toast text='操作中...'/> :
             null
           }
-          {
-            firstLoading ? 
-            <ListFirstLoading/> :
-            (ds && !ds.getRowCount()) ? 
-            <Empty description='暂无货盘信息'/> : 
-            <ListView
-              dataSource={ds}
-              renderBodyComponent={() => <ListBody/>}
-              renderFooter={this.renderListFooter}
-              renderRow={this.renderItem}
-              onEndReachedThreshold={16}
-              onEndReached={this.handleEndReached}
-              useBodyScroll
-              pullToRefresh={
-                <PullToRefresh
-                  refreshing={refreshing}
-                  onRefresh={this.handleRefresh}
-                />
-              }
-            />
-          }
+          <StandardList
+            dataSource={ds}
+            onEndReached={this.handleEndReached}
+            onRefresh={this.handleRefresh}
+            loading={loading}
+            refreshing={refreshing}
+            firstLoading={firstLoading}
+            hasMore={hasMore}
+            renderListCardHeader={this.renderListCardHeader}
+            renderListCardBody={this.renderListCardBody}
+            renderListCardExtra={this.renderListCardExtra}
+            onCardClick={item => this.showActionSheet(item)}
+          />
         </StickyContainer>
       </Screen>
     )

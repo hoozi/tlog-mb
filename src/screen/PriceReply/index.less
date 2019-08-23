@@ -1,0 +1,91 @@
+@import '../../theme.less';
+
+.createForm {
+  padding-bottom: 90px;
+  :global {
+    .am-list-extra {
+      flex-basis: initial !important;
+    }
+  }
+}
+
+.routeCard {
+  background-color: @brand-primary;
+  height: 150px;
+  position: relative;
+}
+
+.expireDate {
+  color: @brand-error;
+}
+
+.detailCardList {
+  padding: 0 8px;
+  box-sizing: border-box;
+  width: 100%;
+  position: relative;
+  z-index: 11;
+}
+
+.detailCard {
+  margin-top: -86px;
+  border-radius: 4px;
+  background-color: #fff;
+  width: 100%;
+  padding:16px 12px;
+  color: @card-text-color;
+  box-shadow: 1px 1px 4px rgba(0,0,0,.08);
+}
+
+.detailListItem {
+  margin-bottom: 12px;
+  svg {
+    margin-top: -2px;
+    vertical-align: middle;
+    color: @card-icon-color;
+  }
+  span {
+    margin-left: 8px;
+  }
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.detailNote {
+  background-color: #f7f7f7;
+  padding: 12px;
+  border-radius: 4px;
+}
+
+.arrowLine {
+  position: absolute;
+  width: 52px;
+  left: 50%;
+  margin-left: -26px;
+  top: 50%;
+  margin-top: -12px;
+  i {
+    background: #fff !important;
+  }
+}
+
+.routeName {
+  position: relative;
+  padding: 8px 24px;
+  background-color: @brand-primary;
+  b, i {
+    display: block;
+  }
+  b {
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+  }
+  i {
+    margin-top: 6px;
+    font-style: normal;
+    color: #a5bef8;
+    font-size:12px;
+  }
+}

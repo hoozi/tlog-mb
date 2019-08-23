@@ -9,6 +9,8 @@ import any from './models/any';
 import user from './models/user';
 import cargo from './models/cargo';
 import transport from './models/transport';
+import priceReply from './models/priceReply';
+import order from './models/order';
 
 const history = createHashHistory();
 
@@ -28,7 +30,9 @@ const store = init({
     any,
     user,
     cargo,
-    transport
+    transport,
+    priceReply,
+    order
   },
   redux,
   plugins: [loading]

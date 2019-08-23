@@ -16,8 +16,7 @@ import moment from 'moment';
 import Screen from '@/component/Screen';
 //import { BARND_COLOR } from '@/constants/color';
 import { mapEffects, mapLoading, hasError } from '@/utils';
-import styles from './index.less';
-import list from '@/style/list.less';
+import form from '@/style/form.less';
 
 const ListItem = List.Item;
 
@@ -48,42 +47,13 @@ if (isIPhone) {
 @connect(mapStateToProps, mapDispatchToProps)
 @createForm()
 class TransportCreate extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      
-    }
-  }
   getTransportType() {
     this.props.fetchTransportType();
   }
   componentDidMount() {
     this.props.form.validateFields();
     this.getTransportType();
-    /* this.getCargoType();
-    this.getLocation(); */
   }
-  /* handleShowCargoSearch = flag => {
-    document.documentElement.style.overflow = 'hidden';
-    this.setState({
-      visibleSearchModal: !!flag
-    })
-  } */
-  /* handleCargoNameChange = data => {
-    const { id:cargoId, cargoChineseName } = data;
-    this.setState({
-      cargo: {
-        cargoId,
-        cargoChineseName
-      }
-    })
-    this.handleShowCargoSearch();
-  }
-  @Debounce(200)
-  handleSearchChange(cargoChineseName){
-    if(!cargoChineseName) return
-    this.getCargoInfo({cargoChineseName})
-  } */
   handleSubmit = () => {
     const { form: { validateFields, resetFields } } = this.props;
     validateFields((errors, values) => {
@@ -94,10 +64,10 @@ class TransportCreate extends PureComponent {
         return;
       } else {
         const transportTypeId = values.transportTypeId[0];
-        const freeStartTime = moment(values.freeStartTime).format('YYYY-MM-DD HH:mm:ss');
-        const freeEndTime = moment(values.freeEndTime).format('YYYY-MM-DD HH:mm:ss');
-        const invalidateTime = moment(values.invalidateTime).format('YYYY-MM-DD HH:mm:ss');
-        const validateTime = moment(values.validateTime).format('YYYY-MM-DD HH:mm:ss');
+        const freeStartTime = moment(values.freeStartTime).format('YYYY-MM-DD');
+        const freeEndTime = moment(values.freeEndTime).format('YYYY-MM-DD');
+        const invalidateTime = moment(values.invalidateTime).format('YYYY-MM-DD');
+        const validateTime = moment(values.validateTime).format('YYYY-MM-DD');
         this.props.createTransport({
           ...values,
           status: 10,
@@ -138,7 +108,7 @@ class TransportCreate extends PureComponent {
           )
         }}
       >
-        <div className={styles.createForm}>
+        <div className={form.createForm}>
           <List renderHeader={() =>'基本信息'}>
             <Picker
               cols={1}
@@ -151,7 +121,7 @@ class TransportCreate extends PureComponent {
               title='运力类型'
               extra={fetchTransportTyping? '加载中...' : '请选择'}
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>运力类型</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>运力类型</ListItem>
             </Picker>
             <InputItem
               {...getFieldProps('transportName', {
@@ -161,7 +131,7 @@ class TransportCreate extends PureComponent {
               })}
               placeholder='请输入'
               clear
-            ><span className={list.required}>*</span>运力名称</InputItem>
+            ><span className={form.required}>*</span>运力名称</InputItem>
             <InputItem
               {...getFieldProps('loadWeight', {
                 rules: [
@@ -209,14 +179,14 @@ class TransportCreate extends PureComponent {
           </List>
           <List renderHeader={() =>'空闲日期'}>
             <DatePicker
-              extra='请选择'
               {...getFieldProps('freeStartTime', {
                 rules: [
                   { required: true, message: '请选择出运开始日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>从</ListItem>
             </DatePicker>
             <DatePicker
               {...getFieldProps('freeEndTime', {
@@ -224,8 +194,9 @@ class TransportCreate extends PureComponent {
                   { required: true, message: '请选择出运结束日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'有效期'}>
@@ -235,8 +206,9 @@ class TransportCreate extends PureComponent {
                   { required: true, message: '请选择生效日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>从</ListItem>
             </DatePicker>
             <DatePicker
               {...getFieldProps('invalidateTime', {
@@ -244,8 +216,9 @@ class TransportCreate extends PureComponent {
                   { required: true, message: '请选择失效日期' }
                 ]
               })}
+              mode='date'
             >
-              <ListItem arrow='horizontal'><span className={list.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'其他'}>
@@ -258,7 +231,7 @@ class TransportCreate extends PureComponent {
             />
           </List>
         </div>
-        <div className={list.bottomButton}>
+        <div className={form.bottomButton}>
           <Button 
             type='primary' 
             onClick={this.handleSubmit}

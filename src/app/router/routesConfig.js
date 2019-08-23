@@ -9,6 +9,9 @@ const CargoAsync = LoadingComponent('Cargo');
 const CargoCreateAsync = LoadingComponent('Cargo/CargoCreate');
 const TransportAsync = LoadingComponent('Transport');
 const TransportCreateAsync = LoadingComponent('Transport/TransportCreate');
+const PriceReplyAsync = LoadingComponent('PriceReply');
+const PriceReplyDetailAsync = LoadingComponent('PriceReply/PriceReplyDetail');
+const OrderAsync = LoadingComponent('Order');
 
 const routesConfig = [
   {
@@ -58,6 +61,30 @@ const routesConfig = [
   {
     path: '/transport-create',
     component: TransportCreateAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/price-reply',
+    component: PriceReplyAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/price-reply-detail',
+    component: PriceReplyDetailAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/order',
+    component: OrderAsync,
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

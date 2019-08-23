@@ -3,7 +3,8 @@ import {
   Grid,
   Icon,
   //ActivityIndicator,
-  Flex
+  Flex,
+  Toast
 } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -35,11 +36,27 @@ const data = [{
 }, {
   icon: <Icon type='xunjiahuifu' size='f' color='#f15a4a'/>,
   text: '询价回复',
-  url: '/transport-create'
+  url: '/price-reply'
 }, {
-  icon: <Icon type='chaoxi' size='f' color={BRAND_COLOR}/>,
+  icon: <Icon type='chaoxi' size='f' color='#f39927'/>,
   text: '潮汐信息',
-  url: '/transport-create'
+  url: ''
+}, {
+  icon: <Icon type='dingdanchaxun' size='f' color={BRAND_COLOR}/>,
+  text: '订单查询',
+  url: '/order'
+}, {
+  icon: <Icon type='renwuguanli' size='f' color='#29ab91'/>,
+  text: '任务管理',
+  url: ''
+}, {
+  icon: <Icon type='matoukucun' size='f' color={BRAND_COLOR}/>,
+  text: '码头库存',
+  url: ''
+}, {
+  icon: <Icon type='zaitukucun' size='f' color={BRAND_COLOR}/>,
+  text: '在途库存',
+  url: ''
 }];/* Array.from(new Array(8)).map((_val, i) => ({
   icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
   text: `功能${i}`,
@@ -90,19 +107,18 @@ class Home extends PureComponent {
     imgHeight: 220
   }
   componentDidMount() {
-    this.props.fetchNews({
+   /*  this.props.fetchNews({
       crudType: 'retrieve',
       current: 1,
       size: 10,
       status: 'P'
-    });
+    }); */
   }
   renderLogisticsItem(item) {
     return (
       <div className={styles.logisticsItem}>
         <div className={styles.logisticsRoute}>
           <span>宁波</span>
-          <span className={styles.arrowLine}><ArrowLine/></span>
           <span>鼠浪湖</span>
         </div>
         {/* <div className={styles.logisticsExtra}>
@@ -114,7 +130,10 @@ class Home extends PureComponent {
   }
   handleLinkTo = el => {
     const { history } = this.props;
-    const { url } = el;
+    const { url='' } = el;
+    if(!url) {
+      return Toast.info('即将到来')
+    }
     history.push(url);
   }
   render() {
@@ -150,7 +169,6 @@ class Home extends PureComponent {
                     <div className={card.cardItemHeader}>
                       <Flex justify='between' className={card.routeName}>
                         <span><b>测试地址地址</b><i>出发地</i></span>
-                        <span className={card.arrowLine}><ArrowLine/></span>
                         <span><b>沙钢海力码头</b><i>目的地</i></span>
                         <span><b>江运+装卸</b><i>作业类型</i></span>
                       </Flex>
