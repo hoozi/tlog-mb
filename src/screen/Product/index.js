@@ -1,29 +1,28 @@
 import React, { PureComponent } from 'react';
 import { NavBar, Icon, ListView, Flex } from 'antd-mobile';
 import { connect } from 'react-redux';
+import moment from 'moment';
 import Screen from '@/component/Screen';
-import StandardList from '@/component/StandardList';
 import RouteName from '@/component/RouteName';
-import { Link } from 'react-router-dom';
+import StandardList from '@/component/StandardList';
 import { mapEffects, mapLoading } from '@/utils';
-import styles from './index.less';
 import list from '@/style/list.less';
 
-const mapStateToProps = ({ order }) => {
+const mapStateToProps = ({ product }) => {
   return {
-    order,
-    ...mapLoading('order',{
-      fetchOrdering: 'fetchOrder'
+    ...product,
+    ...mapLoading('product',{
+      fetchProducting: 'fetchProduct'
     })
   }
 }
 
-const mapDispatchToProps = ({ order }) => ({
-  ...mapEffects(order, ['fetchOrder'])
+const mapDispatchToProps = ({ product }) => ({
+  ...mapEffects(product, ['fetchProduct'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
-class Order extends PureComponent {
+class Transport extends PureComponent {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({
@@ -37,7 +36,8 @@ class Order extends PureComponent {
       firstLoading: true,
       ds,
       hasMore: true,
-      current: this.current
+      current: this.current,
+      status: 'B'
     }
   }
   reset() {
@@ -65,28 +65,29 @@ class Order extends PureComponent {
       ds: this.state.ds.cloneWithRows(this.data)
     })
   }
-  getOrder(payload, callback) {
+  productService(name, payload, callback) {
     const _callback = callback ? callback : () => null;
-    this.props.fetchOrder(payload, _callback)
+    this.props[name](payload, _callback)
   }
   componentDidMount() {
-    const { current } = this.state;
-    this.getOrder({current} , this.callback);
+    const { current, status } = this.state;
+    this.productService('fetchProduct', {status,current} , this.callback);
   }
   handleRefresh = () => {
+    const { status } = this.state;
     this.reset();
     this.setState({
       ...this.state,
       refreshing: true,
       current: this.current
     });
-    this.getOrder({ current: 1 }, this.callback);
+    this.productService('fetchProduct', { status, current: 1 }, this.callback);
   }
   handleEndReached = () => {
-    const { loading,  hasMore } = this.state;
+    const { loading, status, hasMore } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.getOrder({ current: ++this.current }, data => {
+    this.productService('fetchProduct', { status, current: ++this.current }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -96,9 +97,8 @@ class Order extends PureComponent {
   }
   renderListCardHeader = item => (
     <RouteName
-      className={styles.routeContainer}
-      from={item.loadName}
-      to={item.unloadName}
+      from={item.originName}
+      to={item.terminalName}
       extra={
         <>
           <b className='text-primary'>{item.bizTypeName || '未知'}</b>
@@ -108,62 +108,28 @@ class Order extends PureComponent {
     />
   )
   renderListCardBody = item => (
-    <>
-      <p><b>{item.skuName}</b>，<b className='text-primary'>{item.planQuantity}</b>吨</p>
-      <p>托运人<b>{item.customerName || '未知'}</b>，服务商<b>{item.carrierName || '未知'}</b></p>
-    </>
+    <p>距离约<b>{item.mileage}</b>公里, 时长约<b>{item.days}</b>天</p>
   )
   /* renderListCardExtra = item => (
     <Flex justify='between'>
-      <span><Icon type='yonghu' size='xxs'/> {item.contactName}</span>
-      <span><Icon type='dianhua' size='xxs'/> {item.contactNumber} </span>
-      <span><Icon type='leixing' size='xxs'/> {item.bizTypeName} </span>
+      <span><Icon type='yonghu' size='xxs'/> {item.contact}</span>
+      <span><Icon type='dianhua' size='xxs'/> {item.contactTel} </span>
+      <span className='text-primary'><Icon type='leixing' size='xxs'/> {item.transportTypeName}</span>
     </Flex>
   ) */
-  renderListCardFlag = item => {
-    const statusMap = {
-      '00': '未知',
-      '10': '已创建',
-      '20': '待配载',
-      '30': '已配载',
-      '40': '待审核',
-      '50': '执行中',
-      '90': '已完成'
-    }
-    return statusMap[item.status];
-  }
-  renderListCardFooter = item => {
-    return (
-      <Flex justify='end' className={styles.buttons}>
-        <Link>
-          <span>物流任务</span>
-        </Link>
-        <Link to={`/order-comment?id=${item.id}`} className={styles.comment}>
-          <span>订单评价</span>
-        </Link>
-      </Flex>
-    )
-  }
   render() {
     const { refreshing, firstLoading, loading, ds, hasMore } = this.state;
     const { history } = this.props;
-    const renderCardMethods = {
-      renderListCardHeader: this.renderListCardHeader,
-      renderListCardBody: this.renderListCardBody,
-      renderListCardFlag: this.renderListCardFlag,
-      renderListCardFooter: this.renderListCardFooter
-    }
     return (
       <Screen
         className={list.listScreen}
-        fixed
         header={() =>(
           <NavBar   
             mode='dark'
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
           >
-            订单查询
+            物流产品
           </NavBar>
         )}
       >
@@ -175,11 +141,14 @@ class Order extends PureComponent {
           refreshing={refreshing}
           firstLoading={firstLoading}
           hasMore={hasMore}
-          {...renderCardMethods}
+          renderListCardHeader={this.renderListCardHeader}
+          renderListCardBody={this.renderListCardBody}
+          renderListCardExtra={this.renderListCardExtra}
+          onCardClick={item => history.push(`/product-detail?id=${item.id}`)}
         />
       </Screen>
     )
   }
 }
 
-export default Order;
+export default Transport;

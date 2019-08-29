@@ -9,7 +9,6 @@ import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
 import Screen from '@/component/Screen';
 import BannerMask from '@/component/BannerMask';
-import ArrowLine from '@/component/ArrowLine';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
 import form from '@/style/form.less';
@@ -47,6 +46,7 @@ class PriceReplyDetail extends PureComponent {
     }
   }
   componentDidMount() {
+    document.documentElement.scrollTop = 0;
     const { location:{search}, recordList } = this.props;
     const id = parse(search.substring(1))['id'];
     const data = find(recordList.map(item => {
@@ -125,7 +125,7 @@ class PriceReplyDetail extends PureComponent {
                             <b>{data.terminalName}</b>
                             <i>目的地</i>
                           </span>
-                          <span className={styles.arrowLine}><ArrowLine num={4}/></span>
+                          {/* <span className={styles.arrowLine}><ArrowLine num={4}/></span> */}
                         </Flex>
                       </div>
                     )

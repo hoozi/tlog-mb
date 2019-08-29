@@ -5,6 +5,7 @@ import { queryCargoInfo, queryCargoType, queryLocation, queryToken, queryDict } 
 import { queryNews } from './news';
 import { crudPriceReply } from './priceReply';
 import { queryOrder, comment } from './order';
+import { queryProduct } from './product';
 
 let token;
 
@@ -18,7 +19,8 @@ const serviceList = {
   queryDict,
   crudPriceReply,
   queryOrder,
-  comment
+  comment,
+  queryProduct
 }
 
 export default async function service(name, params){

@@ -9,11 +9,16 @@ export default props => {
     renderListCardFooter,
     renderListCardFlag,
     onCardClick,
-    item 
+    item,
+    className = ''
   } = props;
   return (
-    <div className={card.cardItem} style={{boxShadow: '0 3px 5px -5px rgba(0,0,0,.15)'}}>
-      {renderListCardFlag ? <div className={card.flag}>{renderListCardFlag(item)}</div> : null}
+    <div className={`${card.cardItem} ${className}`}>
+      {
+        renderListCardFlag ? 
+        <div className={card.flag}>{renderListCardFlag(item)}</div> : 
+        null
+      }
       <div onClick={() => onCardClick && onCardClick(item)}>
         <div className={card.cardItemHeader}>
           { renderListCardHeader(item) }
@@ -21,9 +26,12 @@ export default props => {
         <div className={card.cardItemBody}>
           { renderListCardBody(item) }
         </div>
-        <div className={card.cardItemExtra}>
-          { renderListCardExtra(item) }
-        </div>
+        {
+          renderListCardExtra ? 
+          <div className={card.cardItemExtra}>{ renderListCardExtra(item) }</div> :
+          null
+        }
+        
       </div>
       { 
         renderListCardFooter && renderListCardFooter(item)

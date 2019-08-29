@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { ListView, PullToRefresh, ActivityIndicator } from 'antd-mobile';
 import PropTypes from 'prop-types';
 import Empty from '@/component/Empty';
-import card from '@/style/card.less';
 import StandardCard from '../StandardCard';
 
 const ListBody = props => (
@@ -35,11 +34,11 @@ export default class StandardList extends PureComponent {
     dataSource: {},
     onEndReached: () => void 0,
     onRefresh: () => void 0,
-    renderListCardHeader: () => null,
-    renderListCardBody: () => null,
-    renderListCardExtra: () => null,
-    renderListCardFooter: () => null,
-    onCardClick: () => null
+    renderListCardHeader:  null,
+    renderListCardBody:  null,
+    renderListCardExtra:  null,
+    renderListCardFooter: null,
+    onCardClick: null
   }
   handleEndReached = () => {
     this.props.onEndReached && this.props.onEndReached();

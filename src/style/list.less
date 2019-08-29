@@ -12,6 +12,11 @@
 }
 .listStatus {
   height: 44px;
+  :global {
+    .am-tabs-default-bar-prevpage,.am-tabs-default-bar-nextpage {
+      background:none;
+    }
+  }
 }
 .listFilter {
   position: relative;
@@ -22,7 +27,7 @@
     .scale-hairline-common(@border-color-secondary, auto, auto, 0, 0);
     width: 100%;
     height: 1px;
-    transform-origin: 50% 50%;
+    transform-origin:50% 50%;
     transform: scaleY(0.5);
   }
   span {

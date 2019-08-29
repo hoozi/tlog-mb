@@ -11,6 +11,7 @@ import cargo from './models/cargo';
 import transport from './models/transport';
 import priceReply from './models/priceReply';
 import order from './models/order';
+import product from './models/product';
 
 const history = createHashHistory();
 
@@ -32,7 +33,8 @@ const store = init({
     cargo,
     transport,
     priceReply,
-    order
+    order,
+    product
   },
   redux,
   plugins: [loading]

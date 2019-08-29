@@ -3,11 +3,11 @@ import { NavBar, Icon, Tabs, ListView, Flex, ActionSheet, ActivityIndicator } fr
 import { connect } from 'react-redux';
 import { StickyContainer, Sticky } from 'react-sticky';
 import moment from 'moment';
+import { parse } from 'qs';
 import findIndex from 'lodash/findIndex';
 import Screen from '@/component/Screen';
 import StandardList from '@/component/StandardList';
 import { mapEffects, mapLoading } from '@/utils';
-import styles from './index.less';
 import list from '@/style/list.less';
 import color from '@/constants/color';
 
@@ -33,6 +33,17 @@ const tabs = [
   { title: '已打回', status: 60 }
 ];
 
+const allTabs = [
+  { title: '已创建', status: 10 },
+  { title: '待发布', status: 20 },
+  { title: '已发布', status: 30 },
+  { title: '待审核', status: 40 },
+  { title: '已锁定', status: 50 },
+  { title: '已打回', status: 60 },
+  { title: '已使用', status: 70 },
+  { title: '已失效', status: 90 },
+]
+
 @connect(mapStateToProps, mapDispatchToProps)
 class Transport extends PureComponent {
   constructor(props) {
@@ -40,6 +51,8 @@ class Transport extends PureComponent {
     const ds = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2
     });
+    const { location: {search} } = props;
+    const type = parse(search.substring(1))['type'] || '';
     this.current = 1;
     this.data = []
     this.state = {
@@ -49,7 +62,7 @@ class Transport extends PureComponent {
       ds,
       hasMore: true,
       current: this.current,
-      status: 40
+      status: type ? (type === 'all' ? 10 : 30) : 40
     }
   }
   reset() {
@@ -122,6 +135,9 @@ class Transport extends PureComponent {
     });
   }
   showActionSheet(item) {
+    const { location: {search} } = this.props;
+    const type = parse(search.substring(1))['type'] || '';
+    if(type) return;
     const { status, id } = item;
     const map = {
       40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '失效', '取消'],
@@ -169,19 +185,20 @@ class Transport extends PureComponent {
   renderListCardBody = item => (
     <>
       <p>服务商<b>{item.logisticsProvider || '未知'}</b></p>
-      <p>有效期到<b className={styles.expireDate}>{moment(item.invalidateTime).format('YYYY-MM-DD')}</b>,空闲日期到<b>{moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
+      <p>空闲日期<b>{moment(item.freeStartTime).format('YYYY-MM-DD')} ~ {moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
     </>
   )
   renderListCardExtra = item => (
     <Flex justify='between'>
       <span><Icon type='yonghu' size='xxs'/> {item.contact}</span>
       <span><Icon type='dianhua' size='xxs'/> {item.contactTel} </span>
-      <span><Icon type='leixing' size='xxs'/> {item.transportTypeName}</span>
+      <span className='text-primary'><Icon type='leixing' size='xxs'/> {item.transportTypeName}</span>
     </Flex>
   )
   render() {
     const { refreshing, firstLoading, loading, status, ds, hasMore } = this.state;
-    const { history, updateTransporting } = this.props;
+    const { history, updateTransporting, location: {search}} = this.props;
+    const type = parse(search.substring(1))['type'];
     return (
       <Screen
         className={list.listScreen}
@@ -191,22 +208,25 @@ class Transport extends PureComponent {
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
           >
-            运力信息
+            {`运力${!type ? '审核' : '信息'}`}
           </NavBar>
         )}
       >
         <StickyContainer className={list.stickyContainer}>
-          <Sticky>
-            {
-              ({ style }) => (
-                <div style={{...style, zIndex:10}}>
-                  <div className={list.listStatus} >
-                    <Tabs initialPage={findIndex(tabs, tab => tab.status === status)} tabs={tabs} {...tabsStyle} onChange={this.handleTabChange}/>
+          {
+            !type || (type && type === 'all') ? 
+            <Sticky>
+              {
+                ({ style }) => (
+                  <div style={{...style, zIndex:10}}>
+                    <div className={list.listStatus} >
+                      <Tabs initialPage={findIndex(tabs, tab => tab.status === status)} tabs={(type && type === 'all') ? allTabs : tabs} {...tabsStyle} renderTabBar={props => <Tabs.DefaultTabBar {...props} page={3} />} onChange={this.handleTabChange}/>
+                    </div>
                   </div>
-                </div>
-              )
-            }
-          </Sticky>
+                )
+              }
+            </Sticky> : null
+          }
           {
             updateTransporting? 
             <ActivityIndicator toast text='操作中...'/> :

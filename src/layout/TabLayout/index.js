@@ -11,28 +11,28 @@ const TabBarItem = TabBar.Item;
 const tabBarItems = [
   {
     title: '首页',
-    key: 'home',
+    key: 'Home',
     icon: <Icon type='shouye'/>,
     selectedIcon: <Icon type='shouye'/>,
     component: Home
   },
   {
     title: '资讯',
-    key: 'news',
+    key: 'News',
     icon: <Icon type='xinwenzixun'/>,
     selectedIcon: <Icon type='xinwenzixun'/>,
     component: News
   },
   {
     title: '消息',
-    key: 'message',
+    key: 'Message',
     icon: <Icon type='lingdang'/>,
     selectedIcon: <Icon type='lingdang'/>,
     component: Message
   },
   {
     title: '我的',
-    key: 'account',
+    key: 'Account',
     icon: <Icon type='yonghu'/>,
     selectedIcon: <Icon type='yonghu'/>,
     component: Account
@@ -43,7 +43,7 @@ const dot = true;
 
 export default props => {
   const { tabBarColor } = color;
-  const [selected, setSelected] = useState('home');
+  const [selected, setSelected] = useState('Home');
   const handleSelect = name => {
     if(name!==selected) {
       setSelected(name)
@@ -61,7 +61,7 @@ export default props => {
             return (
               <TabBarItem 
                 {...item} 
-                dot={!!(key === 'message' && dot)}
+                dot={!!(key === 'Message' && dot)}
                 selected={selected === key} 
                 onPress={() => handleSelect(key)}
               >

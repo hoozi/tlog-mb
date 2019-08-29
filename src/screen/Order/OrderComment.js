@@ -1,5 +1,5 @@
 import React,{ PureComponent } from 'react';
-import { NavBar, Icon, Flex, List, Toast, InputItem, TextareaItem, DatePicker, Button } from 'antd-mobile';
+import { NavBar, Icon, Flex, List, Toast, TextareaItem, Button } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { createForm } from 'rc-form';
@@ -12,8 +12,6 @@ import ArrowLine from '@/component/ArrowLine';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
 import form from '@/style/form.less';
-import { BRAND_COLOR } from '@/constants/color';
-
 
 const ListItem = List.Item;
 
