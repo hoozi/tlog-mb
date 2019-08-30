@@ -1,4 +1,5 @@
 import service from '@/api/any';
+import { push } from 'connected-react-router';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -17,7 +18,7 @@ const reducers = {
   }
 }
 
-const effects = {
+const effects = dispatch => ({
   async fetchTransport(payload, rootState, callback) {
     const response = await service('crudTransport', {
       crudType: 'retrieve',
@@ -45,10 +46,13 @@ const effects = {
       ...params
     });
     if(!response) return;
-    Toast.success(message);
+    Toast.success(message, 2, () => {
+      document.documentElement.scrollTop = 0;
+      dispatch(push('/transport?type=all'));
+    });
     callback && callback();
   }
-}
+})
 
 
 export default {

@@ -9,10 +9,13 @@ import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
 import Screen from '@/component/Screen';
 import BannerMask from '@/component/BannerMask';
+import CenterLoading from '@/component/CenterLoading';
+import Fields from '@/component/Fields';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
 import form from '@/style/form.less';
 import { BRAND_COLOR } from '@/constants/color';
+import Empty from '../../component/Empty';
 
 const ListItem = List.Item;
 //updatePriceReply
@@ -24,6 +27,7 @@ if (isIPhone) {
   };
 }
 const getInitialValue = (data, name, expressions='') => ( data.hasOwnProperty(name) ? (name === 'validDateTime' ? new Date(data[name].replace(/-/g, '/')) : data[name]) : expressions );
+const getQueryByName = (search, name) => parse(search.substring(1))[name];
 
 const mapStateToProps = ({priceReply, user}) => ({
   ...priceReply,
@@ -42,13 +46,16 @@ class PriceReplyDetail extends PureComponent {
     super(props);
     this.state = {
       id: 0,
+      type: 0,
+      loading: true,
       data: {}
     }
   }
   componentDidMount() {
-    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
     const { location:{search}, recordList } = this.props;
-    const id = parse(search.substring(1))['id'];
+    const id = getQueryByName(search, 'id');
+    const type = getQueryByName(search, 'type');
     const data = find(recordList.map(item => {
       const { beginDateTime='', endDateTime='' } = item;
       return {
@@ -59,7 +66,9 @@ class PriceReplyDetail extends PureComponent {
     }), item => item.id === id)
     this.setState({
       id,
-      data
+      data,
+      type,
+      loading: false
     }, () => {
       this.props.form.validateFields();
     })
@@ -94,7 +103,45 @@ class PriceReplyDetail extends PureComponent {
       currentUser, 
       updatePriceReplying
     } = this.props;
-    const { data } = this.state;
+    const { data, type, loading } = this.state;
+    const columns = [
+      {
+        title: '运力名称',
+        dataIndex: 'transport',
+        props: {
+          wrap: true,
+          align: 'top',
+          multipleLine: true
+        }
+      },
+      {
+        title: '载重吨',
+        dataIndex: 'load',
+        props: {
+          wrap: true,
+          align: 'top',
+          multipleLine: true
+        }
+      },
+      {
+        title: '报价',
+        dataIndex: 'quotedPrice',
+        extra: () => '元'
+      },
+      {
+        title: '报价有效期',
+        dataIndex: 'validDateTime',
+        render: data => data.hasOwnProperty('validDateTime') ? data['validDateTime'].substring(0,10) : ''
+      },
+      {
+        title: '联系人',
+        dataIndex: 'contacts'
+      },
+      {
+        title: '联系电话',
+        dataIndex: 'phone'
+      }
+    ]
     return (
       <Screen
         header={() =>(
@@ -109,7 +156,9 @@ class PriceReplyDetail extends PureComponent {
       >
         <StickyContainer>
           {
-            data ? 
+            loading ? 
+            <CenterLoading/> : 
+            !isEmpty(data) ? 
             <>
               <div className={styles.routeCard}>
                 <Sticky>
@@ -146,101 +195,118 @@ class PriceReplyDetail extends PureComponent {
                   <div className={styles.detailNote}>{data.remark === ' ' ? '暂无备注' : data.remark}</div>
                 </div>
               </div>
+              {
+                type === '0' ?
+                <>
+                  <div className={form.createForm}>
+                    <List renderHeader={() => '基本信息'}>
+                      <InputItem
+                        {
+                          ...getFieldProps('transport', {
+                            initialValue: getInitialValue(data, 'transport'),
+                            rules: [{ required: true, message: '请输入运力名称' }]
+                          })
+                        }
+                        placeholder='请输入(多个名称用","分格)'
+                        clear
+                        extra={<Icon type='search' size='xs' color={BRAND_COLOR}/>}
+                      ><span className={form.required}>*</span>运力名称</InputItem>
+                      <InputItem
+                        {
+                          ...getFieldProps('load', {
+                            initialValue: getInitialValue(data, 'load'),
+                            rules: [{ required: true, message: '请输入载重吨' }]
+                          })
+                        }
+                        placeholder='请输入'
+                        clear
+                        extra='吨'
+                      ><span className={form.required}>*</span>载重吨</InputItem>
+                      <InputItem
+                        {
+                          ...getFieldProps('quotedPrice', {
+                            initialValue: getInitialValue(data, 'quotedPrice'),
+                            rules: [{ required: true, message: '请输入报价' }]
+                          })
+                        }
+                        type='money'
+                        placeholder='请输入'
+                        clear
+                        moneyKeyboardAlign='left'
+                        moneyKeyboardWrapProps={moneyKeyboardWrapProps}
+                        extra='元'
+                      ><span className={form.required}>*</span>报价</InputItem>
+                      <DatePicker
+                        mode='date'
+                        {
+                          ...getFieldProps('validDateTime', {
+                            initialValue: getInitialValue(data, 'validDateTime'),
+                            rules: [{ required: true, message: '请选择报价有效期' }]
+                          })
+                        }
+                      >
+                        <ListItem arrow='horizontal'><span className={form.required}>*</span>报价有效期</ListItem>
+                      </DatePicker>
+                    </List>
+                    <List renderHeader={() => '联系'}>
+                      <InputItem
+                        {
+                          ...getFieldProps('contacts', {
+                            initialValue: getInitialValue(data, 'contacts', (!isEmpty(currentUser) ? currentUser.sysUser.username : '')),
+                            rules: [{ required: true, message: '请输入联系人' }]
+                          })
+                        }
+                        placeholder='请输入'
+                      ><span className={form.required}>*</span>联系人</InputItem>
+                      <InputItem
+                        {
+                          ...getFieldProps('phone', {
+                            initialValue: getInitialValue(data, 'phone', (!isEmpty(currentUser) ? currentUser.sysUser.phone : '')),
+                            rules: [{ required: true, message: '请输入联系电话' }]
+                          })
+                        }
+                        placeholder='请输入'
+                      ><span className={form.required}>*</span>联系电话</InputItem>
+                    </List>
+                    <List renderHeader={() => '运输工具情况描述'}>
+                      <TextareaItem
+                        {
+                          ...getFieldProps('details', {
+                            initialValue: getInitialValue(data, 'details')
+                          })
+                        }
+                        placeholder='请输入'
+                        rows={5}
+                        count={100}
+                        className='needsclick'
+                      />
+                    </List>
+                  </div>
+                  <div className={form.bottomButton}>
+                    <Button 
+                      type='primary' 
+                      onClick={this.handleSubmit}
+                      disabled={updatePriceReplying || hasError(getFieldsError())}
+                      loading={updatePriceReplying}
+                    >提交</Button>
+                  </div>
+                </> :
+                <>
+                  <Fields
+                    columns={columns}
+                    data={data}
+                    fieldHeader={() => '询价信息'}
+                  />
+                  <List renderHeader={() => '运输工具情况描述'}>
+                    <ListItem wrap multipleLine align='top'>
+                      {data.hasOwnProperty('details') ? data.details : '暂无描述'}
+                    </ListItem>
+                  </List>
+                </>
+              }  
             </> :
-            null
+            <Empty/>
           }
-          <div className={form.createForm}>
-            <List renderHeader={() => '基本信息'}>
-              <InputItem
-                {
-                  ...getFieldProps('transport', {
-                    initialValue: getInitialValue(data, 'transport'),
-                    rules: [{ required: true, message: '请输入运力名称' }]
-                  })
-                }
-                placeholder='请输入(多个名称用","分格)'
-                clear
-                extra={<Icon type='search' size='xs' color={BRAND_COLOR}/>}
-              ><span className={form.required}>*</span>运力名称</InputItem>
-              <InputItem
-                {
-                  ...getFieldProps('load', {
-                    initialValue: getInitialValue(data, 'load'),
-                    rules: [{ required: true, message: '请输入载重吨' }]
-                  })
-                }
-                placeholder='请输入'
-                clear
-                extra='吨'
-              ><span className={form.required}>*</span>载重吨</InputItem>
-              <InputItem
-                {
-                  ...getFieldProps('quotedPrice', {
-                    initialValue: getInitialValue(data, 'quotedPrice'),
-                    rules: [{ required: true, message: '请输入报价' }]
-                  })
-                }
-                type='money'
-                placeholder='请输入'
-                clear
-                moneyKeyboardAlign='left'
-                moneyKeyboardWrapProps={moneyKeyboardWrapProps}
-                extra='元'
-              ><span className={form.required}>*</span>报价</InputItem>
-              <DatePicker
-                mode='date'
-                {
-                  ...getFieldProps('validDateTime', {
-                    initialValue: getInitialValue(data, 'validDateTime'),
-                    rules: [{ required: true, message: '请选择报价有效期' }]
-                  })
-                }
-              >
-                <ListItem arrow='horizontal'><span className={form.required}>*</span>报价有效期</ListItem>
-              </DatePicker>
-            </List>
-            <List renderHeader={() => '联系'}>
-              <InputItem
-                {
-                  ...getFieldProps('contacts', {
-                    initialValue: getInitialValue(data, 'contacts', (!isEmpty(currentUser) ? currentUser.sysUser.username : '')),
-                    rules: [{ required: true, message: '请输入联系人' }]
-                  })
-                }
-                placeholder='请输入'
-              ><span className={form.required}>*</span>联系人</InputItem>
-              <InputItem
-                {
-                  ...getFieldProps('phone', {
-                    initialValue: getInitialValue(data, 'phone', (!isEmpty(currentUser) ? currentUser.sysUser.phone : '')),
-                    rules: [{ required: true, message: '请输入联系电话' }]
-                  })
-                }
-                placeholder='请输入'
-              ><span className={form.required}>*</span>联系电话</InputItem>
-            </List>
-            <List renderHeader={() => '运输工具情况描述'}>
-              <TextareaItem
-                {
-                  ...getFieldProps('details', {
-                    initialValue: getInitialValue(data, 'details')
-                  })
-                }
-                placeholder='请输入'
-                rows={5}
-                count={100}
-                className='needsclick'
-              />
-            </List>
-          </div>
-          <div className={form.bottomButton}>
-            <Button 
-              type='primary' 
-              onClick={this.handleSubmit}
-              disabled={updatePriceReplying || hasError(getFieldsError())}
-              loading={updatePriceReplying}
-            >提交</Button>
-          </div>
         </StickyContainer>
       </Screen>
     )

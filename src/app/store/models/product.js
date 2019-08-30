@@ -1,5 +1,5 @@
 import service from '@/api/any';
-//import { Toast } from 'antd-mobile';
+import { Toast } from 'antd-mobile';
 
 const state = {
   beginPageIndex: 1,
@@ -8,7 +8,8 @@ const state = {
   pageCount: 0,
   recordCount: 0,
   recordList: [],
-  size: 10
+  size: 10,
+  detail: {}
 }
 
 const reducers = {
@@ -27,6 +28,24 @@ const effects = {
     });
     if(!response) return;
     this.save({...response.data});
+    callback && callback(response.data);
+  },
+  async fetchProductDetail(payload, rootState, callback) {
+    const response = await service('queryProduct', {
+      crudType: 'selectById',
+      ...payload
+    });
+    if(!response) return;
+    this.save({
+      detail: {...response.data}
+    });
+    callback && callback(response.data);
+  },
+  async productKeep(payload, rootState, callback) {
+    const { crudType } = payload;
+    const response = await service('productKeep', payload);
+    if(!response) return;
+    Toast.success(crudType === 'create' ? '收藏成功' : '取消成功');
     callback && callback(response.data);
   }
 }

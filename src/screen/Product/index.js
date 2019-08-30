@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
-import { NavBar, Icon, ListView, Flex } from 'antd-mobile';
+import { NavBar, Icon, ListView } from 'antd-mobile';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import Screen from '@/component/Screen';
 import RouteName from '@/component/RouteName';
 import StandardList from '@/component/StandardList';

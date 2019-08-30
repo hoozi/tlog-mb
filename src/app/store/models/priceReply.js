@@ -32,7 +32,7 @@ const effects = {
   },
   async updatePriceReply(payload, rootState, callback) {
     const response = await service('crudPriceReply', {
-      crudType: 'update',
+      crudType: 'create',
       ...payload
     });
     if(!response) return;

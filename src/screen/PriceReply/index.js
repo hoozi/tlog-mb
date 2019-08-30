@@ -1,12 +1,22 @@
 import React, { PureComponent } from 'react';
-import { NavBar, Icon, ListView, Flex } from 'antd-mobile';
+import { NavBar, Icon, ListView, Flex, Tabs } from 'antd-mobile';
 import { connect } from 'react-redux';
+import { stringify } from 'qs';
 import moment from 'moment';
+import findIndex from 'lodash/findIndex';
+import { Sticky, StickyContainer } from 'react-sticky';
 import Screen from '@/component/Screen';
 import StandardList from '@/component/StandardList';
 import { mapEffects, mapLoading } from '@/utils';
-import styles from './index.less';
 import list from '@/style/list.less';
+import color from '@/constants/color';
+
+const { tabsStyle } = color;
+
+const tabs = [
+  { title: '回复', type: 0 },
+  { title: '历史', type: 1 }
+]
 
 const mapStateToProps = ({ priceReply }) => {
   return {
@@ -36,7 +46,8 @@ class PriceReply extends PureComponent {
       firstLoading: true,
       ds,
       hasMore: true,
-      current: this.current
+      current: this.current,
+      type: 0
     }
   }
   reset() {
@@ -45,15 +56,7 @@ class PriceReply extends PureComponent {
   }
   callback = data => {
     const { recordList, pageCount } = data;
-    const ds = recordList.length > 0 ? recordList.map(item => {
-      const originName = (item.originName && item.originName.length > 6) ? item.originName.substring(0,6) + '...' : item.originName;
-      const terminalName = (item.terminalName  && item.terminalName.length > 6) ? item.terminalName.substring(0,6) + '...' : item.terminalName;
-      return {
-        ...item,
-        originName,
-        terminalName
-      }
-    }) : [];
+    const ds = recordList.length > 0 ? recordList.map(item => ({...item})) : [];
     this.data = [...this.data, ...ds];
     this.setState({
       ...this.state,
@@ -69,23 +72,25 @@ class PriceReply extends PureComponent {
     this.props[name](payload, _callback)
   }
   componentDidMount() {
-    const { current } = this.state;
-    this.priceReplyService('fetchPriceReply', {current} , this.callback);
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+    const { current, type } = this.state;
+    this.priceReplyService('fetchPriceReply', {current, type} , this.callback);
   }
   handleRefresh = () => {
+    const { type } = this.state
     this.reset();
     this.setState({
       ...this.state,
       refreshing: true,
       current: this.current
     });
-    this.priceReplyService('fetchPriceReply', { current: 1 }, this.callback);
+    this.priceReplyService('fetchPriceReply', { type, current: 1 }, this.callback);
   }
   handleEndReached = () => {
-    const { loading, hasMore } = this.state;
+    const { loading, hasMore, type } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.priceReplyService('fetchPriceReply', { current: ++this.current }, data => {
+    this.priceReplyService('fetchPriceReply', { type, current: ++this.current }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -94,7 +99,12 @@ class PriceReply extends PureComponent {
     });
   }
   handleGoToDetail = item => {
-    this.props.history.push(`/price-reply-detail?id=${item.id}`);
+    const { type } = this.state;
+    const query = stringify({
+      id: item.id,
+      type
+    })
+    this.props.history.push(`/price-reply-detail?${query}`);
   }
   renderListCardHeader = item => (
     <Flex justify='between'>
@@ -106,9 +116,8 @@ class PriceReply extends PureComponent {
   )
   renderListCardBody = item => (
     <>
-      
-      <p>货物<b>{item.cargo}({item.cargoTypeName}类)</b></p>
-      <p>有效期到<b className={styles.expireDate}>{moment(item.endDateTime).format('YYYY-MM-DD')}</b></p>
+      <p><b>【{item.cargoTypeName}】{item.cargoName}</b></p>
+      <p>有效期<b>{moment(item.beginDateTime).format('YYYY-MM-DD')} ～ {moment(item.endDateTime).format('YYYY-MM-DD')}</b></p>
     </>
   )
   renderListCardExtra = item => (
@@ -116,13 +125,26 @@ class PriceReply extends PureComponent {
       <span><Icon type='beizhu' size='xxs'/> {item.remark}</span>
     </Flex>
   )
+  handleTabChange = data => {
+    const { type } = data;
+    this.setState({
+      ...this.state,
+      firstLoading: true,
+      type
+    });
+    this.priceReplyService('fetchPriceReply',{
+      type
+    }, data => {
+      this.reset();
+      this.callback(data)
+    })
+  }
   render() {
-    const { refreshing, firstLoading, loading, ds, hasMore } = this.state;
+    const { refreshing, firstLoading, loading, ds, hasMore, type } = this.state;
     const { history } = this.props;
     return (
       <Screen
         className={list.listScreen}
-        fixed
         header={() =>(
           <NavBar   
             mode='dark'
@@ -133,7 +155,18 @@ class PriceReply extends PureComponent {
           </NavBar>
         )}
       >
-        <div className={list.stickyContainer}>
+        <StickyContainer className={list.stickyContainer}>
+          <Sticky>
+            {
+              ({ style }) => (
+                <div style={{...style, zIndex:10}}>
+                  <div className={list.listStatus}>
+                    <Tabs initialPage={findIndex(tabs, tab => tab.type === type)} tabs={tabs} {...tabsStyle} onChange={this.handleTabChange}/>
+                  </div>
+                </div>
+              )
+            }
+          </Sticky>
           <StandardList
             dataSource={ds}
             onEndReached={this.handleEndReached}
@@ -147,7 +180,7 @@ class PriceReply extends PureComponent {
             renderListCardExtra={this.renderListCardExtra}
             onCardClick={this.handleGoToDetail}
           />
-        </div>
+        </StickyContainer>
       </Screen>
     )
   }

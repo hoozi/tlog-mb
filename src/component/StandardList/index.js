@@ -1,15 +1,13 @@
 import React, { PureComponent } from 'react';
-import { ListView, PullToRefresh, ActivityIndicator } from 'antd-mobile';
+import { ListView, PullToRefresh } from 'antd-mobile';
 import PropTypes from 'prop-types';
 import Empty from '@/component/Empty';
+import CenterLoading from '@/component/CenterLoading';
 import StandardCard from '../StandardCard';
 
 const ListBody = props => (
   <div className='am-list-body no-top-bor' style={{backgroundColor: '#f5f5f9'}}>{props.children}</div>
 )
-const ListFirstLoading = props => (
-  <div style={styles.loadingContainer}><ActivityIndicator text='列表加载中...' {...props}/></div>
-) 
 
 export default class StandardList extends PureComponent {
   static propTypes = {
@@ -61,7 +59,7 @@ export default class StandardList extends PureComponent {
     const { refreshing,firstLoading,dataSource  } = this.props;
     return (
       firstLoading ? 
-      <ListFirstLoading/> :
+      <CenterLoading/> :
       (dataSource && !dataSource.getRowCount()) ? 
       <Empty description='暂无信息'/> : 
       <ListView
@@ -80,16 +78,5 @@ export default class StandardList extends PureComponent {
         }
       />
     )
-  }
-}
-
-const styles = {
-  loadingContainer: {
-    position: 'absolute', 
-    top: '50%', 
-    width: '100%',  
-    display: 'flex', 
-    justifyContent: 'center', 
-    marginTop: -10
   }
 }

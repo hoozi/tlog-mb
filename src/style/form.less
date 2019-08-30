@@ -29,22 +29,22 @@
     .am-list-extra {
       flex-basis: initial !important;
     }
-    .am-list-item {
-      .am-input-control,
-      .am-input-control input,
-      .am-input-control .fake-input-container .fake-input,
-      .am-input-label,
-      .am-input-extra,
-      .am-list-line .am-list-extra,
-      .am-list-line .am-list-content,
-      .am-textarea-control textarea {
-        font-size: 15px;
-      }
-      .am-input-clear {
-        width: 16px;
-        height: 16px;
-        background-size: 16px auto;
-      }
-    }
   }
+}
+
+.fieldContainer {
+  span {
+    display: inline-block;
+  }
+}
+.fieldName {
+  color: @card-text-color;
+  width: 85px;
+  margin-right: 4px;
+}
+
+.fieldValue {
+  color: @color-text-base;
+  word-break: break-all;
+  flex: 1;
 }

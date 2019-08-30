@@ -7,8 +7,10 @@ import { Sticky, StickyContainer } from 'react-sticky';
 import Rate from 'rc-rate';
 import 'rc-rate/assets/index.css';
 import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
+import Empty from '@/component/Empty';
 import Screen from '@/component/Screen';
-import ArrowLine from '@/component/ArrowLine';
+import CenterLoading from '@/component/CenterLoading';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
 import form from '@/style/form.less';
@@ -31,6 +33,7 @@ class OrderComment extends PureComponent {
     super(props);
     this.state = {
       id: 0,
+      loading: true,
       data: {}
     }
   }
@@ -40,7 +43,8 @@ class OrderComment extends PureComponent {
     const data = find(recordList.map(item => ({...item})), item => item.id === id)
     this.setState({
       id,
-      data
+      data,
+      loading: false
     }, () => {
       this.props.form.validateFields();
     })
@@ -70,7 +74,7 @@ class OrderComment extends PureComponent {
       history, 
       commenting
     } = this.props;
-    const { data } = this.state;
+    const { data, loading } = this.state;
     return (
       <Screen
         header={() =>(
@@ -85,7 +89,9 @@ class OrderComment extends PureComponent {
       >
         <StickyContainer>
           {
-            data ? 
+            loading ?
+            <CenterLoading/> :
+            !isEmpty(data) ? 
             <>
               <div className={styles.routeCard}>
                 <Sticky>
@@ -101,44 +107,44 @@ class OrderComment extends PureComponent {
                             <b>{data.unloadName}</b>
                             <i>卸货地</i>
                           </span>
-                          <span className={styles.arrowLine}><ArrowLine num={4}/></span>
                         </Flex>
                       </div>
                     )
                   }
                 </Sticky>
               </div>
+              <div className={form.createForm}>
+                <List>
+                  <ListItem extra={
+                    <Rate
+                      {
+                        ...getFieldProps('evaluationStar')
+                      }
+                    />
+                  }>评分</ListItem>
+                  <TextareaItem
+                    {
+                      ...getFieldProps('evaluationContent')
+                    }
+                    placeholder='说点什么...'
+                    rows={5}
+                    count={100}
+                    className='needsclick'
+                  />
+                </List>
+              </div>
+              <div className={form.bottomButton}>
+                <Button 
+                  type='primary' 
+                  onClick={this.handleSubmit}
+                  disabled={commenting || hasError(getFieldsError())}
+                  loading={commenting}
+                >提交</Button>
+              </div>
             </> :
-            null
+            <Empty/>
           }
-          <div className={form.createForm}>
-            <List>
-              <ListItem extra={
-                <Rate
-                  {
-                    ...getFieldProps('evaluationStar')
-                  }
-                />
-              }>评分</ListItem>
-              <TextareaItem
-                {
-                  ...getFieldProps('evaluationContent')
-                }
-                placeholder='说点什么...'
-                rows={5}
-                count={100}
-                className='needsclick'
-              />
-            </List>
-          </div>
-          <div className={form.bottomButton}>
-            <Button 
-              type='primary' 
-              onClick={this.handleSubmit}
-              disabled={commenting || hasError(getFieldsError())}
-              loading={commenting}
-            >提交</Button>
-          </div>
+          
         </StickyContainer>
       </Screen>
     )

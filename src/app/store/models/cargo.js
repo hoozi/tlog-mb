@@ -1,4 +1,5 @@
 import service from '@/api/any';
+import { push } from 'connected-react-router';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -45,7 +46,9 @@ const effects = {
       ...params
     });
     if(!response) return;
-    Toast.success(message);
+    Toast.success(message, 2, () => {
+      push('/cargo?type=all');
+    });
     callback && callback();
   }
 }

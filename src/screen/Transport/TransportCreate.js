@@ -7,6 +7,7 @@ import {
   InputItem, 
   TextareaItem,
   DatePicker,
+  ActivityIndicator,
   Button,
   Toast
 } from 'antd-mobile';
@@ -119,7 +120,7 @@ class TransportCreate extends PureComponent {
               })}
               data={transportType}
               title='运力类型'
-              extra={fetchTransportTyping? '加载中...' : '请选择'}
+              extra={fetchTransportTyping? <ActivityIndicator size='small'/> : '请选择'}
             >
               <ListItem arrow='horizontal'><span className={form.required}>*</span>运力类型</ListItem>
             </Picker>

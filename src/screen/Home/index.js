@@ -114,7 +114,7 @@ const CargoCard = ({item}) => (
       </>
     )}
     renderListCardExtra={item => (
-      <span><Icon type='yonghu' size='xxs'/> {item.contacts.trim() || '未知'}/{item.contactsPhone.trim() || '未知'}</span>
+      <span><Icon type='yonghu' size='xxs'/> {item.contacts.trim() || '未知'},{item.contactsPhone.trim() || '未知'}</span>
     )}
     item={item}
   />

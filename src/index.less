@@ -1,5 +1,7 @@
 @import './theme.less';
 
+@space:0,4,8,12,16,24,32,48,64,72,76;
+
 :global {
   .am-icon-f {
     width: 26px !important;
@@ -8,6 +10,40 @@
   a {
     color: @brand-primary;
   }
+  .space(@num) {
+    .mt@{num} {
+      margin-top: @num+0px;
+    }
+    .mb@{num} {
+      margin-bottom: @num+0px;
+    }
+    .ml@{num} {
+      margin-left: @num+0px;
+    }
+    .mr@{num} {
+      margin-right: @num+0px;
+    }
+    .p@{num} {
+      padding: @num+0px;
+    }
+    .pt@{num} {
+      padding-top: @num+0px;
+    }
+    .pb@{num} {
+      padding-bottom: @num+0px;
+    }
+    .pl@{num} {
+      padding-left: @num+0px;
+    }
+    .pr@{num} {
+      padding-right: @num+0px;
+    }
+  }
+  .loop(@i) when (@i < length(@space)+1){
+    .space(extract(@space, @i));
+    .loop(@i+1);
+  }
+  .loop(1);
   .mt8 {
     margin-top: 8px !important;
   }
@@ -29,42 +65,7 @@
     font-size: 14px;
     //-webkit-overflow-scrolling:touch;
   }
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-    .line1px,.line1pxTop {
-      position: relative;
-    }
-    html:not([data-scale]) .line1px:after {
-      content: "";
-      position: absolute;
-      background-color: @border-color-base;
-      display: block;
-      z-index: 1;
-      top: auto;
-      right: auto;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      transform-origin: 50% 100%;
-      transform: scaleY(.5)
-    }
-    html:not([data-scale]) .line1pxTop:before {
-      content: "";
-      position: absolute;
-      background-color: @border-color-base;
-      display: block;
-      z-index: 1;
-      top: -1px;
-      right: auto;
-      bottom: auto;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      transform-origin: 50% 100%;
-      transform: scaleY(.5)
-    }
-  }
-
+  
   //reset antd mobile style
   .am-navbar-left {
     padding-left: 9px !important;
@@ -77,6 +78,24 @@
   .no-top-bor {
     &:before {
       display: none !important;
+    }
+  }
+  .am-list-item {
+    .am-input-control,
+    .am-input-control input,
+    .am-input-control .fake-input-container .fake-input,
+    .am-input-label,
+    .am-input-extra,
+    .am-list-line .am-list-extra,
+    .am-list-line .am-list-content,
+    .am-textarea-control textarea {
+      font-size: 15px !important;
+      flex-basis: initial !important;
+    }
+    .am-input-clear {
+      width: 16px;
+      height: 16px;
+      background-size: 16px auto;
     }
   }
 }
