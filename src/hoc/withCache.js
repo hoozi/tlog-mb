@@ -4,18 +4,11 @@ import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
 export default WrappedComponent => {
   class CacheComp extends React.Component {
-    cache = null;
-    handleCache = cache => {
-      if(this.cache) {
-        this.cache = {
-          ...this.cache,
-          ...cache
-        }
-      } else {
-        this.cache = cache
-      }
+    getChildInstance = inst => {
+      this.childInstance = inst;
     }
     componentDidMount() {
+      //this.getChildInstance();
       const { match, cache, history } = this.props;
       if(cache[match.path] && history.action === 'PUSH') {
         this.props.dispatch({
@@ -29,11 +22,12 @@ export default WrappedComponent => {
     componentWillUnmount() {
       const { match } = this.props;
       const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+      const { needCache=null } = this.childInstance.state; 
       this.props.dispatch({
         type: 'cache/saveCache',
         payload: {
           [match.path]: {
-            ...this.cache,
+            ...needCache,
             scrollTop
           }
         }
@@ -42,14 +36,15 @@ export default WrappedComponent => {
     render() {
       const { forwardRef, cache, match } = this.props;
       const parentMethods = {
-        onCache: this.handleCache
+        onCache: this.handleCache,
+        getInstance: this.getChildInstance
       }
       const props = {
         ...this.props,
         cache: cache[match.path],
         ...parentMethods
       }
-      return <WrappedComponent {...props} ref={forwardRef}/>;
+      return <WrappedComponent  ref={forwardRef} {...props}/>;
     }
   }
   const Cache = forwardRef((props, ref) => <CacheComp forwardRef={ref} {...props}/>)
