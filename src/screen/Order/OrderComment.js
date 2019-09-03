@@ -115,6 +115,11 @@ class OrderComment extends PureComponent {
               </div>
               <div className={form.createForm}>
                 <List>
+                  <ListItem>
+                    {data.orderNo}
+                  </ListItem>
+                </List>
+                <List renderHeader={() => '评价'}>
                   <ListItem extra={
                     <Rate
                       {

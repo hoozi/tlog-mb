@@ -18,7 +18,6 @@ import StandardCard from '@/component/StandardCard';
 import styles from './index.less';
 import { mapEffects, mapLoading } from '@/utils';
 import { BRAND_COLOR } from '@/constants/color';
-import withCache from '@/hoc/withCache';
 
 const data = [{
   icon: <Icon type='huopanshenhe' size='f' color={BRAND_COLOR}/>,
@@ -194,13 +193,8 @@ const mapDispatchToProps = ({ product, cargo, transport }) => ({
 class Home extends PureComponent {
   constructor(props) {
     super(props);
-    const { getInstance } = props;
-    getInstance(this);
     this.state = {
-      refreshing: false,
-      needCache: {
-        scrollTop: document.body.scrollTop
-      }
+      refreshing: false
     }
   }
   getIndexList() {
@@ -315,4 +309,4 @@ class Home extends PureComponent {
               activeStyle={false}
             /> */
 
-export default withCache(withRouter(Home));
+export default withRouter(Home);

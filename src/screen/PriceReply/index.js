@@ -7,6 +7,7 @@ import findIndex from 'lodash/findIndex';
 import { Sticky, StickyContainer } from 'react-sticky';
 import Screen from '@/component/Screen';
 import StandardList from '@/component/StandardList';
+import RouteName from '@/component/RouteName';
 import { mapEffects, mapLoading } from '@/utils';
 import list from '@/style/list.less';
 import color from '@/constants/color';
@@ -107,12 +108,16 @@ class PriceReply extends PureComponent {
     this.props.history.push(`/price-reply-detail?${query}`);
   }
   renderListCardHeader = item => (
-    <Flex justify='between'>
-      <span><b>{item.originName || '未知'}</b><i>出发地</i></span>
-      {/* <span className={card.arrowLine}><ArrowLine/></span> */}
-      <span><b>{item.terminalName || '未知'}</b><i>目的地</i></span>
-      <span><b>{item.quantity}</b><i>货物吨位</i></span>
-    </Flex>
+    <RouteName
+      from={item.originName}
+      to={item.terminalName}
+      extra={
+        <>
+          <b className='text-primary'>{item.quantity || '未知'}</b>
+          <span>货物吨位</span>
+        </>
+      }
+    />
   )
   renderListCardBody = item => (
     <>

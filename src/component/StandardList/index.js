@@ -15,6 +15,7 @@ export default class StandardList extends PureComponent {
     hasMore: PropTypes.bool,
     refreshing: PropTypes.bool,
     firstLoading: PropTypes.bool,
+    useBodyScroll: PropTypes.bool,
     dataSource: PropTypes.object,
     onEndReached: PropTypes.func,
     onRefresh: PropTypes.func,
@@ -22,21 +23,26 @@ export default class StandardList extends PureComponent {
     renderListCardBody: PropTypes.func,
     renderListCardExtra: PropTypes.func,
     renderListCardFooter: PropTypes.func,
+    renderListCard: PropTypes.func,
     onCardClick: PropTypes.func,
+    withRef: PropTypes.func
   }
   static defaultProps = {
     loading: true,
     refreshing: true,
     firstLoading: true,
     hasMore: true,
+    useBodyScroll: true,
     dataSource: {},
     onEndReached: () => void 0,
     onRefresh: () => void 0,
-    renderListCardHeader:  null,
-    renderListCardBody:  null,
-    renderListCardExtra:  null,
+    renderListCardHeader: null,
+    renderListCardBody: null,
+    renderListCardExtra: null,
     renderListCardFooter: null,
-    onCardClick: null
+    renderListCard: null,
+    onCardClick: null,
+    withRef: () => null
   }
   handleEndReached = () => {
     this.props.onEndReached && this.props.onEndReached();
@@ -45,7 +51,7 @@ export default class StandardList extends PureComponent {
     this.props.onRefresh && this.props.onRefresh();
   }
   __renderItem = (item, sectionID, rowID) => {
-    return <StandardCard item={item} key={rowID} {...this.props}/>
+    return this.props.renderListCard ? this.props.renderListCard(item, sectionID, rowID) : <StandardCard item={item} key={rowID} {...this.props}/>
   }
   renderListFooter = () => {
     const { loading, hasMore } = this.props;
@@ -56,13 +62,14 @@ export default class StandardList extends PureComponent {
     )
   }
   render() {
-    const { refreshing,firstLoading,dataSource  } = this.props;
+    const { refreshing,firstLoading,dataSource,withRef, ...restProps  } = this.props;
     return (
       firstLoading ? 
       <CenterLoading/> :
       (dataSource && !dataSource.getRowCount()) ? 
       <Empty description='暂无信息'/> : 
       <ListView
+        ref={withRef}
         dataSource={dataSource}
         renderBodyComponent={() => <ListBody/>}
         renderFooter={this.renderListFooter}
@@ -76,6 +83,7 @@ export default class StandardList extends PureComponent {
             onRefresh={this.handleRefresh}
           />
         }
+        { ...restProps }
       />
     )
   }

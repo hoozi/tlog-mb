@@ -18,16 +18,18 @@ const reducers = {
 }
 
 const effects = {
-  async fetchNews(payload) {
+  async fetchNews(payload, rootState, callback) {
+    const { crudType='retrieve' } = payload;
     const response = await service('queryNews', {
-      crudType: 'retrieve',
+      crudType,
       current: 1,
-      size: 10,
+      size: 9,
       status: 'P',
       ...payload
     });
     if(!response) return;
-    this.save({...response.data});
+    const saveData = crudType === 'retrieve' ? {...response.data} : { detail:response.data[0] }
+    this.save(saveData);
     callback && callback(response.data);
   }
 }

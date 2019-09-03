@@ -30,7 +30,7 @@ const routesConfig = [
     }
   },
   {
-    path: '/newsDetail',
+    path: '/news-detail',
     component: NewsDetailAsync,
     transitionConfig: {
       enter: 'from-right',

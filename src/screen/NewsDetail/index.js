@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { parse } from 'qs';
-import { NavBar, Icon, ActivityIndicator } from 'antd-mobile';
+import { NavBar, Icon } from 'antd-mobile';
 import { connect } from 'react-redux';
 import Screen from '@/component/Screen';
+import CenterLoading from '@/component/CenterLoading';
+import Empty from '@/component/Empty';
 import { mapEffects, mapLoading } from '@/utils';
 import styles from './index.less';
 
@@ -12,30 +14,29 @@ const typeMap = {
   "Z": "行业资讯"
 }
 
-const mapStateToProps = ({ any }) => {
+const mapStateToProps = ({ news }) => {
   return {
-    ...any,
-    ...mapLoading('any',{
+    ...news,
+    ...mapLoading('news',{
       fetchNewsing: 'fetchNews'
     })
   }
 }
 
-const mapDispatchToProps = ({ any }) => ({
-  ...mapEffects(any, ['fetchNews'])
+const mapDispatchToProps = ({ news }) => ({
+  ...mapEffects(news, ['fetchNews'])
 });
 
 const NewsContent = props => {
   const { data } = props
-  if(!data) return null;
-  document.documentElement.scrollTop = 0;
+  if(!data) return <Empty/>;
   return (
     <div className={styles.newsContainer}>
       <h2 className={styles.newsTitle}>{data.title}</h2>
       <div className={styles.newsExtra}>
-        <span>{data.createUserName}</span>
-        <span className={styles.newsType}>{typeMap[data.type]}</span>
-        <span>{data.createDate}</span>
+        <span><Icon type='yonghu' size='xxs'/>{data.createUserName}</span>
+        <span className={styles.newsType}><Icon type='leixing' size='xxs'/>{typeMap[data.type]}</span>
+        <span><Icon type='shijian' size='xxs'/>{data.createDate}</span>
       </div>
       <div className={styles.newsContent} dangerouslySetInnerHTML={{__html: data.details}}></div>
     </div>
@@ -46,7 +47,7 @@ const NewsContent = props => {
 class NewsDetail extends Component {
   constructor(props) {
     super(props);
-    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
   }
   shouldComponentUpdate(nextProp) {
     return nextProp.fetchNewsing !== this.props.fetchNewsing;
@@ -60,7 +61,7 @@ class NewsDetail extends Component {
     });
   }
   render() {
-    const { history, news } = this.props;
+    const { history, detail } = this.props;
     return (
       <Screen
         className={styles.newsScreen}
@@ -77,15 +78,10 @@ class NewsDetail extends Component {
           )
         }}
       >
-        <ActivityIndicator
-          toast
-          text='加载中...'
-          animating={this.props.fetchNewsing}
-        />
         {
           this.props.fetchNewsing ? 
-          null :
-          <NewsContent data={news[0]}/>
+          <CenterLoading/> :
+          <NewsContent data={detail}/>
         }
       </Screen>
     )
