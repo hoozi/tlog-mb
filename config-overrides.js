@@ -11,7 +11,7 @@ module.exports = override(
     {
       "legacy": true
     }
-  ]),
+  ],"@babel/plugin-proposal-export-default-from"),
   addLessLoader({
     javascriptEnabled: true
   }),

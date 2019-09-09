@@ -13,6 +13,7 @@ import priceReply from './models/priceReply';
 import order from './models/order';
 import product from './models/product';
 import news from './models/news';
+import sock from './models/sock';
 
 const history = createHashHistory();
 
@@ -36,7 +37,8 @@ const store = init({
     priceReply,
     order,
     product,
-    news
+    news,
+    sock
   },
   redux,
   plugins: [loading]

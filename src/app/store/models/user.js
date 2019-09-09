@@ -1,5 +1,6 @@
 import { queryToken,queryCurrentUser } from '@/api/common';
 import { setToken } from '@/utils/token';
+import { push } from 'connected-react-router';
 import isEmpty from 'lodash/isEmpty';
 
 const state = {
@@ -13,7 +14,7 @@ const reducers = {
   }
 }
 
-const effects = {
+const effects = dispatch => ({
   async fetchToken(payload, rootState, callback) {
     const response = await queryToken({
       tenantid: 'next',
@@ -27,6 +28,7 @@ const effects = {
     if(isEmpty(rootState.user.currentUser)) {
       this.fetchCurrentUser();
     }
+    dispatch(push('/'));
     callback && callback();
   },
   async fetchCurrentUser() {
@@ -34,7 +36,7 @@ const effects = {
     if(!response) return;
     this.save({...response.data})
   }
-}
+})
 
 
 export default {

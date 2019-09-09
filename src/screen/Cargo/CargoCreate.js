@@ -23,7 +23,7 @@ import Empty from '@/component/Empty';
 //import { BARND_COLOR } from '@/constants/color';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
-import list from '@/style/list.less';
+//import list from '@/style/list.less';
 import form from '@/style/form.less';
 
 const RadioItem = Radio.RadioItem;
@@ -352,7 +352,7 @@ class CargoCreate extends PureComponent {
           loading={fetchCargoInfoing}
           {...parentMethods}
         />
-        <div className={list.bottomButton}>
+        <div className={form.bottomButton}>
           <Button 
             type='primary' 
             onClick={this.handleSubmit}

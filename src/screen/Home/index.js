@@ -9,6 +9,7 @@ import {
 } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
+import { StickyContainer, Sticky } from 'react-sticky';
 import moment from 'moment';
 import Screen from '@/component/Screen';
 import BannerMask from '@/component/BannerMask';
@@ -62,7 +63,7 @@ const data = [{
 }, {
   icon: <Icon type='matoukucun' size='f' color={BRAND_COLOR}/>,
   text: '码头库存',
-  url: ''
+  url: '/wharf-sock'
 }, {
   icon: <Icon type='zaitukucun' size='f' color={BRAND_COLOR}/>,
   text: '在途库存',
@@ -263,50 +264,56 @@ class Home extends PureComponent {
               />
             </div>
           </div>
-          
-          <div className={styles.indexCard} ref={el => this.product = el}>
-            <div className={styles.indexCardHeader}>
-              <h2 className={styles.indexCardTitle}><span>物流产品</span></h2>
-              <Link to='/product'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
-            </div>
+          <StickyContainer className={styles.indexCard}>
+            <Sticky>
+              {
+                ({style}) => (
+                  <div className={styles.indexCardHeader} style={{...style}}>
+                    <h2 className={styles.indexCardTitle}><span>物流产品</span></h2>
+                    <Link to='/product'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+                  </div>
+                )
+              }
+            </Sticky>
             <div className={styles.indexCardBody}>
               <IndexList renderCard={item => <ProductCard history={history} key={item.id} item={item}/>} data={productList} loading={!refreshing && fetchProducting}/>
             </div>
-          </div>
-
-          <div className={styles.indexCard}>
-            <div className={styles.indexCardHeader}>
-              <h2 className={styles.indexCardTitle}><span>货盘信息</span></h2>
-              <Link to='/cargo?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
-            </div>
+          </StickyContainer>
+          <StickyContainer className={styles.indexCard}>
+            <Sticky>
+              {
+                ({style}) => (
+                  <div className={styles.indexCardHeader}>
+                    <h2 className={styles.indexCardTitle}><span>货盘信息</span></h2>
+                    <Link to='/cargo?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+                  </div>
+                )
+              }
+            </Sticky>
             <div className={styles.indexCardBody}>
               <IndexList renderCard={item => <CargoCard key={item.id} item={item}/>} data={cargoList} loading={!refreshing && fetchCargoing}/>
             </div>
-          </div>
-          
-          <div className={styles.indexCard}>
-            <div className={styles.indexCardHeader}>
-              <h2 className={styles.indexCardTitle}><span>运力信息</span></h2>
-              <Link to='/transport?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
-            </div>
+          </StickyContainer>
+          <StickyContainer className={styles.indexCard}>
+            <Sticky>
+              {
+                ({style}) => (
+                  <div className={styles.indexCardHeader}>
+                    <h2 className={styles.indexCardTitle}><span>运力信息</span></h2>
+                    <Link to='/transport?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+                  </div>
+                )
+              }
+            </Sticky>
             <div className={styles.indexCardBody}>
               <IndexList renderCard={item => <TransportCard key={item.id} item={item}/>} data={transportList} loading={!refreshing && fetchTransporting}/>
             </div>
-          </div>
+          </StickyContainer>
         </Screen>
       </PullToRefresh>
     )
   }
 }
 
-/* <Grid
-              data={new Array(12)}
-              renderItem={item => this.renderLogisticsItem(item)}
-              columnNum={2}
-              hasLine={false}
-              itemStyle={{padding: '0 8px'}}
-              square={false}
-              activeStyle={false}
-            /> */
 
 export default withRouter(Home);

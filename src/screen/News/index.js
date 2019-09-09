@@ -53,6 +53,9 @@ class News extends PureComponent {
     this.current = 1;
     this.data = [];
   }
+  resetLoading() {
+    
+  }
   callback = data => {
     const { recordList, pageCount } = data;
     const ds = recordList.length > 0 ? recordList.map(item =>({...item})) : [];
@@ -151,7 +154,7 @@ class News extends PureComponent {
             <span><Icon type='leixing' size='xxs'/>{typeMap[item.type]}</span>
           </div>
         </Flex>
-        <div className={styles.newsItemImg}><img src={item.img ? item.img : emptyImg}/></div>
+        <div className={styles.newsItemImg}><img src={item.img ? item.img : emptyImg} alt={item.title}/></div>
       </Link>
     )
   }

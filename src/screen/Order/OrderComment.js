@@ -94,6 +94,7 @@ class OrderComment extends PureComponent {
             !isEmpty(data) ? 
             <>
               <div className={styles.routeCard}>
+                {/* <div style={{fontWeight:500, color: '#fff', textAlign: 'center'}}><span className={styles.tag}>编号</span>{data.orderNo}</div> */}
                 <Sticky>
                   {
                     ({style}) => (
@@ -115,11 +116,6 @@ class OrderComment extends PureComponent {
               </div>
               <div className={form.createForm}>
                 <List>
-                  <ListItem>
-                    {data.orderNo}
-                  </ListItem>
-                </List>
-                <List renderHeader={() => '评价'}>
                   <ListItem extra={
                     <Rate
                       {

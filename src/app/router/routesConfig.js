@@ -15,6 +15,7 @@ const OrderAsync = LoadingComponent('Order');
 const OrderCommentAsync = LoadingComponent('Order/OrderComment');
 const ProductAsync = LoadingComponent('Product');
 const ProductDetailAsync = LoadingComponent('Product/ProductDetail');
+const WharfSockAsync = LoadingComponent('WharfSock');
 
 const routesConfig = [
   {
@@ -112,6 +113,14 @@ const routesConfig = [
   {
     path: '/product-detail',
     component: ProductDetailAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/wharf-sock',
+    component: WharfSockAsync,
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
