@@ -69,24 +69,18 @@ export default function request(url, options) {
     ...options
   })
   .then(response => {
-    
-    const fail = !response || 
-    (('success' in response) && !response.success) || 
-    (('state' in response) && response.state !== 'success');
+    const fail = (
+      !response || 
+      (('success' in response) && !response.success) || 
+      (('state' in response) && response.state !== 'success')
+    );
     if(fail) {
       Toast.fail(response.message || response.errorMsg || '请求失败');
-      throw new Error('error');
+      throw new Error(`${serviceUrl}${url}（${response.message || response.errorMsg}）`);
     }
     return response;
   })
   .catch(e => {
-    console.log(e)
-    /* if (e.status === 401) {
-      store.dispatch('user/logout');
-      return;
-    } else if(e.status === 500 ) {
-      router.push('/500');
-      return;
-    } */
+    console.error(e);
   });
 }

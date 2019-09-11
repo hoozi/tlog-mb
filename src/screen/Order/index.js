@@ -135,7 +135,7 @@ class Order extends PureComponent {
   renderListCardFooter = item => {
     return (
       <Flex justify='end' className={styles.buttons}>
-        <Link>
+        <Link to={`/order-task?id=${item.id}`}>
           <span>物流任务</span>
         </Link>
         <Link to={`/order-comment?id=${item.id}`} className={styles.comment}>

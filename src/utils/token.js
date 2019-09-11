@@ -1,16 +1,15 @@
 const TOKENKEY = 'utoken';
 const ANYTOKENKEY = 'any_token_key';
+const USERKEY = 'save_user_object';
 
 export function setToken(token) {
-  window.localStorage.setItem(TOKENKEY, token);
+  window.sessionStorage.setItem(TOKENKEY, token);
 }
-
 export function getToken() {
-  return window.localStorage.getItem(TOKENKEY);
+  return window.sessionStorage.getItem(TOKENKEY);
 }
-
 export function removeToken() {
-  window.localStorage.removeItem(TOKENKEY);
+  window.sessionStorage.removeItem(TOKENKEY);
 }
 
 export function setAnyToken(token) {
@@ -22,3 +21,15 @@ export function getAnyToken() {
 export function removeAnyToken() {
   window.sessionStorage.removeItem(ANYTOKENKEY);
 }
+
+export function setUser(user) {
+  window.sessionStorage.setItem(USERKEY, JSON.stringify(user));
+}
+export function getUser() {
+  const user = window.sessionStorage.getItem(USERKEY);
+  return user ? JSON.parse(user) : {};
+}
+export function removeUser() {
+  window.sessionStorage.removeItem(USERKEY);
+}
+

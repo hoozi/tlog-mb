@@ -9,6 +9,11 @@
   }
   a {
     color: @brand-primary;
+    &:hover, &:focus {
+      color: @brand-primary;
+      text-decoration: none;
+      outline: none;
+    }
   }
   .center-loading {
     padding: 6px 16px;
@@ -69,6 +74,7 @@
     -moz-osx-font-smoothing: grayscale;
     color: @color-text-base;
     font-size: 14px;
+    line-height: 1;
     //-webkit-overflow-scrolling:touch;
   }
   

@@ -68,8 +68,13 @@ class PriceReplyDetail extends PureComponent {
         title: '产品名称',
         dataIndex: 'productName',
         extra: data => {
-          return  productKeeping ? <ActivityIndicator size='small'/> : <span className={styles.keep} onClick={this.handleKeep}><Icon type={!isKeep ? 'shoucangxian' : 'shoucang'} size='xs'/>收藏</span>
+          return  productKeeping ? <ActivityIndicator size='small'/> : <span className={styles.keep} onClick={this.handleKeep}>收藏<Icon type={!isKeep ? 'shoucangxian' : 'shoucang'} size='xs'/></span>
         }
+      },
+      {
+        title: '作业类型',
+        dataIndex: 'bizType',
+        render: value => <span className='text-primary'>{value}</span>
       },
       {
         title: '船型',
@@ -86,9 +91,17 @@ class PriceReplyDetail extends PureComponent {
         extra: () => '天'
       },
       {
+        title: '联系人',
+        dataIndex: 'contactName',
+      },
+      {
+        title: '联系电话',
+        dataIndex: 'contactNumber',
+      },
+      {
         title: '有效期',
         dataIndex: 'effectiveDate',
-        render: data => `${data.effectiveDate.substring(0,10)} ~ ${data.expireDate.substring(0,10)}`
+        render: (value, item, data) => `${data.effectiveDate.substring(0,10)} ~ ${data.expireDate.substring(0,10)}`
       }
     ]
     return (
@@ -134,7 +147,7 @@ class PriceReplyDetail extends PureComponent {
                 columns={columns}
                 data={detail}
               />
-              <List renderHeader={() => '描述'}>
+              <List renderHeader={() => '物流产品描述'}>
                 <ListItem wrap multipleLine align='top'>
                   {detail.introduction || '暂无描述'}
                 </ListItem>

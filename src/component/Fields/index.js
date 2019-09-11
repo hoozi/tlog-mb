@@ -8,10 +8,10 @@ const ListItem = List.Item;
 
 const FieldItem = ({item, data}) => {
   return (
-    <ListItem extra={item.extra ? item.extra(data) : null} {...item.props}>
+    <ListItem extra={item.extra ? item.extra(data[item.dataIndex], item, data) : null} {...item.props}>
       <Flex className={form.fieldContainer} align='start'>
         <span className={form.fieldName}>{item.title}</span>
-        <span className={form.fieldValue}>{item.render ? item.render(data) : data[item.dataIndex]}</span>
+        <span className={form.fieldValue}>{item.render ? item.render(data[item.dataIndex], item, data) : data[item.dataIndex]}</span>
       </Flex>
     </ListItem>
   )

@@ -27,28 +27,37 @@ class WharfSock extends Component {
     center: [121.84922218322755, 30.673635005950928]
   }
   timer = null;
-  componentDidMount() {
-    this.props.fetchTerminalLocation(null, data => {
+  locationItems = null;
+  removeAndAddEvent(type) {
+    this.locationItems = document.querySelectorAll('.loc-item')
+    this.locationItems.forEach(item => {
+      item[`${type}EventListener`]('click', this.handleOverlaySelected, true)
+    });
+  }
+  componentDidMount() { 
+    this.props.fetchTerminalLocation({customerCode: 'SG'}, data => {
       this.timer = setTimeout(() => {
-        document.querySelectorAll('.loc-item').forEach(item => {
-          item.addEventListener('click', this.handleOverlaySelected, true)
-        })
+       this.removeAndAddEvent('add')
       }, 16)
     });
   }
   componentWillUnmount() {
     this.timeer && clearTimeout(this.timer);
-    document.querySelectorAll('.loc-item').forEach(item => {
-      item.removeEventListener('click', this.handleOverlaySelected, true)
-    });
+    this.removeAndAddEvent('remove');
+    this.locationItems = null;
   }
   handleOverlaySelected = e => {
-    const { sock: { location } } = this.props
+    const { sock: { location } } = this.props;
     const locationIndex = e.target.dataset.index;
+
+    // eslint-disable-next-line
     const { code: terminalCode, name } = location[locationIndex]; 
-    this.props.fetchTerminalSock({terminalCode});
+
+    const customerCode = 'SG';
+    this.props.fetchTerminalSock({terminalCode,customerCode});
   }
   render(){
+    // eslint-disable-next-line
     const { sock: {location, sock}, fetchTerminalLocationing, fetchTerminalSocking, history } = this.props;
     return (
       <Screen >

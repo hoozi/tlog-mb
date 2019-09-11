@@ -5,7 +5,6 @@ import createLoading from '@rematch/loading';
 
 import common from './models/common';
 import cache from './models/cache';
-import any from './models/any';
 import user from './models/user';
 import cargo from './models/cargo';
 import transport from './models/transport';
@@ -14,6 +13,7 @@ import order from './models/order';
 import product from './models/product';
 import news from './models/news';
 import sock from './models/sock';
+import task from './models/task';
 
 const history = createHashHistory();
 
@@ -30,7 +30,6 @@ const store = init({
   models: {
     common,
     cache,
-    any,
     user,
     cargo,
     transport,
@@ -38,7 +37,8 @@ const store = init({
     order,
     product,
     news,
-    sock
+    sock,
+    task
   },
   redux,
   plugins: [loading]

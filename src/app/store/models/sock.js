@@ -29,7 +29,7 @@ const effects = {
     const response = await service('queryTerminalSock', {
       crudType: 'retrieve',
       current: 1,
-      size: 100,
+      size: 10,
       ...payload
     });
     if(!response) return;

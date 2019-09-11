@@ -79,7 +79,7 @@ const ProductCard = ({item, history}) => (
         to={item.terminalName}
         extra={
           <>
-            <b className='text-primary'>{item.bizTypeName || '未知'}</b>
+            <b className='text-primary'>{item.bizType || '未知'}</b>
             <span>作业类型</span>
           </>
         }
@@ -87,6 +87,9 @@ const ProductCard = ({item, history}) => (
     )}
     renderListCardBody={item => (
       <p>距离约<b>{item.mileage}</b>公里, 时长约<b>{item.days}</b>天</p>
+    )}
+    renderListCardExtra={item => (
+      <span><Icon type='yonghu' size='xxs'/> {item.contactName.trim() || '未知'},{item.contactNumber.trim() || '未知'}</span>
     )}
     item={item}
     onCardClick={item => history.push(`/product-detail?id=${item.id}`)}
@@ -268,7 +271,7 @@ class Home extends PureComponent {
             <Sticky>
               {
                 ({style}) => (
-                  <div className={styles.indexCardHeader} style={{...style}}>
+                  <div className={styles.indexCardHeader}>
                     <h2 className={styles.indexCardTitle}><span>物流产品</span></h2>
                     <Link to='/product'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
                   </div>

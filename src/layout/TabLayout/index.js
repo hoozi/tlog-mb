@@ -56,7 +56,7 @@ export default withCache(props => {
   const handleSelect = name => {
     if(name!==selected) {
       setSelected(name);
-      props.onCache({selected: name})
+      props.onCache({selected: name});
     }
   }
   return (

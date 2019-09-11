@@ -40,7 +40,7 @@ function LoginItem(props) {
   }
   const type = inputProps.type === 'password' ? (toggle ? 'password' : 'text' ) : inputProps.type
   return (
-    <div className={`${styles.loginItem} line1px`}>
+    <div className={`${styles.loginItem}`}>
       <div className={styles.loginLabel}>
         <Icon type={iconNameMap[name]}/>
       </div>

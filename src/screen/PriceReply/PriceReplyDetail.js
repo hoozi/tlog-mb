@@ -131,7 +131,7 @@ class PriceReplyDetail extends PureComponent {
       {
         title: '报价有效期',
         dataIndex: 'validDateTime',
-        render: data => data.hasOwnProperty('validDateTime') ? data['validDateTime'].substring(0,10) : ''
+        render: (value, item, data) => data.hasOwnProperty('validDateTime') ? data['validDateTime'].substring(0,10) : ''
       },
       {
         title: '联系人',
