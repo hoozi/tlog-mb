@@ -6,6 +6,7 @@ import moment from 'moment';
 import { parse } from 'qs';
 import findIndex from 'lodash/findIndex';
 import Screen from '@/component/Screen';
+import { getToken } from '@/utils/token';
 import StandardList from '@/component/StandardList';
 import { mapEffects, mapLoading } from '@/utils';
 import list from '@/style/list.less';
@@ -17,14 +18,13 @@ const mapStateToProps = ({ transport }) => {
   return {
     ...transport,
     ...mapLoading('transport',{
-      fetchTransporting: 'fetchTransport',
       updateTransporting: 'updateTransport'
     })
   }
 }
 
 const mapDispatchToProps = ({ transport }) => ({
-  ...mapEffects(transport, ['fetchTransport', 'updateTransport'])
+  ...mapEffects(transport, ['fetchTransport', 'fetchAnyTransport', 'updateTransport'])
 });
 
 const tabs = [
@@ -52,7 +52,7 @@ class Transport extends PureComponent {
       rowHasChanged: (row1, row2) => row1 !== row2
     });
     const { location: {search} } = props;
-    const type = parse(search.substring(1))['type'] || '';
+    const type = this.type = parse(search.substring(1))['type'] || '';
     this.current = 1;
     this.data = []
     this.state = {
@@ -92,7 +92,8 @@ class Transport extends PureComponent {
   }
   transportService(name, payload, callback) {
     const _callback = callback ? callback : () => null;
-    this.props[name](payload, _callback)
+    const serviceName = getToken() && this.type!=='more' ? name : (name === 'fetchTransport' ? 'fetchAnyTransport' : name);
+    this.props[serviceName](payload, _callback)
   }
   componentDidMount() {
     const { current, status } = this.state;

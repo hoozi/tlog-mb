@@ -13,7 +13,8 @@ const PriceReplyAsync = LoadingComponent('PriceReply');
 const PriceReplyDetailAsync = LoadingComponent('PriceReply/PriceReplyDetail');
 const OrderAsync = LoadingComponent('Order');
 const OrderCommentAsync = LoadingComponent('Order/OrderComment');
-const OrderTaskAsync = LoadingComponent('Order/Task');
+const TaskAsync = LoadingComponent('Task');
+const TaskTrackAsync = LoadingComponent('Task/TaskTrack');
 const ProductAsync = LoadingComponent('Product');
 const ProductDetailAsync = LoadingComponent('Product/ProductDetail');
 const WharfSockAsync = LoadingComponent('WharfSock');
@@ -128,8 +129,16 @@ const routesConfig = [
     }
   },
   {
-    path: '/order-task',
-    component: OrderTaskAsync,
+    path: '/task',
+    component: TaskAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/task-track',
+    component: TaskTrackAsync,
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

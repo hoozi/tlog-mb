@@ -1,4 +1,5 @@
-import service from '@/api/any';
+import anyService from '@/api/anyService';
+import { crudTransport } from '@/api/transport';
 import { push } from 'connected-react-router';
 import { Toast } from 'antd-mobile';
 
@@ -20,7 +21,18 @@ const reducers = {
 
 const effects = dispatch => ({
   async fetchTransport(payload, rootState, callback) {
-    const response = await service('crudTransport', {
+    const response = await crudTransport({
+      crudType: 'retrieve',
+      current: 1,
+      size: 10,
+      ...payload
+    });
+    if(!response) return;
+    this.save({...response.data});
+    callback && callback(response.data);
+  },
+  async fetchAnyTransport(payload, rootState, callback) {
+    const response = await anyService('queryAnyTransport', {
       crudType: 'retrieve',
       current: 1,
       size: 10,
@@ -31,7 +43,7 @@ const effects = dispatch => ({
     callback && callback(response.data);
   },
   async updateTransport(payload, rootState, callback) {
-    const response = await service('crudTransport', {
+    const response = await crudTransport({
       crudType: 'update',
       ...payload
     });
@@ -41,7 +53,7 @@ const effects = dispatch => ({
   },
   async createTransport(payload, rootState, callback) {
     const { message = '', ...params } = payload
-    const response = await service('crudTransport', {
+    const response = await crudTransport({
       crudType: 'create',
       ...params
     });

@@ -1,4 +1,4 @@
-import service from '@/api/any';
+import { queryTerminalLocation, queryTerminalSock } from '@/api/sock';
 
 const state = {
   location: [],
@@ -13,7 +13,7 @@ const reducers = {
 
 const effects = {
   async fetchTerminalLocation(payload, rootState, callback) {
-    const response = await service('queryTerminalLocation', {
+    const response = await queryTerminalLocation({
       crudType: 'retrieve',
       current: 1,
       size: 10,
@@ -26,7 +26,7 @@ const effects = {
     callback && callback(response.data);
   },
   async fetchTerminalSock(payload, rootState, callback) {
-    const response = await service('queryTerminalSock', {
+    const response = await queryTerminalSock({
       crudType: 'retrieve',
       current: 1,
       size: 10,

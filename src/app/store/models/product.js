@@ -1,4 +1,5 @@
-import service from '@/api/any';
+import anyService from '@/api/anyService';
+import { productKeep } from '@/api/product';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -20,7 +21,7 @@ const reducers = {
 
 const effects = {
   async fetchProduct(payload, rootState, callback) {
-    const response = await service('queryProduct', {
+    const response = await anyService('queryProduct', {
       crudType: 'retrieve',
       current: 1,
       size: 10,
@@ -31,7 +32,7 @@ const effects = {
     callback && callback(response.data);
   },
   async fetchProductDetail(payload, rootState, callback) {
-    const response = await service('queryProduct', {
+    const response = await anyService('queryProduct', {
       crudType: 'selectById',
       ...payload
     });
@@ -43,7 +44,7 @@ const effects = {
   },
   async productKeep(payload, rootState, callback) {
     const { crudType } = payload;
-    const response = await service('productKeep', payload);
+    const response = await productKeep(payload);
     if(!response) return;
     Toast.success(crudType === 'create' ? '收藏成功' : '取消成功');
     callback && callback(response.data);

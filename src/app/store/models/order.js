@@ -1,4 +1,4 @@
-import service from '@/api/any';
+import { queryOrder, comment } from '@/api/order';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -19,18 +19,18 @@ const reducers = {
 
 const effects = {
   async fetchOrder(payload, rootState, callback) {
-    const response = await service('queryOrder', {
+    const response = await queryOrder({
       crudType: 'retrieve',
       current: 1,
       size: 10,
       ...payload
-    });
+    }, true);
     if(!response) return;
     this.save({...response.data});
     callback && callback(response.data);
   },
   async comment(payload, rootState, callback) {
-    const response = await service('comment', {
+    const response = await comment({
       crudType: 'create',
       ...payload
     });

@@ -5,7 +5,7 @@ import HopeMap, { Overlay } from '@/component/HopeMap';
 import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
 import { mapLoading, mapEffects } from '@/utils';
-import styles from './index.less';
+import styles from '@/style/map.less';
 
 const mapStateToProps = ({ sock }) => {
   return {
@@ -60,7 +60,7 @@ class WharfSock extends Component {
     // eslint-disable-next-line
     const { sock: {location, sock}, fetchTerminalLocationing, fetchTerminalSocking, history } = this.props;
     return (
-      <Screen >
+      <Screen>
         <div className={styles.mapHeader}>
           <div className={styles.mapHeaderInner}>
             <div className={styles.backButton} onClick={e => history.goBack()}>

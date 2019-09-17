@@ -100,7 +100,6 @@ class Login extends Component {
               type='primary' 
               disabled={fetchTokening || hasError(getFieldsError())} 
               onClick={this.handleLogin} 
-              loading={fetchTokening}
             >登录</Button>
             <Flex justify='between' style={{marginTop: 16}}>
               <a href='###'>忘记密码？</a>

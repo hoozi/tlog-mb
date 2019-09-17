@@ -7,7 +7,7 @@ import StandardList from '@/component/StandardList';
 import RouteName from '@/component/RouteName';
 import { Link } from 'react-router-dom';
 import { mapEffects, mapLoading } from '@/utils';
-import styles from './index.less';
+import card from '@/style/card.less';
 import list from '@/style/list.less';
 
 const mapStateToProps = ({ task }) => {
@@ -128,8 +128,8 @@ class Task extends PureComponent {
   )
   renderListCardFooter = item => {
     return (
-      <Flex justify='end' className={styles.buttons}>
-        <Link className={styles.comment}>
+      <Flex justify='end' className={card.buttons}>
+        <Link to={`/task-track?id=${item.id}`} className={card.primary}>
           <span>物流跟踪</span>
         </Link>
       </Flex>

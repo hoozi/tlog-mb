@@ -1,6 +1,6 @@
 @import './theme.less';
 
-@space:0,4,8,12,16,24,32,48,64,72,76;
+@space:0,2,4,6,8,12,16,24,32,48,64,72,76;
 
 :global {
   .am-icon-f {
@@ -83,6 +83,12 @@
     padding-left: 9px !important;
   }
   
+  .am-button-primary {
+    &:focus, &:hover {
+      color: #fff;
+    }
+  }
+  
   .text-primary {
     color: @brand-primary;
   }
@@ -93,6 +99,7 @@
     }
   }
   .am-list-item {
+    padding-left: 16px !important;
     .am-input-control,
     .am-input-control input,
     .am-input-control .fake-input-container .fake-input,
@@ -103,6 +110,9 @@
     .am-textarea-control textarea {
       font-size: 15px !important;
       flex-basis: initial !important;
+    }
+    .am-list-line {
+      padding-right: 16px !important;
     }
     .am-input-clear {
       width: 16px;

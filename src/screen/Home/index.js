@@ -19,6 +19,7 @@ import StandardCard from '@/component/StandardCard';
 import styles from './index.less';
 import { mapEffects, mapLoading } from '@/utils';
 import { BRAND_COLOR } from '@/constants/color';
+import LoginCheckArea from '@/hoc/LoginCheckArea';
 
 const data = [{
   icon: <Icon type='huopanshenhe' size='f' color={BRAND_COLOR}/>,
@@ -180,18 +181,18 @@ const mapStateToProps = ({ product, cargo, transport }) => {
       fetchProducting: 'fetchProduct'
     }),
     ...mapLoading('cargo',{
-      fetchCargoing: 'fetchCargo'
+      fetchAnyCargoing: 'fetchAnyCargo'
     }),
     ...mapLoading('transport', {
-      fetchTransporting: 'fetchTransport'
+      fetchAnyTransporting: 'fetchAnyTransport'
     })
   }
 }
 
 const mapDispatchToProps = ({ product, cargo, transport }) => ({
   ...mapEffects(product, ['fetchProduct']),
-  ...mapEffects(cargo, ['fetchCargo']),
-  ...mapEffects(transport, ['fetchTransport'])
+  ...mapEffects(cargo, ['fetchAnyCargo']),
+  ...mapEffects(transport, ['fetchAnyTransport'])
 })
 @connect(mapStateToProps, mapDispatchToProps)
 class Home extends PureComponent {
@@ -204,8 +205,8 @@ class Home extends PureComponent {
   getIndexList() {
     Promise.all([
       this.props.fetchProduct({status: 'B'}),
-      this.props.fetchCargo({status: 30}),
-      this.props.fetchTransport({status: 30})
+      this.props.fetchAnyCargo({status: 30}),
+      this.props.fetchAnyTransport({status: 30})
     ]).then(() => {
       this.setState({
         refreshing: false
@@ -235,8 +236,8 @@ class Home extends PureComponent {
       cargo: { recordList:cargoList }, 
       transport: { recordList:transportList }, 
       fetchProducting,
-      fetchCargoing,
-      fetchTransporting,
+      fetchAnyCargoing,
+      fetchAnyTransporting,
       history
     } = this.props;
     const { refreshing } = this.state
@@ -257,14 +258,16 @@ class Home extends PureComponent {
           </div>
           <div className={styles.gridContainer} ref={el => this.grid = el}>
             <div className={styles.gridWrapper}>
-              <Grid
-                className={styles.fnGrid} 
-                data={data} 
-                square={false} 
-                hasLine={false} 
-                activeStyle={false} 
-                onClick={this.handleLinkTo}
-              />
+              <LoginCheckArea>
+                <Grid
+                  className={styles.fnGrid} 
+                  data={data} 
+                  square={false} 
+                  hasLine={false} 
+                  activeStyle={false} 
+                  onClick={this.handleLinkTo}
+                />
+              </LoginCheckArea>
             </div>
           </div>
           <StickyContainer className={styles.indexCard}>
@@ -294,7 +297,7 @@ class Home extends PureComponent {
               }
             </Sticky>
             <div className={styles.indexCardBody}>
-              <IndexList renderCard={item => <CargoCard key={item.id} item={item}/>} data={cargoList} loading={!refreshing && fetchCargoing}/>
+              <IndexList renderCard={item => <CargoCard key={item.id} item={item}/>} data={cargoList} loading={!refreshing && fetchAnyCargoing}/>
             </div>
           </StickyContainer>
           <StickyContainer className={styles.indexCard}>
@@ -309,7 +312,7 @@ class Home extends PureComponent {
               }
             </Sticky>
             <div className={styles.indexCardBody}>
-              <IndexList renderCard={item => <TransportCard key={item.id} item={item}/>} data={transportList} loading={!refreshing && fetchTransporting}/>
+              <IndexList renderCard={item => <TransportCard key={item.id} item={item}/>} data={transportList} loading={!refreshing && fetchAnyTransporting}/>
             </div>
           </StickyContainer>
         </Screen>

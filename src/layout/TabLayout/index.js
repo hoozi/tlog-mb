@@ -50,7 +50,7 @@ export default withCache(props => {
   useEffect(() => {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
     const hasCache = typeof props.cache !== 'undefined' && !isEmpty(props.cache);
-    hasCache && setSelected(props.cache['selected']); 
+    hasCache ? setSelected(props.cache['selected']) : setSelected('Home'); 
     return;
   }, [props.cache]);
   const handleSelect = name => {

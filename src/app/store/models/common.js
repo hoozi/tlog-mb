@@ -1,4 +1,4 @@
-import service from '@/api/any';
+import { queryCargoInfo, queryCargoType, queryLocation, queryDict } from '@/api/common';
 
 const state = {
   cargoInfo: [],
@@ -15,28 +15,28 @@ const reducers = {
 
 const effects = {
   async fetchCargoInfo(payload) {
-    const response = await service('queryCargoInfo', payload);
+    const response = await queryCargoInfo(payload);
     if(!response) return;
     this.save({
       cargoInfo: response.data.splice(0,20)
     })
   },
   async fetchCargoType() {
-    const response = await service('queryCargoType');
+    const response = await queryCargoType();
     if(!response) return;
     this.save({
       cargoType: response.data
     })
   },
   async fetchLocation() {
-    const response = await service('queryLocation');
+    const response = await queryLocation();
     if(!response) return;
     this.save({
       location: response.data
     })
   },
   async fetchTransportType() {
-    const response = await service('queryDict', {dictName: '运力类型'});
+    const response = await queryDict({dictName: '运力类型'});
     if(!response) return;
     this.save({
       transportType: response.data

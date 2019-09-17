@@ -1,4 +1,5 @@
-import service from '@/api/any';
+import { crudCargo } from '@/api/cargo';
+import anyService from '@/api/anyService';
 import { push } from 'connected-react-router';
 import { Toast } from 'antd-mobile';
 
@@ -18,9 +19,20 @@ const reducers = {
   }
 }
 
-const effects = {
+const effects = dispatch => ({
   async fetchCargo(payload, rootState, callback) {
-    const response = await service('crudCargo', {
+    const response = await crudCargo({
+      crudType: 'retrieve',
+      current: 1,
+      size: 10,
+      ...payload
+    });
+    if(!response) return;
+    this.save({...response.data});
+    callback && callback(response.data);
+  },
+  async fetchAnyCargo(payload, rootState, callback) {
+    const response = await anyService('queryAnyCargo', {
       crudType: 'retrieve',
       current: 1,
       size: 10,
@@ -31,7 +43,7 @@ const effects = {
     callback && callback(response.data);
   },
   async updateCargo(payload, rootState, callback) {
-    const response = await service('crudCargo', {
+    const response = await crudCargo({
       crudType: 'update',
       ...payload
     });
@@ -41,17 +53,18 @@ const effects = {
   },
   async createCargo(payload, rootState, callback) {
     const { message = '', ...params } = payload
-    const response = await service('crudCargo', {
+    const response = await crudCargo({
       crudType: 'create',
       ...params
     });
     if(!response) return;
     Toast.success(message, 2, () => {
-      push('/cargo?type=all');
+      document.documentElement.scrollTop = 0;
+      dispatch(push('/cargo?type=all'));
     });
     callback && callback();
   }
-}
+})
 
 export default {
   state,

@@ -1,29 +1,29 @@
 import request from '@/utils/request';
 
-export async function queryCargoInfo(params, token) {
-  return request(`/ierp/kapi/app/nbg_qcwl/CargoApiPlugin?access_token=${token}`, {
+export async function queryCargoInfo(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/CargoApiPlugin`, {
     data: {
       crudType: 'retrieve',
       ...params
     }
   })
 }
-export async function queryCargoType(params, token) {
-  return request(`/ierp/kapi/app/nbg_qcwl/queryCargoTypeCode?access_token=${token}`, {
+export async function queryCargoType(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/queryCargoTypeCode`, {
     data: {
       crudType: 'retrieve'
     }
   })
 }
-export async function queryLocation(params, token) {
-  return request(`/ierp/kapi/app/nbg_qcwl/configLocationApi?access_token=${token}`, {
+export async function queryLocation(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/configLocationApi`, {
     data: {
       crudType: 'retrieve'
     }
   })
 }
-export async function queryDict(params, token) {
-  return request(`/ierp/kapi/app/nbg_qcwl/dict?access_token=${token}`, {
+export async function queryDict(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/dict`, {
     data: {
       crudType: 'retrieve',
       ...params

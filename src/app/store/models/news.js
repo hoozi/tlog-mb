@@ -1,4 +1,4 @@
-import service from '@/api/any';
+import anyService from '@/api/anyService';
 
 const state = {
   beginPageIndex: 1,
@@ -20,7 +20,7 @@ const reducers = {
 const effects = {
   async fetchNews(payload, rootState, callback) {
     const { crudType='retrieve' } = payload;
-    const response = await service('queryNews', {
+    const response = await anyService('queryNews', {
       crudType,
       current: 1,
       size: 9,

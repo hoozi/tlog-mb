@@ -3,7 +3,9 @@ import { NavBar, Icon, Tabs, ListView, Flex, ActionSheet, ActivityIndicator } fr
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { StickyContainer, Sticky } from 'react-sticky';
+import { getToken } from '@/utils/token';
 import findIndex from 'lodash/findIndex';
+import indexOf from 'lodash/indexOf';
 import Screen from '@/component/Screen';
 import RouteName from '@/component/RouteName';
 import { mapEffects, mapLoading } from '@/utils';
@@ -18,7 +20,6 @@ const mapStateToProps = ({ cargo }) => {
   return {
     ...cargo,
     ...mapLoading('cargo',{
-      fetchCargoing: 'fetchCargo',
       updateCargoing: 'updateCargo',
       changeCargoToBilling: 'createCargo'
     })
@@ -26,7 +27,7 @@ const mapStateToProps = ({ cargo }) => {
 }
 
 const mapDispatchToProps = ({ cargo }) => ({
-  ...mapEffects(cargo, ['fetchCargo', 'updateCargo', 'createCargo'])
+  ...mapEffects(cargo, ['fetchCargo', 'fetchAnyCargo', 'updateCargo', 'createCargo'])
 });
 
 const tabs = [
@@ -43,7 +44,7 @@ const allTabs = [
   { title: '已锁定', status: 50 },
   { title: '已打回', status: 60 },
   { title: '已受理', status: 70 },
-  { title: '已失效', status: 90 },
+  { title: '已失效', status: 90 }
 ]
 
 
@@ -55,7 +56,7 @@ class Cargo extends PureComponent {
       rowHasChanged: (row1, row2) => row1 !== row2
     });
     const { location: {search} } = props;
-    const type = parse(search.substring(1))['type'] || '';
+    const type = this.type = parse(search.substring(1))['type'] || '';
     this.current = 1;
     this.data = []
     this.state = {
@@ -96,7 +97,8 @@ class Cargo extends PureComponent {
   }
   cargoService(name, payload, callback) {
     const _callback = callback ? callback : () => null;
-    this.props[name](payload, _callback)
+    const serviceName = getToken() && this.type!=='more' ? name : (name === 'fetchCargo' ? 'fetchAnyCargo' : name);
+    this.props[serviceName](payload, _callback)
   }
   componentDidMount() {
     const { current, status } = this.state;
@@ -138,10 +140,9 @@ class Cargo extends PureComponent {
     });
   }
   showActionSheet(item) {
-    const { location: {search} } = this.props;
-    const type = parse(search.substring(1))['type'] || '';
-    if(type) return;
+    const blackList = [10, 20, 30, 70, 90];
     const { status, id } = item;
+    if(this.type === 'more' || indexOf(blackList, +status) !== -1 ) return;
     const map = {
       40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '转订单', '失效', '取消'],
       50: ['转订单', '失效', '取消'],

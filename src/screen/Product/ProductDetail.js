@@ -1,5 +1,5 @@
 import React,{ PureComponent } from 'react';
-import { NavBar, Icon, Flex, List, ActivityIndicator } from 'antd-mobile';
+import { NavBar, Icon, Flex, List, ActivityIndicator, Modal } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { createForm } from 'rc-form';
@@ -9,10 +9,12 @@ import CenterLoading from '@/component/CenterLoading';
 import Screen from '@/component/Screen';
 import Fields from '@/component/Fields';
 import { mapEffects, mapLoading } from '@/utils';
+import { getToken } from '@/utils/token';
 import styles from './index.less';
 import Empty from '../../component/Empty';
 
 const ListItem = List.Item;
+const modalAlert = Modal.alert;
 
 const mapStateToProps = ({product}) => ({
   ...product,
@@ -51,14 +53,21 @@ class PriceReplyDetail extends PureComponent {
       crudType: isKeep ? 'delete' : 'create',
       productId
     }
-    this.props.productKeep(params, ()=>{
-      this.setState(prevState => {
-        return {
-          ...this.state,
-          isKeep: !prevState.isKeep
-        }
+    if(!getToken()) {
+      modalAlert('提示','您还未登录,请先登录',[
+        { text: '取消' },
+        { text: '登录', onPress:() => this.props.history.push('/login') }
+      ])
+    } else {
+      this.props.productKeep(params, ()=>{
+        this.setState(prevState => {
+          return {
+            ...this.state,
+            isKeep: !prevState.isKeep
+          }
+        });
       });
-    });
+    }
   }
   render(){
     const { history, fetchProductDetailing, productKeeping, detail } = this.props;
@@ -68,7 +77,7 @@ class PriceReplyDetail extends PureComponent {
         title: '产品名称',
         dataIndex: 'productName',
         extra: data => {
-          return  productKeeping ? <ActivityIndicator size='small'/> : <span className={styles.keep} onClick={this.handleKeep}>收藏<Icon type={!isKeep ? 'shoucangxian' : 'shoucang'} size='xs'/></span>
+          return  productKeeping ? <ActivityIndicator size='small'/> : <span className={styles.keep} onClick={this.handleKeep}><Icon type={!isKeep ? 'shoucangxian' : 'shoucang'} size='xs'/>收藏</span>
         }
       },
       {

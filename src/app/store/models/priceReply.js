@@ -1,4 +1,4 @@
-import service from '@/api/any';
+import { crudPriceReply } from '@/api/priceReply';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -19,7 +19,7 @@ const reducers = {
 
 const effects = {
   async fetchPriceReply(payload, rootState, callback) {
-    const response = await service('crudPriceReply', {
+    const response = await crudPriceReply({
       crudType: 'retrieve',
       current: 1,
       size: 10,
@@ -31,7 +31,7 @@ const effects = {
     callback && callback(response.data);
   },
   async updatePriceReply(payload, rootState, callback) {
-    const response = await service('crudPriceReply', {
+    const response = await crudPriceReply({
       crudType: 'create',
       ...payload
     });

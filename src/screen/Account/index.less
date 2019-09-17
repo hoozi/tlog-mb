@@ -1,3 +1,37 @@
+@import '../../theme.less';
+
 .accountScreen {
   position: static;
+}
+
+.userCard {
+  background-color: @brand-primary;
+  padding: 0 16px 16px;
+  img {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.userContainer {
+  display: flex;
+  align-items: center
+}
+
+.userInfo {
+  color: #fff;
+  margin-left: 16px;
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .userExtra {
+    margin-top: 4px;
+    font-size: 16px;
+    padding:4px 12px;
+    border-radius: 14px;
+    color: #c1d4ff;
+    background-color:#386be0;
+    border: 1px solid #4079ff;
+  }
 }

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { mapEffects, mapLoading } from '@/utils';
 import styles from './index.less';
 import list from '@/style/list.less';
+import card from '@/style/card.less';
 
 const mapStateToProps = ({ order }) => {
   return {
@@ -134,11 +135,11 @@ class Order extends PureComponent {
   }
   renderListCardFooter = item => {
     return (
-      <Flex justify='end' className={styles.buttons}>
-        <Link to={`/order-task?id=${item.id}`}>
+      <Flex justify='end' className={card.buttons}>
+        <Link to={`/task?id=${item.id}`}>
           <span>物流任务</span>
         </Link>
-        <Link to={`/order-comment?id=${item.id}`} className={styles.comment}>
+        <Link to={`/order-comment?id=${item.id}`} className={card.primary}>
           <span>订单评价</span>
         </Link>
       </Flex>
