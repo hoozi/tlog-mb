@@ -77,7 +77,7 @@ class Task extends PureComponent {
     const { location:{search} } = this.props;
     const orderId = this.orderId = parse(search.substring(1))['id'];
     const { current } = this.state;
-    this.getTask({current, orderId} , this.callback);
+    this.getTask({current, orderId, operateType:'lastNode'} , this.callback);
   }
   handleRefresh = () => {
     const { orderId } = this.state

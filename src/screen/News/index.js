@@ -82,7 +82,7 @@ class News extends PureComponent {
     const { needCache: {current} } = this.state;
     const { cache } = this.props;
     const hasCache = typeof cache !== 'undefined' && !isEmpty(cache);
-    if(hasCache) {
+    if(hasCache && cache.hasOwnProperty('data')) {
       const { data, hasMore, current, scrollTop } = cache;
       this.current = current;
       this.data = data;
@@ -167,7 +167,7 @@ class News extends PureComponent {
           <NavBar   
             mode='dark'
           >
-            新闻资讯
+            资讯
           </NavBar>
         )}
       >

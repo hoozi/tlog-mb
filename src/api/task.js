@@ -6,7 +6,7 @@ export async function queryTask(params) {
   })
 }
 
-export async function queryTaskTrack(params) {
+export async function crudTaskTrack(params) {
   return request(`/ierp/kapi/app/nbg_qcwl/web_task_trace`, {
     data: params
   })

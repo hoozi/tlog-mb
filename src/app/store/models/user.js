@@ -1,7 +1,7 @@
 import { queryToken,queryCurrentUser } from '@/api/common';
 import { Toast } from 'antd-mobile';
 import { setToken, setUser } from '@/utils/token';
-import { push } from 'connected-react-router';
+import { push, goBack } from 'connected-react-router';
 import isEmpty from 'lodash/isEmpty';
 
 const state = {
@@ -38,7 +38,7 @@ const effects = dispatch => ({
     this.save({...response.data});
     setUser(response.data);
     Toast.hide();
-    dispatch(push('/'));
+    dispatch(goBack());
   }
 })
 

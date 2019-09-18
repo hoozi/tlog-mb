@@ -23,31 +23,31 @@
   }
   .space(@num) {
     .mt@{num} {
-      margin-top: @num+0px;
+      margin-top: @num+0px !important;
     }
     .mb@{num} {
-      margin-bottom: @num+0px;
+      margin-bottom: @num+0px !important;
     }
     .ml@{num} {
-      margin-left: @num+0px;
+      margin-left: @num+0px !important;
     }
     .mr@{num} {
-      margin-right: @num+0px;
+      margin-right: @num+0px !important;
     }
     .p@{num} {
-      padding: @num+0px;
+      padding: @num+0px !important;
     }
     .pt@{num} {
-      padding-top: @num+0px;
+      padding-top: @num+0px !important;
     }
     .pb@{num} {
-      padding-bottom: @num+0px;
+      padding-bottom: @num+0px !important;
     }
     .pl@{num} {
-      padding-left: @num+0px;
+      padding-left: @num+0px !important;
     }
     .pr@{num} {
-      padding-right: @num+0px;
+      padding-right: @num+0px !important;
     }
   }
   .loop(@i) when (@i < length(@space)+1){
@@ -107,6 +107,7 @@
     .am-input-extra,
     .am-list-line .am-list-extra,
     .am-list-line .am-list-content,
+    .am-textarea-label,
     .am-textarea-control textarea {
       font-size: 15px !important;
       flex-basis: initial !important;

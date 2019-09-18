@@ -47,10 +47,11 @@ const dot = true;
 export default withCache(props => {
   const { tabBarColor } = color;
   const [selected, setSelected] = useState('Home');
+  props.onCache({selected});
   useEffect(() => {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
     const hasCache = typeof props.cache !== 'undefined' && !isEmpty(props.cache);
-    hasCache ? setSelected(props.cache['selected']) : setSelected('Home'); 
+    hasCache && setSelected(props.cache['selected']); 
     return;
   }, [props.cache]);
   const handleSelect = name => {
@@ -71,7 +72,7 @@ export default withCache(props => {
             return (
               <TabBarItem 
                 {...item} 
-                dot={!!(key === 'Message' && dot)}
+                //dot={!!(key === 'Message' && dot)}
                 selected={selected === key} 
                 onPress={() => handleSelect(key)}
               >

@@ -60,7 +60,7 @@ const data = [{
 }, {
   icon: <Icon type='renwuguanli' size='f' color='#29ab91'/>,
   text: '任务管理',
-  url: ''
+  url: '/task'
 }, {
   icon: <Icon type='matoukucun' size='f' color={BRAND_COLOR}/>,
   text: '码头库存',

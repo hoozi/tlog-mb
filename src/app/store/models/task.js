@@ -1,4 +1,6 @@
-import { queryTask, queryTaskTrack, queryTrackNode } from '@/api/task';
+import { queryTask, crudTaskTrack, queryTrackNode } from '@/api/task';
+import { Toast } from 'antd-mobile';
+import isArray from 'lodash/isArray';
 
 const state = {
   beginPageIndex: 1,
@@ -8,7 +10,8 @@ const state = {
   recordCount: 0,
   recordList: [],
   size: 10,
-  nodes: []
+  nodes: [],
+  node: {}
 }
 
 const reducers = {
@@ -21,7 +24,6 @@ const effects = {
   async fetchTask(payload, rootState, callback) {
     const response = await queryTask({
       crudType: 'retrieve',
-      operateType: 'lastNode',
       current: 1,
       size: 10,
       ...payload
@@ -31,10 +33,10 @@ const effects = {
     callback && callback(response.data);
   },
   async fetchTaskTrack(payload, rootState, callback) {
-    const response = await queryTaskTrack({
+    const response = await crudTaskTrack({
       crudType: 'retrieve',
       current: 1,
-      size: 10,
+      size: 999,
       ...payload
     });
     if(!response) return;
@@ -47,8 +49,18 @@ const effects = {
       ...payload
     });
     if(!response) return;
-    this.save({nodes: [...response.data]});
+    this.save(isArray(response.data) ? {nodes: [...response.data]} : {node: {...response.data}});
     callback && callback(response.data);
+  },
+  async editNode(payload, rootState, callback) {
+    const { message, ...params } = payload;
+    const response = await crudTaskTrack({
+      crudType: 'create',
+      ...params
+    });
+    if(!response) return;
+    Toast.success(message, 2);
+    callback && callback();
   }
 }
 

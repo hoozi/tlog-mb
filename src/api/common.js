@@ -40,3 +40,21 @@ export async function queryCurrentUser() {
     method: 'GET'
   })
 }
+
+export async function upload(params) {
+  return request('/ierp/attachment/uploadFile.do', {
+    data: params
+  })
+}
+
+export async function queryUploadKey(params) {
+  return request('/ierp/kapi/app/nbg_qcwl/create_bill', {
+    data: params
+  })
+}
+
+export async function bindFile(params) {
+  return request('/ierp/kapi/app/nbg_qcwl/file', {
+    data: params
+  })
+}

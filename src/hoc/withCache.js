@@ -58,7 +58,7 @@ export default (WrappedComponent, functional) => {
         ...parentMethods,
         ...restProps
       }
-      return <WrappedComponent  ref={forwardRef} {...props}/>;
+      return <WrappedComponent ref={forwardRef} {...props}/>;
     }
   }
   const Cache = forwardRef((props, ref) => <CacheComp forwardRef={ref} {...props}/>)
