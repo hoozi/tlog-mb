@@ -10,7 +10,9 @@ import {
   Picker, 
   TextareaItem,
   ImagePicker,
-  Modal 
+  ActivityIndicator,
+  Modal, 
+  Toast
 } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { createForm } from 'rc-form';
@@ -25,6 +27,7 @@ import CenterLoading from '@/component/CenterLoading';
 import { mapLoading, mapEffects, hasError } from '@/utils';
 import map from '@/style/map.less';
 import form from '@/style/form.less';
+import { FORM_ID } from '@/constants'
 import styles from './index.less';
 
 const tabs = [
@@ -43,24 +46,20 @@ const CheckedItem = props => (
   </div>
 )
 
-
-@connect(null, ({task, common}) => ({fetchTrackNode: task.fetchTrackNode, upload: common.upload}))
-@createForm()
+@connect((({loading}) => ({uploading:loading.effects['common']['upload']})), ({task, common}) => ({fetchTrackNode: task.fetchTrackNode, upload: common.upload}))
 class NodeModal extends Component {
   state = { 
-    nextNodeTypeId: []
-  }
-  componentDidMount() {
-    this.props.form.validateFields();
+    nextNodeTypeId: [],
+    files:[]
   }
   handleNodeSubmit = () => {
     this.props.form.validateFields((errors, values) => {
       if(errors) return;
       const nodeTypeId = values.nodeTypeId[0];
-      const nextNodeTypeId = values.nextNodeTypeId && values.nextNodeTypeId[0];
+      const nextNodeTypeId = values.nextNodeTypeId ? values.nextNodeTypeId[0] : '';
       const nodeTime = moment(values.nodeTime).format('YYYY-MM-DD HH:mm:ss');
-      const nextNodeTime = moment(values.nextNodeTime).format('YYYY-MM-DD HH:mm:ss');
-      const attachment = [];
+      const nextNodeTime = values.nextNodeTime ? moment(values.nextNodeTime).format('YYYY-MM-DD HH:mm:ss') : '';
+      const attachment = this.state.files.length > 0;
       const params = {
         ...values,
         nodeTypeId,
@@ -70,6 +69,10 @@ class NodeModal extends Component {
         attachment
       }
       this.props.onNodeSubmit && this.props.onNodeSubmit(params);
+      this.setState({
+        files: []
+      });
+      this.props.form.resetFields();
     })
   }
   handleNodeTypeChange = ids => {
@@ -90,10 +93,14 @@ class NodeModal extends Component {
     this.props.upload({
       file,
       fd
+    }, () => {
+      this.setState({
+        files
+      })
     })
   }
   render() {
-    const { form:{getFieldProps,getFieldsError}, visible, onModalVisible, submiting, nodes } = this.props;
+    const { form:{getFieldProps,getFieldsError}, uploading, visible, onModalVisible, submiting, nodes, loading } = this.props;
     return (
       <Modal
         visible={visible}
@@ -101,105 +108,122 @@ class NodeModal extends Component {
         animationType='slide-up'
         onClose={() => onModalVisible && onModalVisible()}
         className={styles.nodesModal}
+        afterClose={() => document.documentElement.style.overflow=''}
       >
-        <List renderHeader={() => '当前节点'}>
-          <Picker
-            {
-              ...getFieldProps('nodeTypeId', {
-                rules: [
-                  { required: true, message: '请选择当前节点类型' }
-                ],
-                onChange: this.handleNodeTypeChange
-              })
-            }
-            cols={1}
-            title='节点类型'
-            data={nodes.map(item=>({label: item.name, value: item.id}))}
-          >
-            <List.Item arrow='horizontal'><span className={form.required}>*</span>节点类型</List.Item>
-          </Picker>
-          <DatePicker
-            {
-              ...getFieldProps('nodeTime', {
-                initialValue: new Date(),
-                rules: [
-                  { required: true, message: '请选择当前节点时间' }
-                ]
-              })
-            }
-            title='节点时间'
-            mode='datetime'
-          >
-            <List.Item arrow='horizontal'><span className={form.required}>*</span>节点时间</List.Item>
-          </DatePicker>
-        </List>
-        <List renderHeader={() => '下个节点'}>
-          <Picker
-            {
-              ...getFieldProps('nextNodeTypeId', {
-                initialValue: this.state.nextNodeTypeId
-              })
-            }
-            cols={1}
-            title='节点类型'
-            data={nodes.map(item=>({label: item.name, value: item.id}))}
-          >
-            <List.Item arrow='horizontal'>节点类型</List.Item>
-          </Picker>
-          <DatePicker
-            {
-              ...getFieldProps('nextNodeTime')
-            }
-            title='节点时间'
-            mode='datetime'
-          >
-            <List.Item arrow='horizontal'>节点时间</List.Item>
-          </DatePicker>
-        </List>
-        <List renderHeader={() => '其他信息'}>
-          <List.Item>
-            <ImagePicker
-              onImageClick={(index, fs) => console.log(index, fs)}
-              onAddImageClick={(e) => console.log(e)}
-              onChange={this.handleUploadChange}
-              //selectable={files.length < 5}
-              //accept="image/gif,image/jpeg,image/jpg,image/png"
-            />
-          </List.Item>
-          <TextareaItem 
-            {
-              ...getFieldProps('remark')
-            }
-            placeholder='请输入...'
-            title='备注'
-            rows={2}
-            count={100}
-          />
-        </List>
-        <div className='p16'>
-          <Button type='primary' onClick={this.handleNodeSubmit} disabled={hasError(getFieldsError()) || submiting} loading={submiting}>提交</Button>
-        </div>
+        {
+          loading ? 
+          <ActivityIndicator/> :
+          <>
+            <h2 className={styles.addNodesTitle}>添加节点</h2>
+            <List>
+              <Picker
+                {
+                  ...getFieldProps('nodeTypeId', {
+                    rules: [
+                      { required: true, message: '请选择当前节点类型' }
+                    ],
+                    onChange: this.handleNodeTypeChange
+                  })
+                }
+                cols={1}
+                title='节点类型'
+                data={nodes.map(item=>({label: item.name, value: item.id}))}
+              >
+                <List.Item arrow='horizontal'><span className={form.required}>*</span>节点类型</List.Item>
+              </Picker>
+              <DatePicker
+                {
+                  ...getFieldProps('nodeTime', {
+                    initialValue: new Date(),
+                    rules: [
+                      { required: true, message: '请选择当前节点时间' }
+                    ]
+                  })
+                }
+                title='节点时间'
+                mode='datetime'
+              >
+                <List.Item arrow='horizontal'><span className={form.required}>*</span>节点时间</List.Item>
+              </DatePicker>
+              <Picker
+                {
+                  ...getFieldProps('nextNodeTypeId', {
+                    initialValue: this.state.nextNodeTypeId
+                  })
+                }
+                cols={1}
+                title='节点类型'
+                data={nodes.map(item=>({label: item.name, value: item.id}))}
+              >
+                <List.Item arrow='horizontal'>下个节点类型</List.Item>
+              </Picker>
+              <DatePicker
+                {
+                  ...getFieldProps('nextNodeTime')
+                }
+                title='节点时间'
+                mode='datetime'
+              >
+                <List.Item arrow='horizontal'>下个节点时间</List.Item>
+              </DatePicker>
+            </List>
+            <List renderHeader={() => uploading ? <ActivityIndicator text='附件上传中...'/> : '其他信息'} className={styles.extraInfo}>
+              <List.Item>
+                <ImagePicker
+                  length={4}
+                  files={this.state.files}
+                  onImageClick={(index, fs) => console.log(index, fs)}
+                  onAddImageClick={(e) => console.log(e)}
+                  onChange={this.handleUploadChange}
+                  disableDelete
+                  selectable={this.state.files.length < 4}
+                  accept=''
+                /> 
+              </List.Item>
+              <TextareaItem 
+                {
+                  ...getFieldProps('remark')
+                }
+                placeholder='请输入...'
+                title='节点备注'
+                rows={2}
+                count={100}
+              />
+            </List>
+            <div className='p16'>
+              <Button type='primary' onClick={this.handleNodeSubmit} disabled={hasError(getFieldsError()) || submiting} loading={submiting}>提交</Button>
+            </div>
+          </>
+        }
+        
       </Modal>
     )
   }
 }
 
-const mapStateToProps = ({ task }) => {
+const mapStateToProps = ({ task, common }) => {
   return {
+    common,
     task,
     ...mapLoading('task',{
       fetchTaskTracking: 'fetchTaskTrack',
       fetchTrackNodeing: 'fetchTrackNode',
+      fetchUploadKeying: 'fetchUploadKey',
       editNodeing: 'editNode'
+    }),
+    ...mapLoading('common', {
+      bindFileing: 'bindFile'
     })
   }
 }
 
-const mapDispatchToProps = ({ task }) => ({
-  ...mapEffects(task, ['fetchTaskTrack', 'fetchTrackNode', 'editNode'])
+const mapDispatchToProps = ({ task, common }) => ({
+  ...mapEffects(task, ['fetchTaskTrack', 'fetchTrackNode', 'editNode']),
+  ...mapEffects(common, ['bindFile', 'fetchUploadKey'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
+@createForm()
 class WharfSock extends Component {
   constructor(props) {
     super(props);
@@ -210,34 +234,65 @@ class WharfSock extends Component {
     }
     this.taskId = parse(search.substring(1))['id'];
   }
-  componentDidMount() { 
+  getTaskTrack() {
     this.props.fetchTaskTrack({
       taskId: this.taskId
     });
+  }
+  closeModalAndRefreshList() {
+    this.setState({
+      modalVisible: false
+    });
+    this.getTaskTrack();
+  }
+  componentDidMount() { 
+    this.getTaskTrack();
     this.props.fetchTrackNode();
   }
   handleModalVisible = flag => {
+    if(flag) {
+      document.documentElement.style.overflow='hidden';
+      this.props.fetchUploadKey({formId: FORM_ID});
+      this.props.form.validateFields();
+    }
     this.setState({
       modalVisible: !!flag
     })
   }
+
   hanndleNodeSubmit = params => {
+    const { common:{uploadKey} } = this.props
+    const { attachment, ...restParams } = params;
     this.props.editNode({
       message: '节点添加成功',
       taskId: this.taskId,
-      ...params
+      id: uploadKey,
+      ...restParams
     },() => {
-      this.setState({
-        modalVisible: false
-      });
-      this.props.fetchTaskTrack({
-        taskId: this.taskId
-      });
+      if(attachment) {
+        Toast.loading('正在绑定附件...');
+        this.props.bindFile({formId: FORM_ID,id: uploadKey}, () => {
+          Toast.success('附件绑定成功', 2, () => {
+            this.closeModalAndRefreshList();
+          });
+        })
+      } else {
+        this.closeModalAndRefreshList();
+      }
     })
+  }
+  handleNodeAttachmentClick = id => {
+    this.props.history.push(`/attachments?id=${id}`)
+    /* this.props.bindFile({
+      formId: FORM_ID,
+      id,
+      operateType: 'listAttachments',
+      attachmentPanels: ['attachmentpanel']
+    }) */
   }
   render(){
     // eslint-disable-next-line
-    const { task: {recordList, nodes}, fetchTaskTracking, fetchTrackNodeing, history, editNodeing } = this.props;
+    const { task: {recordList, nodes}, form, fetchTaskTracking, fetchUploadKeying, fetchTrackNodeing, history, editNodeing, bindFileing } = this.props;
     const tracks = recordList.filter(item => item.nodeTypeName);
     const mainNodes = nodes.filter(item => item.keyNode === 'true');
     const checked = item => {
@@ -277,10 +332,10 @@ class WharfSock extends Component {
             <Tabs tabs={tabs} renderTabBar={props => (
               <Sticky topOffset={200}>
                 {({ style }) => (
-                  <div style={{ ...style, zIndex: 10}}>
+                  <div style={{ ...style, zIndex: 10, backgroundColor: '#fff'}}>
                     <Tabs.DefaultTabBar {...props}/>
                     <div className='pt16 pl16 pr16'>
-                      <Button className={styles.addNodes} onClick={() => this.handleModalVisible(true)}>添加节点</Button>
+                      <Button size='small' className={styles.addNodes} onClick={() => this.handleModalVisible(true)}>添加节点</Button>
                     </div>
                   </div>
                 )}
@@ -301,7 +356,7 @@ class WharfSock extends Component {
                         >
                           <Flex className='mb6' style={{color: index === 0 ? '#6abf47' : ''}} justify='between'>
                             <b>{item.nodeTypeName}</b>
-                            <a href="">查看附件</a>
+                            <a href='javascript:;' onClick={() => this.handleNodeAttachmentClick(item.id)}>查看附件</a>
                           </Flex>
                           <p>{item.remark}</p>
                           {
@@ -332,7 +387,14 @@ class WharfSock extends Component {
             </Tabs>
           }
         </StickyContainer>
-        <NodeModal visible={this.state.modalVisible} nodes={nodes} submiting={editNodeing} {...modalMethods}/>
+        <NodeModal 
+          visible={this.state.modalVisible} 
+          nodes={nodes} 
+          submiting={editNodeing || bindFileing} 
+          loading={fetchUploadKeying} 
+          {...modalMethods}
+          form={form}
+        />
       </Screen>
     )
   }

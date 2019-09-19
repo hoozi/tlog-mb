@@ -18,6 +18,7 @@ const TaskTrackAsync = LoadingComponent('Task/TaskTrack');
 const ProductAsync = LoadingComponent('Product');
 const ProductDetailAsync = LoadingComponent('Product/ProductDetail');
 const WharfSockAsync = LoadingComponent('WharfSock');
+const AttachmentsAsync = LoadingComponent('Attachments');
 
 const routesConfig = [
   {
@@ -139,6 +140,14 @@ const routesConfig = [
   {
     path: '/task-track',
     component: TaskTrackAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/attachments',
+    component: AttachmentsAsync,
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

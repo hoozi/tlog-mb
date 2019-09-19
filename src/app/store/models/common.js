@@ -11,11 +11,14 @@ const state = {
   attachmentInfos: []
 }
 
-const FORM_ID = 'nbg_fl_task_trace'
-
 const reducers = {
   save(state, payload) {
     return Object.assign(state, payload)
+  },
+  saveAttachments(state, payload) {
+    const attachmentInfos = state.attachmentInfos;
+    const merge = [...payload, ...attachmentInfos];
+    return Object.assign(state, {attachmentInfos: merge});
   }
 }
 
@@ -55,28 +58,28 @@ const effects = dispatch => ({
     if((response.hasOwnProperty('status') && response.status !== 'success') || !response.hasOwnProperty('status')) {
       return Toast.fail('上传失败');
     }
-    this.save({
-      url: response.url,
-      attachmentInfos: [{fileName: file.name, size: file.size, url: response.url, description: Date.now() }]
-    })
-    dispatch.common.fetchUploadKey({formId: FORM_ID}, callback);
+    this.saveAttachments([{fileName: file.name, size: file.size, url: response.url, description: Date.now() }]);
+    callback && callback(response.url)
+    //dispatch.common.fetchUploadKey({formId: FORM_ID}, callback);
   },
   async fetchUploadKey(payload, rootStaste, callback) {
     const response = await queryUploadKey(payload); 
     if(!response) return;
     this.save({
       uploadKey: response.data
-    });
-    dispatch.common.bindFile({formId: FORM_ID, id: response.data }, callback)
+    })
+    callback && callback(response.data);
+    //dispatch.common.bindFile({formId, id: response.data }, callback)
   },
-  async bindFile(payload, {common:{url, attachmentInfos}}, callback) {
+  async bindFile(payload, {common:{attachmentInfos}}, callback) {
     const response = await bindFile({
       operateType: 'upload',
       attachmentPanels: ['attachmentpanel'],
-      attachmentInfos
+      attachmentInfos,
+      ...payload
     });
     if(!response) return;
-    callback && callback(url)
+    callback && callback(response.data.collection)
   }
 })
 

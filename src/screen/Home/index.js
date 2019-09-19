@@ -169,7 +169,7 @@ const IndexList = props => {
 }
 
 const AccountCard = props => {
-  return <div className={styles.accountCard}><h1>首页</h1></div>
+  return <div className={styles.accountCard}><h1>全程物流</h1></div>
 }
 
 const mapStateToProps = ({ product, cargo, transport }) => {
