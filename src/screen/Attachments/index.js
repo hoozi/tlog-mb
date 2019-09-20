@@ -1,5 +1,5 @@
-import React, { Component, useState } from 'react';
-import { NavBar, Grid, List, Icon } from 'antd-mobile';
+import React, { Component } from 'react';
+import { NavBar, List, Icon } from 'antd-mobile';
 import { parse } from 'qs';
 import { connect } from 'react-redux';
 import CenterLoading from '@/component/CenterLoading';
@@ -12,15 +12,15 @@ import styles from './index.less';
 const B2MB = 1024 * 1024;
 
 const getFileTypeIcon = type => {
-  let exts = [];
-  let icon = <Icon type='unknow'/>;
+  let icon = <Icon type='unknown' size='lg'/>;
   const fileTypeIconMap = {
-    'doc|docx': <Icon type='w' size='lg'/>,
+    'doc|docx|dot': <Icon type='w' size='lg'/>,
     'xlsx|xls': <Icon type='x' size='lg'/>,
     'pdf': <Icon type='pdf' size='lg'/>,
     'txt': <Icon type='txt' size='lg'/>,
     'jpg|png|gif|jpeg': <Icon type='pic' size='lg'/>,
-    'zip|rar': <Icon type='zip' size='lg'/>
+    'zip|rar': <Icon type='zip' size='lg'/>,
+    'ppt|pptx': <Icon type='ppt' size='lg'/>
   }
   Object.keys(fileTypeIconMap).forEach(key => {
     if(key.indexOf(type)!==-1) {
@@ -83,9 +83,9 @@ class Attachments extends Component {
           <List className={styles.fileList}>
             {
               this.state.data.map(item => (
-                <List.Item thumb={getFileTypeIcon(item.type)}>
+                <List.Item thumb={getFileTypeIcon(item.type)} key={item.uid}>
                   <div>{item.name}</div>
-                  <List.Item.Brief style={{fontSize: 14}}>{(item.size >= B2MB ? item.size/B2MB : item.size/1024).toFixed(1)}{item.size >= B2MB ? 'MB' : 'KB'}</List.Item.Brief>
+                  <List.Item.Brief style={{fontSize: 12}}>{(item.size >= B2MB ? item.size/B2MB : item.size/1024).toFixed(1)}{item.size >= B2MB ? 'MB' : 'KB'}</List.Item.Brief>
                 </List.Item>
               ))
             }

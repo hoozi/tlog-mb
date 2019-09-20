@@ -18,6 +18,9 @@ const TaskTrackAsync = LoadingComponent('Task/TaskTrack');
 const ProductAsync = LoadingComponent('Product');
 const ProductDetailAsync = LoadingComponent('Product/ProductDetail');
 const WharfSockAsync = LoadingComponent('WharfSock');
+const WharfSockDetailAsync = LoadingComponent('WharfSock/Sock');
+const TransportSockAsync = LoadingComponent('TransportSock')
+const TransportSockDetailAsync = LoadingComponent('TransportSock/Sock')
 const AttachmentsAsync = LoadingComponent('Attachments');
 
 const routesConfig = [
@@ -130,6 +133,14 @@ const routesConfig = [
     }
   },
   {
+    path: '/wharf-sock-detail',
+    component: WharfSockDetailAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
     path: '/task',
     component: TaskAsync,
     transitionConfig: {
@@ -148,6 +159,22 @@ const routesConfig = [
   {
     path: '/attachments',
     component: AttachmentsAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/transport-sock',
+    component: TransportSockAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/transport-sock-detail',
+    component: TransportSockDetailAsync,
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

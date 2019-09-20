@@ -34,6 +34,9 @@ class WharfSock extends Component {
       item[`${type}EventListener`]('click', this.handleOverlaySelected, true)
     });
   }
+  shouldComponentUpdate(prevProps) {
+    return this.props.fetchTerminalLocationing !== prevProps.fetchTerminalLocationing;
+  }
   componentDidMount() { 
     this.props.fetchTerminalLocation({customerCode: 'SG'}, data => {
       this.timer = setTimeout(() => {
@@ -54,7 +57,8 @@ class WharfSock extends Component {
     const { code: terminalCode, name } = location[locationIndex]; 
 
     const customerCode = 'SG';
-    this.props.fetchTerminalSock({terminalCode,customerCode});
+    this.props.history.push(`/wharf-sock-detail?customerCode=${customerCode}&terminalCode=${terminalCode}&terminalName=${name}`)
+    //this.props.fetchTerminalSock({terminalCode,customerCode});
   }
   render(){
     // eslint-disable-next-line
@@ -88,7 +92,7 @@ class WharfSock extends Component {
                 show
                 render={{
                   position:[loc.longitude, loc.latitude],
-                  content: `<div class='loc-item'><span data-index='${index}'>${loc.name}</span><span data-index='${index}'>100000</span></div>`
+                  content: `<div class='loc-item'><span data-index='${index}'>${loc.name}</span></div>`
                 }}
               />
             )) : null

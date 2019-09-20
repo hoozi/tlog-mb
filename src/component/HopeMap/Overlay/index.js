@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import withRef from '../HOC/withRef';
 import propsToMethod from '../HOC/propsToMethod';
 const Hope = window.Hope;
@@ -10,9 +10,12 @@ const Hope = window.Hope;
   show: (instance, options) => options ? instance.show() : instance.hide(),
   style: (instance, options) => instance.setStyle(options)
 })
-class HopeOverlay extends Component {
+class HopeOverlay extends PureComponent {
   getInstanceFromComponent(component) {
     return component.overlay;
+  }
+  shouldComponentUpdate() {
+    return !this.overlay;
   }
   componentDidMount() {
     const { map } = this.props;

@@ -64,3 +64,46 @@
 .stickyContainer {
   //position: relative;
 }
+
+.sockList {
+  background-color: #fff;
+}
+.sockListItem {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding:16px;
+  .sockListContent {
+    color: @color-text-base;
+  }
+  .sockListBrief {
+    margin-top: 6px;
+    color: @card-text-color;
+    span b{
+      font-weight: 500;
+      color: @color-text-base;
+    }
+    span:last-child {
+      margin-left:8px;
+    }
+  }
+  .sockListExtra {
+    color: @brand-primary;
+    font-size: 16px;
+    font-weight: 500;
+    span {
+      display: inline-block;
+      margin-left: 2px;
+      font-size: 12px;
+    }
+  }
+  &:after {
+    .scale-hairline-common(@border-color-base, auto, auto, 0, 0);
+    width: 100%;
+    height: 1px;
+    transform-origin:50% 50%;
+    transform: scaleY(0.5);
+  }
+}

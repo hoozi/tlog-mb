@@ -1,8 +1,9 @@
-import { queryTerminalLocation, queryTerminalSock } from '@/api/sock';
+import { queryTerminalLocation, queryTerminalSock, queryIntransitSock } from '@/api/sock';
 
 const state = {
   location: [],
-  sock: []
+  list: [],
+  total: 0
 }
 
 const reducers = {
@@ -29,13 +30,22 @@ const effects = {
     const response = await queryTerminalSock({
       crudType: 'retrieve',
       current: 1,
-      size: 10,
+      size: 20,
       ...payload
     });
     if(!response) return;
-    this.save({
-      sock: [...response.data]
+    this.save({...response.data});
+    callback && callback(response.data);
+  },
+  async fetchIntransitSock(payload, rootState, callback) {
+    const response = await queryIntransitSock({
+      crudType: 'retrieve',
+      current: 1,
+      size: 20,
+      ...payload
     });
+    if(!response) return;
+    this.save({list:[...response.data]});
     callback && callback(response.data);
   }
 }

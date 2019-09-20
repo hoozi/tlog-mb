@@ -11,3 +11,9 @@ export async function queryTerminalSock(params) {
     data: params
   })
 }
+
+export async function queryIntransitSock(params) {
+  return request('/ierp/kapi/app/nbg_qcwl/storage_intransit', {
+    data: params
+  })
+}

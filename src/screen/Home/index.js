@@ -68,7 +68,7 @@ const data = [{
 }, {
   icon: <Icon type='zaitukucun' size='f' color={BRAND_COLOR}/>,
   text: '在途库存',
-  url: ''
+  url: '/transport-sock'
 }];
 
 const ProductCard = ({item, history}) => (

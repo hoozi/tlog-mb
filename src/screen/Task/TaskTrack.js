@@ -52,6 +52,13 @@ class NodeModal extends Component {
     nextNodeTypeId: [],
     files:[]
   }
+  reset() {
+    this.setState({
+      nextNodeTypeId: [],
+      files: []
+    });
+    this.props.form.resetFields();
+  }
   handleNodeSubmit = () => {
     this.props.form.validateFields((errors, values) => {
       if(errors) return;
@@ -69,10 +76,7 @@ class NodeModal extends Component {
         attachment
       }
       this.props.onNodeSubmit && this.props.onNodeSubmit(params);
-      this.setState({
-        files: []
-      });
-      this.props.form.resetFields();
+      this.reset();
     })
   }
   handleNodeTypeChange = ids => {
@@ -114,7 +118,7 @@ class NodeModal extends Component {
           loading ? 
           <ActivityIndicator/> :
           <>
-            <h2 className={styles.addNodesTitle}>添加节点</h2>
+            <h2 className='popup-list-title'>添加节点</h2>
             <List>
               <Picker
                 {
@@ -177,7 +181,7 @@ class NodeModal extends Component {
                   onChange={this.handleUploadChange}
                   disableDelete
                   selectable={this.state.files.length < 4}
-                  accept=''
+                  accept='image/jpeg,image/gif,image/png,application/msword,application/pdf,application/msexcel,application/mspowerpoint'
                 /> 
               </List.Item>
               <TextareaItem 

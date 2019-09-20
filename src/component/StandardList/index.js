@@ -11,6 +11,7 @@ const ListBody = props => (
 
 export default class StandardList extends PureComponent {
   static propTypes = {
+    initialListSize: PropTypes.number,
     loading: PropTypes.bool,
     hasMore: PropTypes.bool,
     refreshing: PropTypes.bool,
@@ -28,6 +29,7 @@ export default class StandardList extends PureComponent {
     withRef: PropTypes.func
   }
   static defaultProps = {
+    initialListSize: 10,
     loading: true,
     refreshing: true,
     firstLoading: true,
