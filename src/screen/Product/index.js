@@ -1,34 +1,35 @@
 import React, { PureComponent } from 'react';
 import { NavBar, Icon, ListView } from 'antd-mobile';
 import { connect } from 'react-redux';
+import { parse } from 'qs';
 import Screen from '@/component/Screen';
 import RouteName from '@/component/RouteName';
 import StandardList from '@/component/StandardList';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects } from '@/utils';
 import list from '@/style/list.less';
 
 const mapStateToProps = ({ product }) => {
   return {
-    ...product,
-    ...mapLoading('product',{
-      fetchProducting: 'fetchProduct'
-    })
+    ...product
   }
 }
 
 const mapDispatchToProps = ({ product }) => ({
-  ...mapEffects(product, ['fetchProduct'])
+  ...mapEffects(product, ['fetchProduct', 'fetchMyProduct'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
 class Transport extends PureComponent {
   constructor(props) {
     super(props);
+    const { location:{search} } = props;
+    this.type = parse(search.substring(1))['type'];
+    const extraStatus = this.type === 'any' ? { status: 'B' } : ''
     const ds = new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2
     });
     this.current = 1;
-    this.data = []
+    this.data = [];
     this.state = {
       loading: true,
       refreshing: true,
@@ -36,7 +37,7 @@ class Transport extends PureComponent {
       ds,
       hasMore: true,
       current: this.current,
-      status: 'B'
+      ...extraStatus
     }
   }
   reset() {
@@ -45,15 +46,7 @@ class Transport extends PureComponent {
   }
   callback = data => {
     const { recordList, pageCount } = data;
-    const ds = recordList.length > 0 ? recordList.map(item => {
-      /* const originName = (item.originName && item.originName.length > 6) ? item.originName.substring(0,6) + '...' : item.originName;
-      const terminalName = (item.terminalName  && item.terminalName.length > 6) ? item.terminalName.substring(0,6) + '...' : item.terminalName; */
-      return {
-        ...item,
-       /*  originName,
-        terminalName */
-      }
-    }) : [];
+    const ds = recordList.length > 0 ? recordList.map(item => ({...item})) : [];
     this.data = [...this.data, ...ds];
     this.setState({
       ...this.state,
@@ -64,13 +57,14 @@ class Transport extends PureComponent {
       ds: this.state.ds.cloneWithRows(this.data)
     })
   }
-  productService(name, payload, callback) {
+  productService(payload, callback) {
     const _callback = callback ? callback : () => null;
-    this.props[name](payload, _callback)
+    const serviceName = this.type === 'any' ? 'fetchProduct' : 'fetchMyProduct';
+    this.props[serviceName](payload, _callback)
   }
   componentDidMount() {
     const { current, status } = this.state;
-    this.productService('fetchProduct', {status,current} , this.callback);
+    this.productService({status,current} , this.callback);
   }
   handleRefresh = () => {
     const { status } = this.state;
@@ -80,13 +74,13 @@ class Transport extends PureComponent {
       refreshing: true,
       current: this.current
     });
-    this.productService('fetchProduct', { status, current: 1 }, this.callback);
+    this.productService({ status, current: 1 }, this.callback);
   }
   handleEndReached = () => {
     const { loading, status, hasMore } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.productService('fetchProduct', { status, current: ++this.current }, data => {
+    this.productService({ status, current: ++this.current }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -124,7 +118,7 @@ class Transport extends PureComponent {
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
           >
-            物流产品
+            {this.type === 'any' ? '物流产品' : '我的收藏'}
           </NavBar>
         )}
       >
@@ -139,7 +133,7 @@ class Transport extends PureComponent {
           renderListCardHeader={this.renderListCardHeader}
           renderListCardBody={this.renderListCardBody}
           renderListCardExtra={this.renderListCardExtra}
-          onCardClick={item => history.push(`/product-detail?id=${item.id}`)}
+          onCardClick={item => history.push(`/product-detail?id=${this.type === 'any' ? item.id : item.productId}`)}
         />
       </Screen>
     )

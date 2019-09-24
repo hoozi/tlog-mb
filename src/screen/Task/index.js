@@ -49,15 +49,7 @@ class Task extends PureComponent {
   }
   callback = data => {
     //const { recordList, pageCount } = data;
-    const ds = data.length > 0 ? data.map(item => {
-      /* const originName = (item.originName && item.originName.length > 6) ? item.originName.substring(0,6) + '...' : item.originName;
-      const terminalName = (item.terminalName  && item.terminalName.length > 6) ? item.terminalName.substring(0,6) + '...' : item.terminalName; */
-      return {
-        ...item,
-       /*  originName,
-        terminalName */
-      }
-    }) : [];
+    const ds = data.length > 0 ? data.map(item => ({...item})) : [];
     this.data = [...this.data, ...ds];
     this.setState({
       ...this.state,
@@ -178,6 +170,7 @@ class Task extends PureComponent {
           refreshing={refreshing}
           firstLoading={firstLoading}
           hasMore={hasMore}
+          onCardClick={item => this.props.history.push(`/task-detail?id=${item.id}`)}
           {...renderCardMethods}
         />
       </Screen>

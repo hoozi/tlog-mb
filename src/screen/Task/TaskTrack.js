@@ -360,7 +360,7 @@ class WharfSock extends Component {
                         >
                           <Flex className='mb6' style={{color: index === 0 ? '#6abf47' : ''}} justify='between'>
                             <b>{item.nodeTypeName}</b>
-                            <a href='javascript:;' onClick={() => this.handleNodeAttachmentClick(item.id)}>查看附件</a>
+                            <span className='text-primary' onClick={() => this.handleNodeAttachmentClick(item.id)}>查看附件</span>
                           </Flex>
                           <p>{item.remark}</p>
                           {

@@ -3,7 +3,7 @@ import { NavBar, ListView, Icon } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import Screen from '@/component/Screen';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects } from '@/utils';
 import StandardList from '@/component/StandardList';
 import list from '@/style/list.less';
 

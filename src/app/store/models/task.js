@@ -29,7 +29,9 @@ const effects = {
       ...payload
     });
     if(!response) return;
-    this.save({...response.data});
+    this.save({
+      recordList: [...response.data]
+    });
     callback && callback(response.data);
   },
   async fetchTaskTrack(payload, rootState, callback) {

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { StickyContainer, Sticky } from 'react-sticky';
 import moment from 'moment';
 import { parse } from 'qs';
+import indexOf from 'lodash/indexOf';
 import findIndex from 'lodash/findIndex';
 import Screen from '@/component/Screen';
 import { getToken } from '@/utils/token';
@@ -71,15 +72,7 @@ class Transport extends PureComponent {
   }
   callback = data => {
     const { recordList, pageCount } = data;
-    const ds = recordList.length > 0 ? recordList.map(item => {
-      /* const originName = (item.originName && item.originName.length > 6) ? item.originName.substring(0,6) + '...' : item.originName;
-      const terminalName = (item.terminalName  && item.terminalName.length > 6) ? item.terminalName.substring(0,6) + '...' : item.terminalName; */
-      return {
-        ...item,
-       /*  originName,
-        terminalName */
-      }
-    }) : [];
+    const ds = recordList.length > 0 ? recordList.map(item => ({...item})) : [];
     this.data = [...this.data, ...ds];
     this.setState({
       ...this.state,
@@ -136,10 +129,9 @@ class Transport extends PureComponent {
     });
   }
   showActionSheet(item) {
-    const { location: {search} } = this.props;
-    const type = parse(search.substring(1))['type'] || '';
-    if(type) return;
+    const blackList = [10, 20, 30, 70, 90];
     const { status, id } = item;
+    if(this.type === 'more' || indexOf(blackList, +status) !== -1 ) return;
     const map = {
       40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '失效', '取消'],
       50: ['失效', '取消'],

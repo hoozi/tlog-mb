@@ -48,6 +48,17 @@ const effects = {
     if(!response) return;
     Toast.success(crudType === 'create' ? '收藏成功' : '取消成功');
     callback && callback(response.data);
+  },
+  async fetchMyProduct(payload, rootState, callback) {
+    const response = await productKeep({
+      crudType: 'retrieve',
+      current: 1,
+      size: 10,
+      ...payload
+    });
+    if(!response) return;
+    this.save({...response.data});
+    callback && callback(response.data);
   }
 }
 

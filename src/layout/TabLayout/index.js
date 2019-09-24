@@ -42,7 +42,7 @@ const tabBarItems = [
   }
 ]
 
-const dot = true;
+//const dot = true;
 
 export default withCache(props => {
   const { tabBarColor } = color;

@@ -1,5 +1,5 @@
 import React,{ PureComponent } from 'react';
-import { NavBar, Icon, Flex, List, Toast, TextareaItem, Button } from 'antd-mobile';
+import { NavBar, Icon, List, Toast, TextareaItem, Button } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { createForm } from 'rc-form';
@@ -11,8 +11,8 @@ import isEmpty from 'lodash/isEmpty';
 import Empty from '@/component/Empty';
 import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
+import RouteCard from '@/component/RouteCard';
 import { mapEffects, mapLoading, hasError } from '@/utils';
-import styles from './index.less';
 import form from '@/style/form.less';
 
 const ListItem = List.Item;
@@ -93,27 +93,13 @@ class OrderComment extends PureComponent {
             <CenterLoading/> :
             !isEmpty(data) ? 
             <>
-              <div className={styles.routeCard}>
-                {/* <div style={{fontWeight:500, color: '#fff', textAlign: 'center'}}><span className={styles.tag}>编号</span>{data.orderNo}</div> */}
-                <Sticky>
-                  {
-                    ({style}) => (
-                      <div className={styles.routeName} style={{...style, zIndex: 20}}>
-                        <Flex justify='between'> 
-                          <span>
-                            <b>{data.loadName}</b>
-                            <i>装货地</i>
-                          </span>
-                          <span>
-                            <b>{data.unloadName}</b>
-                            <i>卸货地</i>
-                          </span>
-                        </Flex>
-                      </div>
-                    )
-                  }
-                </Sticky>
-              </div>
+              <Sticky>
+                {
+                  ({style}) => (
+                    <RouteCard from={data.loadName} to={data.unloadName} style={{...style, zIndex: 20}}/>
+                  )
+                }
+              </Sticky>
               <div className={form.createForm}>
                 <List>
                   <ListItem extra={

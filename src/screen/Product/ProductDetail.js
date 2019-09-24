@@ -1,5 +1,5 @@
 import React,{ PureComponent } from 'react';
-import { NavBar, Icon, Flex, List, ActivityIndicator, Modal } from 'antd-mobile';
+import { NavBar, Icon, List, ActivityIndicator, Modal } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { createForm } from 'rc-form';
@@ -8,6 +8,7 @@ import isEmpty from 'lodash/isEmpty';
 import CenterLoading from '@/component/CenterLoading';
 import Screen from '@/component/Screen';
 import Fields from '@/component/Fields';
+import RouteCard from '@/component/RouteCard';
 import { mapEffects, mapLoading } from '@/utils';
 import { getToken } from '@/utils/token';
 import styles from './index.less';
@@ -131,27 +132,11 @@ class PriceReplyDetail extends PureComponent {
             <CenterLoading text='详情加载中...'/> :
             !isEmpty(detail) ? 
             <>
-              <div className={styles.routeCard}>
-                <Sticky>
-                  {
-                    ({style}) => (
-                      <div className={styles.routeName} style={{...style, zIndex: 20}}>
-                        <Flex justify='between'> 
-                          <span>
-                            <b>{detail.originName}</b>
-                            <i>出发地</i>
-                          </span>
-                          <span>
-                            <b>{detail.terminalName}</b>
-                            <i>目的地</i>
-                          </span>
-                          {/* <span className={styles.arrowLine}><ArrowLine num={4}/></span> */}
-                        </Flex>
-                      </div>
-                    )
-                  }
-                </Sticky>
-              </div>
+              <Sticky>
+                {
+                  ({style}) => <RouteCard from={detail.originName} to={detail.terminalName} style={{...style, zIndex: 20}}/>
+                }
+              </Sticky>
               <Fields
                 columns={columns}
                 data={detail}

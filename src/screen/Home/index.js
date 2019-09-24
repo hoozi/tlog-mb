@@ -69,6 +69,10 @@ const data = [{
   icon: <Icon type='zaitukucun' size='f' color={BRAND_COLOR}/>,
   text: '在途库存',
   url: '/transport-sock'
+}, {
+  icon: <Icon type='yongdu' size='f' color='#f15a4a'/>,
+  text: '拥堵情况',
+  url: '/wharf-congestion'
 }];
 
 const ProductCard = ({item, history}) => (
@@ -276,7 +280,7 @@ class Home extends PureComponent {
                 ({style}) => (
                   <div className={styles.indexCardHeader}>
                     <h2 className={styles.indexCardTitle}><span>物流产品</span></h2>
-                    <Link to='/product'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+                    <Link to='/product?type=any'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
                   </div>
                 )
               }

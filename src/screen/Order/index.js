@@ -176,6 +176,7 @@ class Order extends PureComponent {
           refreshing={refreshing}
           firstLoading={firstLoading}
           hasMore={hasMore}
+          onCardClick={item => this.props.history.push(`/order-detail?id=${item.id}`)}
           {...renderCardMethods}
         />
       </Screen>

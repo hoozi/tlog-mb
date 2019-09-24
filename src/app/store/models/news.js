@@ -23,7 +23,7 @@ const effects = {
     const response = await anyService('queryNews', {
       crudType,
       current: 1,
-      size: 9,
+      size: 10,
       status: 'P',
       ...payload
     });

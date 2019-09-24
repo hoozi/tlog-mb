@@ -3,7 +3,7 @@ import { NavBar, ListView, Icon } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import Screen from '@/component/Screen';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects } from '@/utils';
 import StandardList from '@/component/StandardList';
 import list from '@/style/list.less';
 
@@ -49,7 +49,6 @@ class Cargo extends PureComponent {
     const { list, total } = data;
     const ds = list.length > 0 ? list.map(item => ({...item})) : [];
     this.data = [...this.data, ...ds];
-    console.log(this.data)
     const newState = {
       ...this.state,
       refreshing: false,

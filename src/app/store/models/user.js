@@ -1,7 +1,7 @@
 import { queryToken,queryCurrentUser } from '@/api/common';
 import { Toast } from 'antd-mobile';
 import { setToken, setUser } from '@/utils/token';
-import { push, goBack } from 'connected-react-router';
+import { goBack } from 'connected-react-router';
 import isEmpty from 'lodash/isEmpty';
 
 const state = {
