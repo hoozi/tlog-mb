@@ -1,4 +1,4 @@
-import { queryTask, crudTaskTrack, queryTrackNode } from '@/api/task';
+import { queryTask, crudTaskTrack, queryTrackNode, queryRoute } from '@/api/task';
 import { Toast } from 'antd-mobile';
 import isArray from 'lodash/isArray';
 
@@ -11,7 +11,8 @@ const state = {
   recordList: [],
   size: 10,
   nodes: [],
-  node: {}
+  node: {},
+  route: []
 }
 
 const reducers = {
@@ -31,6 +32,20 @@ const effects = {
     if(!response) return;
     this.save({
       recordList: [...response.data]
+    });
+    callback && callback(response.data);
+  },
+  async fetchRoute(payload, rootState, callback) {
+    const response = await queryRoute({
+      crudType: 'retrieve',
+      beginTime: '2019-09-24 00:00:00',
+      endTime: '2019-09-30 00:00:00',
+      mmsi: '413417480',
+      ...payload
+    });
+    if(!response) return;
+    this.save({
+      route: [...response.data]
     });
     callback && callback(response.data);
   },

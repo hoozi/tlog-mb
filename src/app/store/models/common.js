@@ -19,6 +19,9 @@ const reducers = {
     const attachmentInfos = state.attachmentInfos;
     const merge = [...payload, ...attachmentInfos];
     return Object.assign(state, {attachmentInfos: merge});
+  },
+  clearAttachments(state) {
+    return Object.assign(state, {attachmentInfos: []})
   }
 }
 
@@ -79,6 +82,7 @@ const effects = dispatch => ({
       ...payload
     });
     if(!response) return;
+    this.clearAttachments();
     callback && callback(response.data.collection)
   }
 })

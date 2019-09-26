@@ -17,3 +17,9 @@ export async function queryTrackNode(params) {
     data: params
   })
 }
+
+export async function queryRoute(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/ais_history`, {
+    data: params
+  })
+}

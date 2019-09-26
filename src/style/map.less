@@ -38,7 +38,8 @@
   font-size: 12px;
   color: #fff;
   font-weight: 500;
-  position: relative;
+  position: absolute;
+  z-index: 10;
   top: -17px;
   span {
     display: inline-block;
@@ -73,7 +74,8 @@
     height:0;
     position: absolute;
     bottom: -10px;
-    left: 29px;
+    left: 50%;
+    margin-left: -5px;
     border-style: solid;
     border-width: 5px;
     border-color: @brand-primary transparent transparent transparent
@@ -81,9 +83,7 @@
 }
 
 .ship {
-  position: relative;
-  top: 0;
-  left: 0;
+  position: absolute;
   width:8px;
   height: 8px;
   border: 2px solid #fff;
@@ -93,6 +93,7 @@
   box-sizing: content-box;
   :global{
     .loc-item {
+      display: block;
       background-color:@brand-primary;
       color: #fff;
       border-radius: 4px;
@@ -101,7 +102,7 @@
       font-size: 12px;
       padding:2px 8px;
       top: -24px;
-      left:-8px;
+      left:50%;
       &:after {
         content: '';
         display: block;
@@ -109,7 +110,8 @@
         height:0;
         position: absolute;
         bottom: -10px;
-        left: 8px;
+        left: 50%;
+        margin-left: -5px;
         border-style: solid;
         border-width: 5px;
         border-color: @brand-primary transparent transparent transparent

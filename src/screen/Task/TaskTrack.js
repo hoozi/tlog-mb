@@ -19,7 +19,7 @@ import { createForm } from 'rc-form';
 import { Sticky, StickyContainer } from 'react-sticky';
 import moment from 'moment';
 import { parse } from 'qs';
-import HopeMap from '@/component/HopeMap';
+import { BaiduMap, Polyline, Marker } from 'react-baidu-maps';
 import Timeline from '@/component/Timeline';
 import Screen from '@/component/Screen';
 import Empty from '@/component/Empty';
@@ -29,6 +29,8 @@ import map from '@/style/map.less';
 import form from '@/style/form.less';
 import { FORM_ID } from '@/constants'
 import styles from './index.less';
+import startTag from '@/assets/start.png';
+import currentTag from '@/assets/current.png';
 
 const tabs = [
   {
@@ -91,7 +93,7 @@ class NodeModal extends Component {
     });
   }
   handleUploadChange = files => {
-    const file = files[0].file;
+    const file = files[files.length-1].file;
     const fd = new FormData();
     fd.append('file', file);
     this.props.upload({
@@ -116,7 +118,7 @@ class NodeModal extends Component {
       >
         {
           loading ? 
-          <ActivityIndicator/> :
+          <CenterLoading/> :
           <>
             <h2 className='popup-list-title'>添加节点</h2>
             <List>
@@ -212,17 +214,18 @@ const mapStateToProps = ({ task, common }) => {
     ...mapLoading('task',{
       fetchTaskTracking: 'fetchTaskTrack',
       fetchTrackNodeing: 'fetchTrackNode',
-      fetchUploadKeying: 'fetchUploadKey',
-      editNodeing: 'editNode'
+      editNodeing: 'editNode',
+      fetchRouteing: 'fetchRoute'
     }),
     ...mapLoading('common', {
-      bindFileing: 'bindFile'
+      bindFileing: 'bindFile',
+      fetchUploadKeying: 'fetchUploadKey'
     })
   }
 }
 
 const mapDispatchToProps = ({ task, common }) => ({
-  ...mapEffects(task, ['fetchTaskTrack', 'fetchTrackNode', 'editNode']),
+  ...mapEffects(task, ['fetchTaskTrack', 'fetchTrackNode', 'editNode', 'fetchRoute']),
   ...mapEffects(common, ['bindFile', 'fetchUploadKey'])
 });
 
@@ -233,8 +236,10 @@ class WharfSock extends Component {
     super(props);
     const { search } = this.props.location
     this.state = {
-      center: [121.84922218322755, 30.673635005950928],
-      modalVisible: false
+      center: {lng:121.721133,lat:30.605635},
+      modalVisible: false,
+      startPoint: {},
+      endPoint: {}
     }
     this.taskId = parse(search.substring(1))['id'];
   }
@@ -252,6 +257,16 @@ class WharfSock extends Component {
   componentDidMount() { 
     this.getTaskTrack();
     this.props.fetchTrackNode();
+    this.props.fetchRoute({}, data => {
+      const endPoint = data.pop();
+      const startPoint = data.shift();
+      const { lon:lng, lat } = endPoint;
+      this.setState({
+        center: {lng, lat},
+        endPoint: { lng: endPoint.lon, lat: endPoint.lat },
+        startPoint: { lng: startPoint.lon, lat: startPoint.lat }
+      });
+    });
   }
   handleModalVisible = flag => {
     if(flag) {
@@ -286,7 +301,7 @@ class WharfSock extends Component {
     })
   }
   handleNodeAttachmentClick = id => {
-    this.props.history.push(`/attachments?id=${id}`)
+    this.props.history.push(`/attachments?id=${decodeURI(id)}`)
     /* this.props.bindFile({
       formId: FORM_ID,
       id,
@@ -296,9 +311,23 @@ class WharfSock extends Component {
   }
   render(){
     // eslint-disable-next-line
-    const { task: {recordList, nodes}, form, fetchTaskTracking, fetchUploadKeying, fetchTrackNodeing, history, editNodeing, bindFileing } = this.props;
+    const { 
+      task: {recordList, nodes, route}, 
+      form, 
+      fetchTaskTracking, 
+      fetchUploadKeying, 
+      fetchTrackNodeing, 
+      history, 
+      editNodeing,
+      fetchRouteing, 
+      bindFileing 
+    } = this.props;
     const tracks = recordList.filter(item => item.nodeTypeName);
     const mainNodes = nodes.filter(item => item.keyNode === 'true');
+    const polyline = route.length ? route.map(item => ({
+      lng: item.lon,
+      ...item
+    })) : [];
     const checked = item => {
       return tracks.some(el => {
         return el.nodeTypeId === item.id
@@ -318,16 +347,30 @@ class WharfSock extends Component {
           </div>
         </div>
         <div className={styles.routeMap}>
-          <HopeMap 
-            ak='uiwBRkB8kW2v3VHmG1GrIywNV+Cpw4KHrit+JO2B9TM=' 
+          <BaiduMap 
+            mapContainer={<div style={{ height: '100%', width: '100%' }} />}
+            zoom={7} 
             center={this.state.center}
-            level={1}
-            services={[
-              { type: 'WMTS', url: 'http://169.169.213.123:9002/map/1947247294712/MapServer' },
-              { type: 'WMTS', url: 'http://169.169.213.123:9002/map/1947246562936/MapServer' }        
-            ]}
+            enableScrollWheelZoom
           >
-          </HopeMap>
+            {
+              fetchRouteing ?
+              <CenterLoading className='center-loading' text='运行轨迹加载中...'/> :
+              <>
+                <Marker 
+                  position={this.state.startPoint}
+                  icon={{ imageUrl: startTag, size: { width: 32, height: 32 } }} 
+                  offset={{width: -1, height: -17}}
+                />
+                {polyline.length && <Polyline path={polyline} strokeWeight={4} strokeColor='#3c73f0' />}
+                <Marker
+                  position={this.state.endPoint}
+                  icon={{ imageUrl: currentTag, size: { width: 32, height: 32 } }}
+                  offset={{width: -1, height: -17}}
+                />
+              </>
+            }
+          </BaiduMap>
         </div>
         <StickyContainer className={styles.nodeContainer}>
           {

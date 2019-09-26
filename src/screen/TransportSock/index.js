@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Icon, Modal } from 'antd-mobile';
 import { connect } from 'react-redux';
-import HopeMap, { Overlay } from '@/component/HopeMap';
+import { BaiduMap, Overlay } from 'react-baidu-maps';
 import Fields from '@/component/Fields';
 import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
@@ -24,12 +24,11 @@ const mapDispatchToProps = ({ sock }) => ({
 @connect(mapStateToProps, mapDispatchToProps)
 class WharfSock extends Component {
   state = {
-    center: [121.84922218322755, 30.673635005950928],
+    center: {lng:121.721133,lat:30.605635},
     visible: false,
     detail: {}
   }
-  timer = null;
-  locationItems = null;
+  overlays = []
   removeAndAddEvent(type) {
     this.locationItems = document.querySelectorAll('.loc-item')
     this.locationItems.forEach(item => {
@@ -39,17 +38,43 @@ class WharfSock extends Component {
   componentDidMount() { 
     this.props.fetchIntransitSock({}, data => {
       this.setState({
-        center: [data[0].longitude, data[0].latitude]
-      })
-      this.timer = setTimeout(() => {
-       this.removeAndAddEvent('add')
-      }, 16)
+        center: {lng:data[0].longitude,lat:data[0].latitude}
+      });
     });
   }
   componentWillUnmount() {
-    this.timeer && clearTimeout(this.timer);
-    this.removeAndAddEvent('remove');
-    this.locationItems = null;
+    this.overlays.forEach(div => {
+      div.removeEventListener('touchstart', this.handleOverlaySelected, false);
+    });
+    this.overlays = null;
+  }
+  overlayConstructor = (self, params) => {
+    self.point = new BMap.Point(params.point.lng, params.point.lat); // eslint-disable-line no-undef
+    self.text = params.text;
+    self.index = params.index;
+  }
+  overlayInitialize = (self, map) => {
+    self.map = map;
+    const div = document.createElement('div');
+    div.className = styles.ship;
+    const span = document.createElement('span');
+    span.className = 'loc-item'
+    span.dataset.index = self.index;
+    span.appendChild(document.createTextNode(self.text));
+    div.appendChild(span);
+    map.getPanes().labelPane.appendChild(div);
+    div.addEventListener('touchstart', this.handleOverlaySelected, false)
+    self.div = div;
+    self.span = span;
+    this.overlays.push(div);
+    return div;
+  }
+  overlayDraw = self => {
+    const map = self.map;
+    const pixel = map.pointToOverlayPixel(self.point);
+    self.div.style.left = `${pixel.x-self.div.offsetWidth/2}px`;
+    self.div.style.top = `${pixel.y-self.div.offsetHeight/2}px`;
+    self.span.style.marginLeft = `-${self.span.offsetWidth/2}px`
   }
   handleShowModal = flag => {
     this.setState({
@@ -59,16 +84,19 @@ class WharfSock extends Component {
   handleOverlaySelected = e => {
     const { sock: { list } } = this.props;
     const transportIndex = e.target.dataset.index;
-    //const { code: terminalCode, name } = list[transportIndex];
     this.handleShowModal(true);
     this.setState({
       detail: list[transportIndex]
-    })
-    //console.log(list[transportIndex])
+    });
   }
   render(){
     // eslint-disable-next-line
     const { sock: {list}, fetchIntransitSocking, history } = this.props;
+    const createOverlayMethods = {
+      customConstructor: this.overlayConstructor,
+      initialize: this.overlayInitialize,
+      draw: this.overlayDraw
+    }
     const columns = [
       {
         title: '货名',
@@ -116,32 +144,31 @@ class WharfSock extends Component {
             </div>
           </div>
         </div>
-        <HopeMap 
-          ak='uiwBRkB8kW2v3VHmG1GrIywNV+Cpw4KHrit+JO2B9TM=' 
+        <BaiduMap 
+          mapContainer={<div style={{ height: '100%', width: '100%' }} />} 
+          zoom={7} 
           center={this.state.center}
-          level={1}
-          services={[
-            { type: 'WMTS', url: 'http://169.169.213.123:9002/map/1947247294712/MapServer' },
-            { type: 'WMTS', url: 'http://169.169.213.123:9002/map/1947246562936/MapServer' }        
-          ]}
+          enableScrollWheelZoom
         >
           {
             fetchIntransitSocking ? 
             <CenterLoading className='center-loading' text='在途数据加载中...'/> :
             list ? 
             list.map((item, index) => (
-              <Overlay
-                key={item.vesselExportSysid}
-                className={styles.ship}
-                show
-                render={{
-                  position:[item.longitude, item.latitude],
-                  content: `<div class='loc-item' data-index=${index}>${item.vesselExportEname}</div>`
-                }}
-              />
+              <Overlay key={item.vesselExportEname} 
+                  constructorParams={{
+                    point: {
+                      lng: item.longitude,
+                      lat: item.latitude
+                    },
+                    text: item.vesselExportEname,
+                    index
+                  }}
+                  {...createOverlayMethods}
+                />
             )) : null
           }
-        </HopeMap>
+        </BaiduMap>
         <Modal
           visible={this.state.visible}
           popup
