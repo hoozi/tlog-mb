@@ -7,10 +7,6 @@ import {
   InputItem, 
   TextareaItem,
   DatePicker,
-  SearchBar,
-  Modal,
-  Radio,
-  ActivityIndicator,
   Button,
   Toast
 } from 'antd-mobile';
@@ -19,15 +15,14 @@ import { createForm } from 'rc-form';
 import moment from 'moment';
 import Debounce from 'lodash-decorators/debounce';
 import Screen from '@/component/Screen';
-import Empty from '@/component/Empty';
-//import { BARND_COLOR } from '@/constants/color';
+import SearchModal from '@/component/SearchModal';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import styles from './index.less';
-//import list from '@/style/list.less';
 import form from '@/style/form.less';
+import { getUser } from '@/utils/token';
 
-const RadioItem = Radio.RadioItem;
 const ListItem = List.Item;
+const { username, phone } = getUser().sysUser;
 
 const mapStateToProps = ({ common }) => {
   return {
@@ -47,43 +42,6 @@ const mapDispatchToProps = ({ common, cargo }) => ({
   ...mapEffects(cargo, ['createCargo']),
 });
 
-const SearchCargo = props => {
-  const { visible, onCancel, onSearchChange, data, value, loading, onItemChange, selectedValue } = props;
-  return (
-    <Modal
-      popup
-      visible={visible}
-      animationType='slide-up'
-      className={styles.modalFullScreen}
-      afterClose={() => document.documentElement.style.overflow=''}
-    >
-      <SearchBar 
-        defaultValue={value}
-        placeholder='请输入货名，模糊搜索' 
-        className={styles.searchBar} 
-        onChange={onSearchChange}
-        onCancel={onCancel} 
-        showCancelButton
-      />
-      {
-        loading ? 
-        <div style={{display: 'flex', justifyContent: 'center', marginTop: 128}}><ActivityIndicator text='查询中...'/></div> :
-        data.length ? 
-        <List style={{height: 'calc(100% - 45px)', overflow: 'auto'}}>
-          {
-            data.map(item => (
-              <RadioItem key={item.id} checked={item.id === selectedValue} onChange={e => onItemChange(item)}>
-                {item.cargoChineseName}<ListItem.Brief>{item.cargoCode}</ListItem.Brief>
-              </RadioItem>
-            ))
-          }
-        </List> :
-        <Empty description='暂无货物信息'/>
-      }
-    </Modal>
-  )
-}
-
 @connect(mapStateToProps, mapDispatchToProps)
 @createForm()
 class CargoCreate extends PureComponent {
@@ -93,7 +51,8 @@ class CargoCreate extends PureComponent {
       visibleSearchModal: false,
       cargo:{
         cargoId: -1,
-        cargoChineseName: ''
+        cargoChineseName: '',
+        selectedCargoType: -1
       } 
     }
     this.handleSearchChange = this.handleSearchChange.bind(this)
@@ -119,11 +78,12 @@ class CargoCreate extends PureComponent {
     })
   }
   handleCargoNameChange = data => {
-    const { id:cargoId, cargoChineseName } = data;
+    const { id:cargoId, cargoChineseName, cargoType } = data;
     this.setState({
       cargo: {
         cargoId,
-        cargoChineseName
+        cargoChineseName,
+        selectedCargoType: parseInt(cargoType,10)
       }
     })
     this.handleShowCargoSearch();
@@ -167,7 +127,8 @@ class CargoCreate extends PureComponent {
           this.setState({
             cargo: {
               cargoChineseName:'', 
-              cargoId: -1
+              cargoId: -1,
+              selectedCargoType: -1
             }
           })
         })
@@ -185,10 +146,12 @@ class CargoCreate extends PureComponent {
       cargoInfo,
       location 
     } = this.props;
-    const { cargo: { cargoChineseName, cargoId }, visibleSearchModal } = this.state
+    const { cargo: { cargoChineseName, cargoId, selectedCargoType }, visibleSearchModal } = this.state
     const cargoTypes = cargoType.map(t => ({
+      ...t,
       label: t.cargoName,
-      value: t.id
+      value: t.id,
+      cargoType: parseInt(t.cargoType,10)
     }));
     const locations = location.map(l => ({
       label: <div key={l.id}>{l.name} <span style={{color:'#a4a9b0', fontSize: 12}}>{l.helpcode}</span></div>,
@@ -199,6 +162,14 @@ class CargoCreate extends PureComponent {
       onSearchChange: this.handleSearchChange,
       onItemChange: this.handleCargoNameChange
     }
+    const selectedCargoTypes = cargoTypes ? cargoTypes.filter(item => {
+      return this.state.cargo.selectedCargoType === item.cargoType;
+    }).map(item => item.id) : [];
+    const cargos = cargoInfo.length ? cargoInfo.map(item => ({
+      label: item.cargoChineseName,
+      brief: item.cargoCode,
+      ...item
+    })) : [];
     return (
       <Screen
         fixed
@@ -249,10 +220,15 @@ class CargoCreate extends PureComponent {
             >价格</InputItem> */}
           </List>
           <List renderHeader={() =>'货物信息'}>
+            <ListItem
+              arrow='horizontal'
+              extra={cargoChineseName ? cargoChineseName : '请选择'}
+              onClick={() => this.handleShowCargoSearch(true)}
+            ><span className={form.required}>*</span>货名</ListItem>
             <Picker
               cols={1}
               {...getFieldProps('cargoTypeId', {
-                
+                initialValue: selectedCargoTypes
               })}
               title='货类'
               data={cargoTypes}
@@ -260,11 +236,6 @@ class CargoCreate extends PureComponent {
             >
               <ListItem arrow='horizontal'><span className={form.required}>*</span>货类</ListItem>
             </Picker>
-            <ListItem
-              arrow='horizontal'
-              extra={cargoChineseName ? cargoChineseName : '请选择'}
-              onClick={() => this.handleShowCargoSearch(true)}
-            ><span className={form.required}>*</span>货名</ListItem>
             <InputItem
               {...getFieldProps('tonnage', {
                 rules: [
@@ -278,16 +249,26 @@ class CargoCreate extends PureComponent {
           </List>
           <List renderHeader={() =>'联系'}>
             <InputItem
-              {...getFieldProps('contacts')}
+              {...getFieldProps('contacts', {
+                initialValue: username,
+                rules: [
+                  { required: true, message: '请输入联系人' }
+                ]
+              })}
               placeholder='请输入'
               clear
-            >联系人</InputItem>
+            ><span className={form.required}>*</span>联系人</InputItem>
             <InputItem
               type='number'
-              {...getFieldProps('contactsPhone')}
+              {...getFieldProps('contactsPhone', {
+                initialValue: phone,
+                rules: [
+                  { required: true, message: '请输入联系电话' }
+                ]
+              })}
               placeholder='请输入'
               clear
-            >联系电话</InputItem>
+            ><span className={form.required}>*</span>联系电话</InputItem>
           </List>
           <List renderHeader={() =>'要求出运日期'}  className={styles.datePickerList}>
             <DatePicker
@@ -344,9 +325,9 @@ class CargoCreate extends PureComponent {
             />
           </List>
         </div>
-        <SearchCargo
+        <SearchModal
           visible={visibleSearchModal}
-          data={cargoInfo}
+          data={cargos}
           value={cargoChineseName}
           selectedValue={cargoId}
           loading={fetchCargoInfoing}
@@ -356,7 +337,7 @@ class CargoCreate extends PureComponent {
           <Button 
             type='primary' 
             onClick={this.handleSubmit}
-            disabled={!cargoChineseName || createCargoing || hasError(getFieldsError())}
+            disabled={!cargoChineseName || createCargoing || hasError(getFieldsError()) || !selectedCargoType}
             loading={createCargoing}
           >提交</Button>
         </div>

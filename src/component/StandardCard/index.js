@@ -31,7 +31,6 @@ export default props => {
           <div className={card.cardItemExtra}>{ renderListCardExtra(item) }</div> :
           null
         }
-        
       </div>
       { 
         renderListCardFooter && renderListCardFooter(item)

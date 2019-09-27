@@ -15,17 +15,22 @@ import { connect } from 'react-redux';
 import { createForm } from 'rc-form';
 import moment from 'moment';
 import Screen from '@/component/Screen';
-//import { BARND_COLOR } from '@/constants/color';
+import Debounce from 'lodash-decorators/debounce';
+import SearchModal from '@/component/SearchModal';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import form from '@/style/form.less';
+import { getUser } from '@/utils/token';
 
 const ListItem = List.Item;
+const { username, phone } = getUser().sysUser;
 
 const mapStateToProps = ({ common }) => {
   return {
     ...common,
     ...mapLoading('common',{
-      fetchTransportTyping: 'fetchTransportType'
+      fetchTransportTyping: 'fetchTransportType',
+      fetchTransportNameing: 'fetchTransportName',
+      fetchTransportByIding: 'fetchTransportById'
     }),
     ...mapLoading('transport', {
       createTransporting: 'createTransport'
@@ -33,7 +38,7 @@ const mapStateToProps = ({ common }) => {
   }
 }
 const mapDispatchToProps = ({ common, transport }) => ({
-  ...mapEffects(common, ['fetchTransportType']),
+  ...mapEffects(common, ['fetchTransportType', 'fetchTransportName', 'fetchTransportById', 'findTransports']),
   ...mapEffects(transport, ['createTransport']),
 });
 
@@ -48,15 +53,19 @@ if (isIPhone) {
 @connect(mapStateToProps, mapDispatchToProps)
 @createForm()
 class TransportCreate extends PureComponent {
-  getTransportType() {
-    this.props.fetchTransportType();
+  state = {
+    transportName: '',
+    transportVisible: false,
+    transportId: -1
   }
   componentDidMount() {
     this.props.form.validateFields();
-    this.getTransportType();
+    this.props.fetchTransportType();
+    this.props.fetchTransportName();
   }
   handleSubmit = () => {
     const { form: { validateFields, resetFields } } = this.props;
+    const { tranportId, transportName } = this.state
     validateFields((errors, values) => {
       if(errors) {
         Object.keys(errors).forEach(key => {
@@ -74,26 +83,56 @@ class TransportCreate extends PureComponent {
           status: 10,
           message: '运力发布成功',
           transportTypeId,
+          tranportId,
+          transportName,
           freeStartTime,
           freeEndTime,
           invalidateTime,
           validateTime
         },() => {
           resetFields();
-         /*  this.setState({
-            
-          }) */
         })
       }
     })
+  }
+  handleShowTransportSearch = flag => {
+    this.setState({
+      transportVisible: !!flag
+    })
+  }
+  @Debounce(200)
+  handleTransportSearchChange = name => {
+    this.props.findTransports({name});
+  }
+  handleTransportNameChange = data => {
+    console.log(data)
+    const { id:transportId, chineseName:transportName, vesselLoadWeight:loadWeight } = data;
+    this.props.form.setFieldsValue({loadWeight})
+    this.setState({
+      transportId,
+      transportName
+    });
+    this.handleShowTransportSearch();
   }
   render() {
     const { 
       form: { getFieldProps, getFieldsError }, 
       createTransporting,
       fetchTransportTyping,
+      transportSplice,
       transportType
     } = this.props;
+    const { transportName, transportVisible, transportId } = this.state;
+    const transportModalMethods = {
+      onCancel: () => this.handleShowTransportSearch(),
+      onSearchChange: this.handleTransportSearchChange,
+      onItemChange: this.handleTransportNameChange
+    }
+    const transportSplices = transportSplice.length ? transportSplice.map(item => ({
+      ...item,
+      label: item.chineseName,
+      brief: item.englishName
+    })) : []
     return (
       <Screen
         fixed
@@ -124,19 +163,15 @@ class TransportCreate extends PureComponent {
             >
               <ListItem arrow='horizontal'><span className={form.required}>*</span>运力类型</ListItem>
             </Picker>
-            <InputItem
-              {...getFieldProps('transportName', {
-                rules: [
-                  { required: true, message: '请输入运力名称' }
-                ]
-              })}
-              placeholder='请输入'
-              clear
-            ><span className={form.required}>*</span>运力名称</InputItem>
+            <ListItem
+              arrow='horizontal'
+              extra={transportName ? transportName : '请选择'}
+              onClick={() => this.handleShowTransportSearch(true)}
+            ><span className={form.required}>*</span>运力名称</ListItem>
             <InputItem
               {...getFieldProps('loadWeight', {
                 rules: [
-                  { required: true, message: '请输入运力名称' }
+                  { required: true, message: '请输入载重吨' }
                 ]
               })}
               type='money'
@@ -145,7 +180,7 @@ class TransportCreate extends PureComponent {
               moneyKeyboardAlign='left'
               moneyKeyboardWrapProps={moneyKeyboardWrapProps}
               extra='吨'
-            >载重吨</InputItem>
+            ><span className={form.required}>*</span>载重吨</InputItem>
             <InputItem
               {...getFieldProps('freePlace', {
                 rules: [
@@ -167,16 +202,26 @@ class TransportCreate extends PureComponent {
           </List>
           <List renderHeader={() =>'联系'}>
             <InputItem
-              {...getFieldProps('contact')}
+              {...getFieldProps('contact', {
+                initialValue: username,
+                rules: [
+                  { required: true, message: '请输入联系人' }
+                ]
+              })}
               placeholder='请输入'
               clear
-            >联系人</InputItem>
+            ><span className={form.required}>*</span>联系人</InputItem>
             <InputItem
               type='number'
-              {...getFieldProps('contactTel')}
+              {...getFieldProps('contactTel', {
+                initialValue: phone,
+                rules: [
+                  { required: true, message: '请输入联系电话' }
+                ]
+              })}
               placeholder='请输入'
               clear
-            >联系电话</InputItem>
+            ><span className={form.required}>*</span>联系电话</InputItem>
           </List>
           <List renderHeader={() =>'空闲日期'}>
             <DatePicker
@@ -240,6 +285,14 @@ class TransportCreate extends PureComponent {
             loading={createTransporting}
           >提交</Button>
         </div>
+        <SearchModal
+          visible={transportVisible}
+          data={transportSplices}
+          value={transportName}
+          selectedValue={transportId}
+          placeholder='请输入中文或者英文船名'
+          { ...transportModalMethods }
+        />
       </Screen>
     )
   }

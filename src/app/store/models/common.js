@@ -1,4 +1,4 @@
-import { queryCargoInfo, queryCargoType, queryLocation, queryDict, upload, queryUploadKey, bindFile } from '@/api/common';
+import { queryCargoInfo, queryCargoType, queryTransportName, queryLocation, queryDict, upload, queryUploadKey, bindFile } from '@/api/common';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -6,6 +6,9 @@ const state = {
   cargoType: [],
   location: [],
   transportType: [],
+  transports: [],
+  transportSplice: [],
+  transport: {},
   uploadKey: '',
   url: '',
   attachmentInfos: []
@@ -31,6 +34,36 @@ const effects = dispatch => ({
     if(!response) return;
     this.save({
       cargoInfo: response.data.splice(0,20)
+    })
+  },
+  async fetchTransportName(payload) {
+    const response = await queryTransportName({
+      crudType: 'retrieve'
+    });
+    if(!response) return;
+    this.save({
+      transports: response.data.map(item=>({...item, key: `${item.chineseName}_${item.englishName}`})),
+      transportSplice: response.data.splice(0,20)
+    })
+  },
+  findTransports(payload, rootState) {
+    const { name } = payload;
+    const capitalization = name.toUpperCase()
+    const transportSplice = rootState.common.transports.filter(item => {
+      return item.key.indexOf(capitalization) > -1
+    }).splice(0,20);
+    this.save({
+      transportSplice
+    })
+  },
+  async fetchTransportById(payload) {
+    const response = await queryTransportName({
+      crudType: 'retrieve',
+      id: payload.id
+    });
+    if(!response) return;
+    this.save({
+      transport: response.data[0]
     })
   },
   async fetchCargoType() {

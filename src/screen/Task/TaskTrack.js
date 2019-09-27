@@ -48,7 +48,19 @@ const CheckedItem = props => (
   </div>
 )
 
-@connect((({loading}) => ({uploading:loading.effects['common']['upload']})), ({task, common}) => ({fetchTrackNode: task.fetchTrackNode, upload: common.upload}))
+@connect(
+  ({loading}) => (
+    {
+      uploading:loading.effects['common']['upload']
+    }
+  ),
+  ({task, common}) => (
+    {
+      fetchTrackNode: task.fetchTrackNode, 
+      upload: common.upload
+    }
+  )
+)
 class NodeModal extends Component {
   state = { 
     nextNodeTypeId: [],
@@ -231,7 +243,7 @@ const mapDispatchToProps = ({ task, common }) => ({
 
 @connect(mapStateToProps, mapDispatchToProps)
 @createForm()
-class WharfSock extends Component {
+class TaskTrack extends Component {
   constructor(props) {
     super(props);
     const { search } = this.props.location
@@ -255,6 +267,7 @@ class WharfSock extends Component {
     this.getTaskTrack();
   }
   componentDidMount() { 
+    console.log(this.props)
     this.getTaskTrack();
     this.props.fetchTrackNode();
     this.props.fetchRoute({}, data => {
@@ -327,7 +340,7 @@ class WharfSock extends Component {
     const polyline = route.length ? route.map(item => ({
       lng: item.lon,
       ...item
-    })) : [];
+    })) : [{lng: 0, lat: 0}];
     const checked = item => {
       return tracks.some(el => {
         return el.nodeTypeId === item.id
@@ -362,7 +375,7 @@ class WharfSock extends Component {
                   icon={{ imageUrl: startTag, size: { width: 32, height: 32 } }} 
                   offset={{width: -1, height: -17}}
                 />
-                {polyline.length && <Polyline path={polyline} strokeWeight={4} strokeColor='#3c73f0' />}
+                {polyline.length && <Polyline path={polyline} strokeWeight={5} strokeColor='#3c73f0' />}
                 <Marker
                   position={this.state.endPoint}
                   icon={{ imageUrl: currentTag, size: { width: 32, height: 32 } }}
@@ -447,5 +460,5 @@ class WharfSock extends Component {
   }
 }
 
-export default WharfSock;
+export default TaskTrack;
 

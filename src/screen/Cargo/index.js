@@ -201,7 +201,7 @@ class Cargo extends PureComponent {
   )
   renderListCardExtra = item => (
     <Flex justify='between'>
-      <span><Icon type='yonghu' size='xxs'/> {item.contacts.trim() || '未知'}/{item.contactsPhone.trim() || '未知'}</span>
+      <span><Icon type='yonghu' size='xxs'/> {item.contacts.trim() || '未知'},{item.contactsPhone.trim() || '未知'}</span>
     </Flex>
   )
   render() {

@@ -35,6 +35,11 @@ export async function queryToken(params) {
     data: params
   })
 }
+export async function queryTransportName(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/base_vessel`, {
+    data: params
+  })
+}
 export async function queryCurrentUser() {
   return request('/ierp/kapi/app/nbg_qcwl/web_user_info', {
     method: 'GET'
