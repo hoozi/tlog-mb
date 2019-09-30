@@ -22,7 +22,7 @@ import form from '@/style/form.less';
 import { getUser } from '@/utils/token';
 
 const ListItem = List.Item;
-const { username, phone } = getUser().sysUser;
+const { username, phone } = getUser();
 
 const mapStateToProps = ({ common }) => {
   return {

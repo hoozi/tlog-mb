@@ -16,12 +16,13 @@ import BannerMask from '@/component/BannerMask';
 import RouteName from '@/component/RouteName';
 import Empty from '@/component/Empty';
 import StandardCard from '@/component/StandardCard';
+import CenterLoading from '@/component/CenterLoading';
 import styles from './index.less';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects, mapLoading, getMenuFromStorage } from '@/utils';
 import { BRAND_COLOR } from '@/constants/color';
 import LoginCheckArea from '@/hoc/LoginCheckArea';
 
-const data = [{
+const menus = [{
   icon: <Icon type='huopanshenhe' size='f' color={BRAND_COLOR}/>,
   text: '货盘审核',
   url: '/cargo'
@@ -189,11 +190,14 @@ const mapStateToProps = ({ product, cargo, transport }) => {
     }),
     ...mapLoading('transport', {
       fetchAnyTransporting: 'fetchAnyTransport'
+    }),
+    ...mapLoading('user', {
+      fetchCurrentMenuing: 'fetchCurrentMenu'
     })
   }
 }
 
-const mapDispatchToProps = ({ product, cargo, transport }) => ({
+const mapDispatchToProps = ({ product, cargo, transport, user }) => ({
   ...mapEffects(product, ['fetchProduct']),
   ...mapEffects(cargo, ['fetchAnyCargo']),
   ...mapEffects(transport, ['fetchAnyTransport'])
@@ -242,6 +246,7 @@ class Home extends PureComponent {
       fetchProducting,
       fetchAnyCargoing,
       fetchAnyTransporting,
+      fetchCurrentMenuing,
       history
     } = this.props;
     const { refreshing } = this.state
@@ -260,17 +265,23 @@ class Home extends PureComponent {
             <AccountCard/>
             <BannerMask/>
           </div>
-          <div className={styles.gridContainer} ref={el => this.grid = el}>
-            <div className={styles.gridWrapper}>
+          <div className={styles.gridContainer}>
+            <div className={styles.gridWrapper} style={{minHeight:getMenuFromStorage(menus).length ? 'auto' : 237}}>
               <LoginCheckArea>
-                <Grid
-                  className={styles.fnGrid} 
-                  data={data} 
-                  square={false} 
-                  hasLine={false} 
-                  activeStyle={false} 
-                  onClick={this.handleLinkTo}
-                />
+                {
+                  fetchCurrentMenuing ? 
+                  <CenterLoading text='菜单加载中...'/> : 
+                  getMenuFromStorage(menus).length ? 
+                  <Grid
+                    className={styles.fnGrid} 
+                    data={getMenuFromStorage(menus)} 
+                    square={false} 
+                    hasLine={false} 
+                    activeStyle={false} 
+                    onClick={this.handleLinkTo}
+                  /> :
+                  <Empty description='暂无授权的菜单'/>
+                }
               </LoginCheckArea>
             </div>
           </div>

@@ -45,6 +45,11 @@ export async function queryCurrentUser() {
     method: 'GET'
   })
 }
+export async function queryCurrentMenu(params) {
+  return request('/ierp/kapi/app/nbg_qcwl/web_menu', {
+    data: params
+  })
+}
 
 export async function upload(params) {
   return request('/ierp/attachment/uploadFile.do', {
