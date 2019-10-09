@@ -1,4 +1,14 @@
-import { queryCargoInfo, queryCargoType, queryTransportName, queryLocation, queryDict, upload, queryUploadKey, bindFile } from '@/api/common';
+import { 
+  queryCargoInfo, 
+  queryCargoType, 
+  queryTransportName, 
+  queryLocation, 
+  queryDict, 
+  upload, 
+  queryUploadKey, 
+  bindFile, 
+  queryOrg 
+} from '@/api/common';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -8,6 +18,8 @@ const state = {
   transportType: [],
   transports: [],
   transportSplice: [],
+  orgs: [],
+  orgSplice: [],
   transport: {},
   uploadKey: '',
   url: '',
@@ -33,7 +45,7 @@ const effects = dispatch => ({
     const response = await queryCargoInfo(payload);
     if(!response) return;
     this.save({
-      cargoInfo: response.data.splice(0,20)
+      cargoInfo: response.data.slice(0,20)
     })
   },
   async fetchTransportName(payload) {
@@ -43,17 +55,41 @@ const effects = dispatch => ({
     if(!response) return;
     this.save({
       transports: response.data.map(item=>({...item, key: `${item.chineseName}_${item.englishName}`})),
-      transportSplice: response.data.splice(0,20)
+      transportSplice: response.data.slice(0,20)
     })
+  },
+  async fetchOrg(payload, rootState, callback) {
+    if(typeof callback === 'undefined') {
+      callback = payload;
+      payload = {};
+    }
+    const response = await queryOrg({
+      crudType: 'retrieve'
+    });
+    if(!response) return;
+    this.save({
+      orgs: response.data,
+      orgSplice: response.data.slice(0,20)
+    });
+    callback && callback(response.data);
   },
   findTransports(payload, rootState) {
     const { name } = payload;
     const capitalization = name.toUpperCase()
     const transportSplice = rootState.common.transports.filter(item => {
       return item.key.indexOf(capitalization) > -1
-    }).splice(0,20);
+    }).slice(0,20);
     this.save({
       transportSplice
+    })
+  },
+  findOrgs(payload, rootState) {
+    const { name } = payload;
+    const orgSplice = rootState.common.orgs.filter(item => {
+      return item.name.indexOf(name) > -1;
+    }).slice(0,20);
+    this.save({
+      orgSplice
     })
   },
   async fetchTransportById(payload) {

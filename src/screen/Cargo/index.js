@@ -8,7 +8,7 @@ import findIndex from 'lodash/findIndex';
 import indexOf from 'lodash/indexOf';
 import Screen from '@/component/Screen';
 import RouteName from '@/component/RouteName';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects, mapLoading, checkPermissions, getButtonsByPermissions } from '@/utils';
 import StandardList from '@/component/StandardList';
 
 import list from '@/style/list.less';
@@ -30,11 +30,6 @@ const mapDispatchToProps = ({ cargo }) => ({
   ...mapEffects(cargo, ['fetchCargo', 'fetchAnyCargo', 'updateCargo', 'createCargo'])
 });
 
-const tabs = [
-  { title: '待审核', status: 40 },
-  { title: '已锁定', status: 50 },
-  { title: '已打回', status: 60 }
-];
 
 const allTabs = [
   { title: '已创建', status: 10 },
@@ -46,7 +41,6 @@ const allTabs = [
   { title: '已受理', status: 70 },
   { title: '已失效', status: 90 }
 ]
-
 
 @connect(mapStateToProps, mapDispatchToProps)
 class Cargo extends PureComponent {
@@ -142,27 +136,72 @@ class Cargo extends PureComponent {
   showActionSheet(item) {
     const blackList = [10, 20, 30, 70, 90];
     const { status, id } = item;
-    if(this.type === 'more' || indexOf(blackList, +status) !== -1 ) return;
-    const map = {
-      40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '转订单', '失效', '取消'],
-      50: ['转订单', '失效', '取消'],
-      60: ['失效', '取消']
+    if(this.type === 'more' || indexOf(blackList, +status) !== -1 || !checkPermissions(['cargo_check','change_bill','cargo_invalid']) ) return;
+    const buttonMap = {
+      40: [
+        {
+          code: '60',
+          button: '打回',
+          authority: 'cargo_check'
+        },
+        {
+          code: '50',
+          button: '锁定',
+          authority: 'cargo_check'
+        },
+        {
+          code: 'c',
+          button: '转订单',
+          authority: 'change_bill'
+        },
+        {
+          code: '90',
+          button: '失效',
+          authority: 'cargo_invalid'
+        },
+        {
+          button: '取消'
+        }
+      ],
+      50: [
+        {
+          code: 'c',
+          button: '转订单',
+          authority: 'change_bill'
+        },
+        {
+          code: '90',
+          button: '失效',
+          authority: 'cargo_invalid'
+        },
+        {
+          button: '取消'
+        }
+      ],
+      60: [
+        {
+          code: '90',
+          button: '失效',
+          authority: 'cargo_invalid'
+        },
+        {
+          button: '取消'
+        }
+      ]
     }
-    const allStatusMap = {
-      40: ['60', '50', 'c', '90'],
-      50: ['c', '90'],
-      60: ['90']
-    }
+    const currentButtons = getButtonsByPermissions(buttonMap, status);
+    const names = currentButtons.map(item => item.button);
     ActionSheet.showActionSheetWithOptions({
-      options: map[status],
-      destructiveButtonIndex: map[status].length - 2,
-      cancelButtonIndex: map[status].lenght - 1,
+      options: names,
+      cancelButtonIndex: names.length - 1,
+      destructiveButtonIndex: names.length - 2,
       title: '货盘操作',
+      message: '货盘操作',
       maskClosable: true
     },
     buttonIndex => {
-      if(buttonIndex < 0) return;
-      const statusCode = allStatusMap[status][buttonIndex];
+      if(buttonIndex < 0 || !currentButtons[buttonIndex].code) return;
+      const statusCode = currentButtons[buttonIndex].code;
       const isCreate = statusCode === 'c';
       const params = isCreate ? {
         operateType: 'C',
@@ -229,7 +268,7 @@ class Cargo extends PureComponent {
                 ({ style }) => (
                   <div style={{...style, zIndex:10}}>
                     <div className={list.listStatus} >
-                      <Tabs initialPage={findIndex(tabs, tab => tab.status === status)} tabs={(type && type === 'all') ? allTabs : tabs} {...tabsStyle} renderTabBar={props => <Tabs.DefaultTabBar {...props} page={3} />} onChange={this.handleTabChange}/>
+                      <Tabs initialPage={findIndex(allTabs, tab => tab.status === status)} tabs={allTabs} {...tabsStyle} renderTabBar={props => <Tabs.DefaultTabBar {...props} page={3} />} onChange={this.handleTabChange}/>
                     </div>
                   </div>
                 )

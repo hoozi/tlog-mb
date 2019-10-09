@@ -25,6 +25,7 @@ const TransportSockAsync = LoadingComponent('TransportSock')
 const TransportSockDetailAsync = LoadingComponent('TransportSock/Sock')
 const AttachmentsAsync = LoadingComponent('Attachments');
 const WharfCongestionAsync = LoadingComponent('WharfCongestion');
+const TideAsync = LoadingComponent('Tide');
 
 const routesConfig = [
   {
@@ -202,6 +203,14 @@ const routesConfig = [
   {
     path: '/wharf-congestion',
     component: WharfCongestionAsync,
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/tide',
+    component: TideAsync,
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

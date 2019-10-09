@@ -29,6 +29,11 @@ export function mapLoading(namespace, names) {
 export const hasError = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 export const checkPermissions = (authorities, permissions=getPermission()) => {
+
+  if(typeof authorities === 'undefined') {
+    return true
+  }
+
   if (isEmpty(permissions)) {
     return true;
   }
@@ -51,6 +56,13 @@ export const checkPermissions = (authorities, permissions=getPermission()) => {
 
   throw new Error('Unsupport type of authorities.');
 };
+
+export const getButtonsByPermissions = (buttonMap, status) => {
+  const buttons = buttonMap[status];
+  return buttons.filter(item => {
+    return checkPermissions(item.authority);
+  });
+}
 
 export function getPermissionFromMenu(menu) {
   return menu.map(m =>  m.id);

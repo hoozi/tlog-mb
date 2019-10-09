@@ -9,14 +9,15 @@ import findIndex from 'lodash/findIndex';
 import Screen from '@/component/Screen';
 import { getToken } from '@/utils/token';
 import StandardList from '@/component/StandardList';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects, mapLoading, checkPermissions, getButtonsByPermissions } from '@/utils';
 import list from '@/style/list.less';
 import color from '@/constants/color';
 
 const { tabsStyle } = color;
 
-const mapStateToProps = ({ transport }) => {
+const mapStateToProps = ({ transport, common }) => {
   return {
+    common,
     ...transport,
     ...mapLoading('transport',{
       updateTransporting: 'updateTransport'
@@ -27,12 +28,6 @@ const mapStateToProps = ({ transport }) => {
 const mapDispatchToProps = ({ transport }) => ({
   ...mapEffects(transport, ['fetchTransport', 'fetchAnyTransport', 'updateTransport'])
 });
-
-const tabs = [
-  { title: '待审核', status: 40 },
-  { title: '已锁定', status: 50 },
-  { title: '已打回', status: 60 }
-];
 
 const allTabs = [
   { title: '已创建', status: 10 },
@@ -72,7 +67,15 @@ class Transport extends PureComponent {
   }
   callback = data => {
     const { recordList, pageCount } = data;
-    const ds = recordList.length > 0 ? recordList.map(item => ({...item})) : [];
+    const { common: {orgs} } = this.props
+    const ds = recordList.length > 0 ? recordList.map(item => {
+      const filted = orgs.filter(org => org.id === item.logisticsProviderId);
+      const logisticsProviderName = filted.length ? filted[0]['name'] : '';
+      return {
+        ...item,
+        logisticsProviderName
+      }
+    }) : [];
     this.data = [...this.data, ...ds];
     this.setState({
       ...this.state,
@@ -131,27 +134,62 @@ class Transport extends PureComponent {
   showActionSheet(item) {
     const blackList = [10, 20, 30, 70, 90];
     const { status, id } = item;
-    if(this.type === 'more' || indexOf(blackList, +status) !== -1 ) return;
-    const map = {
-      40: [<span style={{color: '#fa8c16'}}>打回</span>,'锁定', '失效', '取消'],
-      50: ['失效', '取消'],
-      60: ['失效', '取消']
+    if(this.type === 'more' || indexOf(blackList, +status) !== -1 || !checkPermissions(['transport','transport_invalid'])) return;
+    const buttonMap = {
+      40: [
+        {
+          code: '60',
+          button: <span style={{color: '#fa8c16'}}>打回</span>,
+          authority: 'transport_check'
+        },
+        {
+          code: '50',
+          button: '锁定',
+          authority: 'transport_check'
+        },
+        {
+          code: '90',
+          button: '失效',
+          authority: 'transport_invalid'
+        },
+        {
+          button: '取消'
+        }
+      ],
+      50: [
+        {
+          code: '90',
+          button: '失效',
+          authority: 'transport_invalid'
+        },
+        {
+          button: '取消'
+        }
+      ],
+      60: [
+        {
+          code: '90',
+          button: '失效',
+          authority: 'transport_invalid'
+        },
+        {
+          button: '取消'
+        }
+      ]
     }
-    const allStatusMap = {
-      40: ['60', '50', '90'],
-      50: ['90'],
-      60: ['90']
-    }
+    const currentButtons = getButtonsByPermissions(buttonMap, status);
+    const names = currentButtons.map(item => item.button);
     ActionSheet.showActionSheetWithOptions({
-      options: map[status],
-      destructiveButtonIndex: map[status].length - 2,
-      cancelButtonIndex: map[status].lenght - 1,
+      options: names,
+      cancelButtonIndex: names.length - 1,
+      destructiveButtonIndex: names.length - 2,
       title: '运力操作',
+      message: '运力操作',
       maskClosable: true
     },
     buttonIndex => {
-      if(buttonIndex < 0) return;
-      const statusCode = allStatusMap[status][buttonIndex];
+      if(buttonIndex < 0 || !currentButtons[buttonIndex].code) return;
+      const statusCode = currentButtons[buttonIndex].code;
       const params = {
         status: statusCode
       }
@@ -175,12 +213,14 @@ class Transport extends PureComponent {
       <span><b>{item.freePlace}</b><i>空闲地</i></span>
     </Flex>
   )
-  renderListCardBody = item => (
-    <>
-      <p>服务商<b>{item.logisticsProvider || '未知'}</b></p>
-      <p>空闲日期<b>{moment(item.freeStartTime).format('YYYY-MM-DD')} ~ {moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
-    </>
-  )
+  renderListCardBody = item => {
+    return (
+      <>
+        <p>服务商<b>{ item.logisticsProviderName || '未知'}</b></p>
+        <p>空闲日期<b>{moment(item.freeStartTime).format('YYYY-MM-DD')} ~ {moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
+      </>
+    )
+  }
   renderListCardExtra = item => (
     <Flex justify='between'>
       <span><Icon type='yonghu' size='xxs'/> {item.contact}</span>
@@ -213,7 +253,7 @@ class Transport extends PureComponent {
                 ({ style }) => (
                   <div style={{...style, zIndex:10}}>
                     <div className={list.listStatus} >
-                      <Tabs initialPage={findIndex(tabs, tab => tab.status === status)} tabs={(type && type === 'all') ? allTabs : tabs} {...tabsStyle} renderTabBar={props => <Tabs.DefaultTabBar {...props} page={3} />} onChange={this.handleTabChange}/>
+                      <Tabs initialPage={findIndex(allTabs, tab => tab.status === status)} tabs={allTabs} {...tabsStyle} renderTabBar={props => <Tabs.DefaultTabBar {...props} page={3} />} onChange={this.handleTabChange}/>
                     </div>
                   </div>
                 )

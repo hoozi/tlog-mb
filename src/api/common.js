@@ -40,6 +40,12 @@ export async function queryTransportName(params) {
     data: params
   })
 }
+export async function queryOrg(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/org`, {
+    data: params
+  })
+}
+
 export async function queryCurrentUser() {
   return request('/ierp/kapi/app/nbg_qcwl/web_user_info', {
     method: 'GET'

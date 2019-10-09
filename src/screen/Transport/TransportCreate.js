@@ -21,6 +21,7 @@ import { mapEffects, mapLoading, hasError } from '@/utils';
 import form from '@/style/form.less';
 import { getUser } from '@/utils/token';
 
+const userOrgId = getUser().orgId;
 const ListItem = List.Item;
 const { username, phone } = getUser();
 
@@ -30,7 +31,8 @@ const mapStateToProps = ({ common }) => {
     ...mapLoading('common',{
       fetchTransportTyping: 'fetchTransportType',
       fetchTransportNameing: 'fetchTransportName',
-      fetchTransportByIding: 'fetchTransportById'
+      fetchTransportByIding: 'fetchTransportById',
+      fetchOrging: 'fetchOrg'
     }),
     ...mapLoading('transport', {
       createTransporting: 'createTransport'
@@ -38,7 +40,7 @@ const mapStateToProps = ({ common }) => {
   }
 }
 const mapDispatchToProps = ({ common, transport }) => ({
-  ...mapEffects(common, ['fetchTransportType', 'fetchTransportName', 'fetchTransportById', 'findTransports']),
+  ...mapEffects(common, ['fetchTransportType', 'fetchTransportName', 'fetchTransportById', 'findTransports', 'findOrgs', 'fetchOrg']),
   ...mapEffects(transport, ['createTransport']),
 });
 
@@ -56,16 +58,27 @@ class TransportCreate extends PureComponent {
   state = {
     transportName: '',
     transportVisible: false,
-    transportId: -1
+    transportId: -1,
+    logisticsProviderId: -1,
+    logisticsProviderName: '',
+    orgVisible: false
   }
   componentDidMount() {
     this.props.form.validateFields();
     this.props.fetchTransportType();
     this.props.fetchTransportName();
+    this.props.fetchOrg(data => {
+      const logisticsProvider = data.filter(item => item.id === userOrgId);
+      const { id:logisticsProviderId, name:logisticsProviderName } = logisticsProvider[0];
+      this.setState({
+        logisticsProviderId, 
+        logisticsProviderName
+      })
+    });
   }
   handleSubmit = () => {
     const { form: { validateFields, resetFields } } = this.props;
-    const { tranportId, transportName } = this.state
+    const { transportId, transportName, logisticsProviderId } = this.state
     validateFields((errors, values) => {
       if(errors) {
         Object.keys(errors).forEach(key => {
@@ -83,7 +96,8 @@ class TransportCreate extends PureComponent {
           status: 10,
           message: '运力发布成功',
           transportTypeId,
-          tranportId,
+          logisticsProviderId,
+          transportId,
           transportName,
           freeStartTime,
           freeEndTime,
@@ -100,12 +114,21 @@ class TransportCreate extends PureComponent {
       transportVisible: !!flag
     })
   }
+  handleShowOrgSearch = flag => {
+    this.setState({
+      orgVisible: !!flag
+    })
+  }
   @Debounce(200)
   handleTransportSearchChange = name => {
     this.props.findTransports({name});
   }
+  @Debounce(200)
+  handleOrgSearchChange = name => {
+    this.props.findOrgs({name});
+    console.log(name)
+  }
   handleTransportNameChange = data => {
-    console.log(data)
     const { id:transportId, chineseName:transportName, vesselLoadWeight:loadWeight } = data;
     this.props.form.setFieldsValue({loadWeight})
     this.setState({
@@ -114,24 +137,44 @@ class TransportCreate extends PureComponent {
     });
     this.handleShowTransportSearch();
   }
+  handleOrgNameChange = data => {
+    const { id:logisticsProviderId, name:logisticsProviderName } = data;
+    this.setState({
+      logisticsProviderId,
+      logisticsProviderName
+    });
+    this.handleShowOrgSearch();
+  }
   render() {
     const { 
       form: { getFieldProps, getFieldsError }, 
       createTransporting,
       fetchTransportTyping,
       transportSplice,
-      transportType
+      orgSplice,
+      transportType,
+      fetchOrging
     } = this.props;
-    const { transportName, transportVisible, transportId } = this.state;
+    const { transportName, transportVisible,transportId, logisticsProviderName, orgVisible, logisticsProviderId,  } = this.state;
     const transportModalMethods = {
       onCancel: () => this.handleShowTransportSearch(),
       onSearchChange: this.handleTransportSearchChange,
       onItemChange: this.handleTransportNameChange
     }
+    const orgModalMethods = {
+      onCancel: () => this.handleShowOrgSearch(),
+      onSearchChange: this.handleOrgSearchChange,
+      onItemChange: this.handleOrgNameChange
+    }
     const transportSplices = transportSplice.length ? transportSplice.map(item => ({
       ...item,
       label: item.chineseName,
       brief: item.englishName
+    })) : []
+    const orgSplices = orgSplice.length ? orgSplice.map(item => ({
+      ...item,
+      label: item.name,
+      brief: item.code
     })) : []
     return (
       <Screen
@@ -181,24 +224,16 @@ class TransportCreate extends PureComponent {
               moneyKeyboardWrapProps={moneyKeyboardWrapProps}
               extra='吨'
             ><span className={form.required}>*</span>载重吨</InputItem>
+            <ListItem
+              arrow='horizontal'
+              extra={fetchOrging ? <ActivityIndicator size='small'/> : logisticsProviderName ? logisticsProviderName : '请选择'}
+              onClick={() => this.handleShowOrgSearch(true)}
+            ><span className={form.required}>*</span>服务商</ListItem>
             <InputItem
-              {...getFieldProps('freePlace', {
-                rules: [
-                  { required: true, message: '请输入空闲地' }
-                ]
-              })}
+              {...getFieldProps('freePlace')}
               placeholder='请输入'
               clear
             >空闲地</InputItem>
-            <InputItem
-              {...getFieldProps('logisticsProvider', {
-                rules: [
-                  { required: true, message: '请输入服务商' }
-                ]
-              })}
-              placeholder='请输入'
-              clear
-            >服务商</InputItem>
           </List>
           <List renderHeader={() =>'联系'}>
             <InputItem
@@ -225,46 +260,30 @@ class TransportCreate extends PureComponent {
           </List>
           <List renderHeader={() =>'空闲日期'}>
             <DatePicker
-              {...getFieldProps('freeStartTime', {
-                rules: [
-                  { required: true, message: '请选择出运开始日期' }
-                ]
-              })}
+              {...getFieldProps('freeStartTime')}
               mode='date'
             >
-              <ListItem arrow='horizontal'><span className={form.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'>从</ListItem>
             </DatePicker>
             <DatePicker
-              {...getFieldProps('freeEndTime', {
-                rules: [
-                  { required: true, message: '请选择出运结束日期' }
-                ]
-              })}
+              {...getFieldProps('freeEndTime')}
               mode='date'
             >
-              <ListItem arrow='horizontal'><span className={form.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'有效期'}>
             <DatePicker
-              {...getFieldProps('validateTime', {
-                rules: [
-                  { required: true, message: '请选择生效日期' }
-                ]
-              })}
+              {...getFieldProps('validateTime')}
               mode='date'
             >
-              <ListItem arrow='horizontal'><span className={form.required}>*</span>从</ListItem>
+              <ListItem arrow='horizontal'>从</ListItem>
             </DatePicker>
             <DatePicker
-              {...getFieldProps('invalidateTime', {
-                rules: [
-                  { required: true, message: '请选择失效日期' }
-                ]
-              })}
+              {...getFieldProps('invalidateTime')}
               mode='date'
             >
-              <ListItem arrow='horizontal'><span className={form.required}>*</span>到</ListItem>
+              <ListItem arrow='horizontal'>到</ListItem>
             </DatePicker>
           </List>
           <List renderHeader={() =>'其他'}>
@@ -281,7 +300,7 @@ class TransportCreate extends PureComponent {
           <Button 
             type='primary' 
             onClick={this.handleSubmit}
-            disabled={createTransporting || hasError(getFieldsError())}
+            disabled={createTransporting || hasError(getFieldsError()) || logisticsProviderId < 0 || transportId < 0}
             loading={createTransporting}
           >提交</Button>
         </div>
@@ -292,6 +311,14 @@ class TransportCreate extends PureComponent {
           selectedValue={transportId}
           placeholder='请输入中文或者英文船名'
           { ...transportModalMethods }
+        />
+        <SearchModal
+          visible={orgVisible}
+          data={orgSplices}
+          value={logisticsProviderName}
+          selectedValue={logisticsProviderId}
+          placeholder='请输入组织名称'
+          { ...orgModalMethods }
         />
       </Screen>
     )

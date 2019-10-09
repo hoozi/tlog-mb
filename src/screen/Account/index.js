@@ -64,9 +64,9 @@ class Account extends Component {
             <ListItem arrow='horizontal' onClick={() => this.props.history.push('/product?type=keep')} thumb={<Icon type='shoucang' color='#f39927'/>}>我的收藏</ListItem>
           </List>
         </Authorized>
-        <List>
+        {/* <List>
           <ListItem arrow='horizontal' thumb={<Icon type='xiugaimima' color='#f15a4a'/>}>修改密码</ListItem>
-        </List>
+        </List> */}
       </LoginCheckArea>
     </Screen>
     )

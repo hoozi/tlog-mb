@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import {
   Grid,
   Icon,
-  ActivityIndicator,
   Flex,
   Toast,
   PullToRefresh
@@ -53,7 +52,7 @@ const menus = [{
 }, {
   icon: <Icon type='chaoxi' size='f' color='#f39927'/>,
   text: '潮汐信息',
-  url: ''
+  url: '/tide'
 }, {
   icon: <Icon type='dingdanchaxun' size='f' color={BRAND_COLOR}/>,
   text: '订单查询',
@@ -161,9 +160,7 @@ const IndexList = props => {
   const { data, loading, renderCard } = props;
   return (
     loading ? 
-    <div style={{minHeight: 128, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-      <ActivityIndicator text='加载中...'/>
-    </div>
+    <CenterLoading text='加载中...'/>
     : data.length ?
     <div className={styles.cardList}>
       {
