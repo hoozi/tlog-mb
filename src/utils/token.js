@@ -1,6 +1,7 @@
 const TOKENKEY = 'utoken';
 const ANYTOKENKEY = 'any_token_key';
 const USERKEY = 'save_user_object';
+const PERMISSIONKEY = 'user_permission';
 
 export function setToken(token) {
   window.sessionStorage.setItem(TOKENKEY, token);
@@ -23,7 +24,8 @@ export function removeAnyToken() {
 }
 
 export function setUser(user) {
-  window.sessionStorage.setItem(USERKEY, JSON.stringify(user));
+  setPermission(user.permissions)
+  window.sessionStorage.setItem(USERKEY, JSON.stringify(user.sysUser));
 }
 export function getUser() {
   const user = window.sessionStorage.getItem(USERKEY);
@@ -33,3 +35,13 @@ export function removeUser() {
   window.sessionStorage.removeItem(USERKEY);
 }
 
+export function setPermission(permissions) {
+  window.sessionStorage.setItem(PERMISSIONKEY, JSON.stringify(getPermission().length ? [...getPermission(), ...permissions] : permissions));
+}
+export function getPermission() {
+  const permissions = window.sessionStorage.getItem(PERMISSIONKEY);
+  return permissions ? JSON.parse(permissions) : [];
+}
+export function removePermission() {
+  window.sessionStorage.removeItem(PERMISSIONKEY);
+}

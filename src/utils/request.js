@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Toast } from 'antd-mobile';
 /* import store from '@/store/index';
 import router from '@/router'; */
-let serviceUrl = process.env.NODE_ENV === 'production' ? 'http://169.169.171.21:8080' : '';
+let serviceUrl = process.env.NODE_ENV === 'production' ? 'http://169.169.171.21' : '';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据',

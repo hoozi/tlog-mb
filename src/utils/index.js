@@ -5,7 +5,7 @@ import isString from 'lodash/isString';
 import isFunction from 'lodash/isFunction';
 import indexOf from 'lodash/indexOf';
 import store from '@/app/store';
-import { getUser } from './token';
+import { setPermission, getPermission } from './token';
 
 export function mapEffects(namespace, names) {
   const effects = {};
@@ -28,7 +28,12 @@ export function mapLoading(namespace, names) {
 
 export const hasError = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
-export const checkPermissions = (authorities, permissions=getUser().permissions) => {
+export const checkPermissions = (authorities, permissions=getPermission()) => {
+
+  if(typeof authorities === 'undefined') {
+    return true
+  }
+
   if (isEmpty(permissions)) {
     return true;
   }
@@ -42,7 +47,6 @@ export const checkPermissions = (authorities, permissions=getUser().permissions)
   }
 
   if (isString(authorities)) {
-    
     return indexOf(permissions, authorities) !== -1;
   }
 
@@ -52,3 +56,39 @@ export const checkPermissions = (authorities, permissions=getUser().permissions)
 
   throw new Error('Unsupport type of authorities.');
 };
+
+export const getButtonsByPermissions = (buttonMap, status) => {
+  const buttons = buttonMap[status];
+  return buttons.filter(item => {
+    return checkPermissions(item.authority);
+  });
+}
+
+export function getPermissionFromMenu(menu) {
+  return menu.map(m =>  m.id);
+}
+
+export function getMenu(menus) {
+  const permissions = menus.map(item => item.url);
+  setPermission(permissions)
+}
+ 
+const isIPhone = new RegExp('\\biPhone\\b|\\biPod\\b', 'i').test(window.navigator.userAgent);
+let wrapProps = {};
+if (isIPhone) {
+  wrapProps = {
+    onTouchStart: e => e.preventDefault(),
+  };
+}
+
+export { wrapProps };
+
+export function getMenuFromStorage(staticMenus) {
+  return getPermission().length ? staticMenus.map( item => {
+    if(getPermission().some(permission => permission === item.url)) {
+      return item;
+    } else {
+      return null
+    }
+  }).filter(item => item) : [];
+}

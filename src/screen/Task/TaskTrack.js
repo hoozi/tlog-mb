@@ -27,7 +27,8 @@ import CenterLoading from '@/component/CenterLoading';
 import { mapLoading, mapEffects, hasError } from '@/utils';
 import map from '@/style/map.less';
 import form from '@/style/form.less';
-import { FORM_ID } from '@/constants'
+import { FORM_ID } from '@/constants';
+import Authorized from '@/hoc/Authorized';
 import styles from './index.less';
 import startTag from '@/assets/start.png';
 import currentTag from '@/assets/current.png';
@@ -267,7 +268,6 @@ class TaskTrack extends Component {
     this.getTaskTrack();
   }
   componentDidMount() { 
-    console.log(this.props)
     this.getTaskTrack();
     this.props.fetchTrackNode();
     this.props.fetchRoute({}, data => {
@@ -394,9 +394,11 @@ class TaskTrack extends Component {
                 {({ style }) => (
                   <div style={{ ...style, zIndex: 10, backgroundColor: '#fff'}}>
                     <Tabs.DefaultTabBar {...props}/>
-                    <div className='pt16 pl16 pr16'>
-                      <Button size='small' className={styles.addNodes} onClick={() => this.handleModalVisible(true)}>添加节点</Button>
-                    </div>
+                    <Authorized authority='add_node'>
+                      <div className='pt16 pl16 pr16'>
+                        <Button size='small' className={styles.addNodes} onClick={() => this.handleModalVisible(true)}>添加节点</Button>
+                      </div>
+                    </Authorized>
                   </div>
                 )}
               </Sticky>

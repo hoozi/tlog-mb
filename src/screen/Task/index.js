@@ -79,13 +79,13 @@ class Task extends PureComponent {
       refreshing: true,
       current: this.current
     });
-    this.getTask({ current: 1, orderId}, this.callback);
+    this.getTask({ current: 1, orderId, operateType:'lastNode'}, this.callback);
   }
   handleEndReached = () => {
-    const { loading,  hasMore } = this.state;
+    const { loading,  hasMore, orderId } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.getTask({ current: ++this.current }, data => {
+    this.getTask({ current: ++this.current, orderId, operateType:'lastNode' }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -132,10 +132,12 @@ class Task extends PureComponent {
       '00': '未知',
       '10': '已创建',
       '20': '待配载',
+      '25': '配载中',
       '30': '已配载',
       '40': '待审核',
       '50': '执行中',
-      '90': '已完成'
+      '60': '已打回',
+      '90': '已完成|#6abf47'
     }
     return statusMap[item.status];
   }

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { createForm } from 'rc-form';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import Screen from '@/component/Screen';
+import loginBg from '@/assets/lbg.png';
 import styles from './index.less';
 
 const loginItemMap = [
@@ -86,7 +87,7 @@ class Login extends Component {
   render() {
     const { history, form: { getFieldDecorator, getFieldsError }, fetchTokening } = this.props;
     return (
-      <Screen className={styles.loginScreen}>
+      <Screen className={styles.loginScreen} style={{backgroundImage: `url(${loginBg})`}}>
         <Icon type='cross' onClick={() => history.goBack()} size='md' className={styles.loginClose}/>
         <div className={styles.loginBox}>
           <h1 className={styles.loginTitle}>用户登录</h1>

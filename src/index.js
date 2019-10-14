@@ -3,5 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.less';
 import App from './app/index';
 
-ReactDOM.render(App, document.getElementById('root'));
+function render() {
+  ReactDOM.render(App, document.getElementById('root'));
+}
 
+if(window.cordova) {
+  document.addEventListener('deviceready', render, false)
+} else {
+  render();
+}

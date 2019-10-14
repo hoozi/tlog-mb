@@ -159,7 +159,7 @@ class News extends PureComponent {
     )
   }
   render() {
-    const { refreshing, firstLoading, loading, needCache:{ ds, hasMore } } = this.state;
+    const { /* refreshing, */ firstLoading, loading, needCache:{ ds, hasMore } } = this.state;
     return (
       <Screen
         className={styles.newsScreen}
@@ -177,13 +177,11 @@ class News extends PureComponent {
           onEndReached={this.handleEndReached}
           onRefresh={this.handleRefresh}
           loading={loading}
-          useBodyScroll={false}
-          refreshing={refreshing}
           firstLoading={firstLoading}
-          contentContainerStyle={{minHeight: '100%'}}
           hasMore={hasMore}
           renderListCard = { this.renderListCard }
           onScroll={this.handleLsScroll}
+          pullToRefresh={false}
         />
       </Screen>
     )

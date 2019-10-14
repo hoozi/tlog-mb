@@ -15,6 +15,7 @@ import news from './models/news';
 import sock from './models/sock';
 import task from './models/task';
 import congestion from './models/congestion';
+import tide from './models/tide';
 
 const history = createHashHistory();
 
@@ -40,7 +41,8 @@ const store = init({
     news,
     sock,
     task,
-    congestion
+    congestion,
+    tide
   },
   redux,
   plugins: [loading]

@@ -126,10 +126,12 @@ class Order extends PureComponent {
       '00': '未知',
       '10': '已创建',
       '20': '待配载',
+      '25': '配载中',
       '30': '已配载',
       '40': '待审核',
       '50': '执行中',
-      '90': '已完成'
+      '60': '已打回',
+      '90': '已完成|#6abf47'
     }
     return statusMap[item.status];
   }
@@ -139,9 +141,11 @@ class Order extends PureComponent {
         <Link to={`/task?id=${item.id}`}>
           <span>物流任务</span>
         </Link>
-        <Link to={`/order-comment?id=${item.id}`} className={card.primary}>
-          <span>订单评价</span>
-        </Link>
+        { item.status === '90' ?
+          <Link to={`/order-comment?id=${item.id}`} className={card.primary}>
+            <span>订单评价</span>
+          </Link> : null
+        }
       </Flex>
     )
   }

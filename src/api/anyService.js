@@ -21,7 +21,7 @@ export default async function anyService(name, params){
       tenantid: 'next',
       user: '15869399274',
       password: '1234567',
-      accountId: '1542003592082020204',
+      accountId: '733974411840848896',
       logintype: '2'
     });
     token = response && response.state === 'success' ? response.data.access_token : '';

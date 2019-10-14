@@ -7,6 +7,7 @@ import {
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { ConnectedRouter } from 'connected-react-router';
 import { ActivityIndicator } from 'antd-mobile';
+import UpdateModal from '@/component/UpdateModal';
 import routesConfig from './routesConfig';
 import './screenTransition.css';
 const DEFAULT_SCREEN_CONFIG = {
@@ -55,9 +56,12 @@ const Routes = withRouter(({location, history}) => {
 export default class AppRouter extends PureComponent {
   render() {
     return (
-      <ConnectedRouter history={this.props.history}>
-        <Routes/>
-      </ConnectedRouter>
+      <>
+        { window.cordova && <UpdateModal/> }
+        <ConnectedRouter history={this.props.history}>
+          <Routes/>
+        </ConnectedRouter>
+      </>
     )
   }
 }

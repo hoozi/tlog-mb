@@ -21,6 +21,10 @@ const reducers = {
 
 const effects = dispatch => ({
   async fetchTransport(payload, rootState, callback) {
+    const { common: {orgs} } = rootState;
+    if(!orgs.length) {
+      await dispatch.common.fetchOrg()
+    }
     const response = await crudTransport({
       crudType: 'retrieve',
       current: 1,
@@ -28,6 +32,7 @@ const effects = dispatch => ({
       ...payload
     });
     if(!response) return;
+    
     this.save({...response.data});
     callback && callback(response.data);
   },

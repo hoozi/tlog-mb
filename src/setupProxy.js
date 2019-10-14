@@ -1,6 +1,6 @@
 const proxy = require('http-proxy-middleware');
 
-const proxyUrl = 'http://169.169.171.21:8080';//'https://www.easy-mock.com/mock/5d0858dd691f9b10af527bb8';
+const proxyUrl = 'http://169.169.171.21';//'https://www.easy-mock.com/mock/5d0858dd691f9b10af527bb8';
 const localPath = '/';
 
 const serviceList = [

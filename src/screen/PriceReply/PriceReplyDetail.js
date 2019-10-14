@@ -12,6 +12,7 @@ import BannerMask from '@/component/BannerMask';
 import CenterLoading from '@/component/CenterLoading';
 import Fields from '@/component/Fields';
 import { mapEffects, mapLoading, hasError } from '@/utils';
+import { getUser } from '@/utils/token';
 import styles from './index.less';
 import form from '@/style/form.less';
 import { BRAND_COLOR } from '@/constants/color';
@@ -28,6 +29,7 @@ if (isIPhone) {
 }
 const getInitialValue = (data, name, expressions='') => ( data.hasOwnProperty(name) ? (name === 'validDateTime' ? new Date(data[name].replace(/-/g, '/')) : data[name]) : expressions );
 const getQueryByName = (search, name) => parse(search.substring(1))[name];
+const currentUser = getUser();
 
 const mapStateToProps = ({priceReply, user}) => ({
   ...priceReply,
@@ -99,8 +101,7 @@ class PriceReplyDetail extends PureComponent {
   render(){
     const { 
       form: { getFieldProps, getFieldsError },
-      history, 
-      currentUser, 
+      history,  
       updatePriceReplying
     } = this.props;
     const { data, type, loading } = this.state;
@@ -252,7 +253,7 @@ class PriceReplyDetail extends PureComponent {
                       <InputItem
                         {
                           ...getFieldProps('contacts', {
-                            initialValue: getInitialValue(data, 'contacts', (!isEmpty(currentUser) ? currentUser.sysUser.username : '')),
+                            initialValue: getInitialValue(data, 'contacts', (!isEmpty(currentUser) ? currentUser.username : '')),
                             rules: [{ required: true, message: '请输入联系人' }]
                           })
                         }
@@ -261,7 +262,7 @@ class PriceReplyDetail extends PureComponent {
                       <InputItem
                         {
                           ...getFieldProps('phone', {
-                            initialValue: getInitialValue(data, 'phone', (!isEmpty(currentUser) ? currentUser.sysUser.phone : '')),
+                            initialValue: getInitialValue(data, 'phone', (!isEmpty(currentUser) ? currentUser.phone : '')),
                             rules: [{ required: true, message: '请输入联系电话' }]
                           })
                         }

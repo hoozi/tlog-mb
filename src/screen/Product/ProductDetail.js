@@ -11,6 +11,7 @@ import Fields from '@/component/Fields';
 import RouteCard from '@/component/RouteCard';
 import { mapEffects, mapLoading } from '@/utils';
 import { getToken } from '@/utils/token';
+import Authorized from '@/hoc/Authorized';
 import styles from './index.less';
 import Empty from '../../component/Empty';
 
@@ -78,7 +79,17 @@ class PriceReplyDetail extends PureComponent {
         title: '产品名称',
         dataIndex: 'productName',
         extra: data => {
-          return  productKeeping ? <ActivityIndicator size='small'/> : <span className={styles.keep} onClick={this.handleKeep}><Icon type={!isKeep ? 'shoucangxian' : 'shoucang'} size='xs'/>收藏</span>
+          return  (
+            <Authorized authority='keep_product'>
+              {
+                productKeeping ? 
+                <ActivityIndicator size='small'/> : 
+                <span className={styles.keep} onClick={this.handleKeep}>
+                  <Icon type={!isKeep ? 'shoucangxian' : 'shoucang'} size='xs'/>收藏
+                </span>
+              }
+            </Authorized>
+          )
         }
       },
       {

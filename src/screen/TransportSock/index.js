@@ -52,20 +52,21 @@ class WharfSock extends Component {
     self.point = new BMap.Point(params.point.lng, params.point.lat); // eslint-disable-line no-undef
     self.text = params.text;
     self.index = params.index;
+    self.extra = params.extra;
   }
   overlayInitialize = (self, map) => {
     self.map = map;
     const div = document.createElement('div');
     div.className = styles.ship;
-    const span = document.createElement('span');
-    span.className = 'loc-item'
-    span.dataset.index = self.index;
-    span.appendChild(document.createTextNode(self.text));
-    div.appendChild(span);
+    const text = document.createElement('div');
+    text.className = 'loc-item'
+    text.dataset.index = self.index;
+    text.innerHTML = `${self.text}<br/>${self.extra}`
+    div.appendChild(text);
     map.getPanes().labelPane.appendChild(div);
     div.addEventListener('touchstart', this.handleOverlaySelected, false)
     self.div = div;
-    self.span = span;
+    self.text = text;
     this.overlays.push(div);
     return div;
   }
@@ -74,7 +75,7 @@ class WharfSock extends Component {
     const pixel = map.pointToOverlayPixel(self.point);
     self.div.style.left = `${pixel.x-self.div.offsetWidth/2}px`;
     self.div.style.top = `${pixel.y-self.div.offsetHeight/2}px`;
-    self.span.style.marginLeft = `-${self.span.offsetWidth/2}px`
+    self.text.style.marginLeft = `-${self.text.offsetWidth/2}px`
   }
   handleShowModal = flag => {
     this.setState({
@@ -133,6 +134,10 @@ class WharfSock extends Component {
       {
         title: '实际离泊',
         dataIndex: 'actLevTime'
+      },
+      {
+        title: '备注',
+        dataIndex: 'notes'
       }
     ]
     return (
@@ -161,7 +166,8 @@ class WharfSock extends Component {
                       lng: item.longitude,
                       lat: item.latitude
                     },
-                    text: item.vesselExportEname,
+                    text: `运输工具: ${item.vesselExportEname}/${item.exportVoyage}`,
+                    extra:  `货物: ${item.cargoShortName},${item.feeWeight}吨`,
                     index
                   }}
                   {...createOverlayMethods}
