@@ -13,7 +13,8 @@ const state = {
 
 const reducers = {
   save(state, payload) {
-    return Object.assign(state, payload)
+    const recordList = state.recordList.length?[...state.recordList, ...payload.recordList] : payload.recordList;
+    return Object.assign(state, {...payload, recordList})
   }
 }
 

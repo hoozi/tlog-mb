@@ -8,7 +8,6 @@ import {
 } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { StickyContainer, Sticky } from 'react-sticky';
 import moment from 'moment';
 import Screen from '@/component/Screen';
 import BannerMask from '@/component/BannerMask';
@@ -282,51 +281,33 @@ class Home extends PureComponent {
               </LoginCheckArea>
             </div>
           </div>
-          <StickyContainer className={styles.indexCard}>
-            <Sticky>
-              {
-                ({style}) => (
-                  <div className={styles.indexCardHeader}>
-                    <h2 className={styles.indexCardTitle}><span>物流产品</span></h2>
-                    <Link to='/product?type=any'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
-                  </div>
-                )
-              }
-            </Sticky>
+          <div className={styles.indexCard}>
+            <div className={styles.indexCardHeader}>
+              <h2 className={styles.indexCardTitle}><span>物流产品</span></h2>
+              <Link to='/product?type=any'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+            </div>    
             <div className={styles.indexCardBody}>
               <IndexList renderCard={item => <ProductCard history={history} key={item.id} item={item}/>} data={productList} loading={!refreshing && fetchProducting}/>
             </div>
-          </StickyContainer>
-          <StickyContainer className={styles.indexCard}>
-            <Sticky>
-              {
-                ({style}) => (
-                  <div className={styles.indexCardHeader}>
-                    <h2 className={styles.indexCardTitle}><span>货盘信息</span></h2>
-                    <Link to='/cargo?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
-                  </div>
-                )
-              }
-            </Sticky>
+          </div>
+          <div className={styles.indexCard}>
+            <div className={styles.indexCardHeader}>
+              <h2 className={styles.indexCardTitle}><span>货盘信息</span></h2>
+              <Link to='/cargo?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+            </div>
             <div className={styles.indexCardBody}>
               <IndexList renderCard={item => <CargoCard key={item.id} item={item}/>} data={cargoList} loading={!refreshing && fetchAnyCargoing}/>
             </div>
-          </StickyContainer>
-          <StickyContainer className={styles.indexCard}>
-            <Sticky>
-              {
-                ({style}) => (
-                  <div className={styles.indexCardHeader}>
-                    <h2 className={styles.indexCardTitle}><span>运力信息</span></h2>
-                    <Link to='/transport?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
-                  </div>
-                )
-              }
-            </Sticky>
+          </div>
+          <div className={styles.indexCard}>
+            <div className={styles.indexCardHeader}>
+              <h2 className={styles.indexCardTitle}><span>运力信息</span></h2>
+              <Link to='/transport?type=more'><span>更多</span><Icon type='xiayiyeqianjinchakangengduo' color='#a4a9b0' size='xxs'/></Link>
+            </div>        
             <div className={styles.indexCardBody}>
               <IndexList renderCard={item => <TransportCard key={item.id} item={item}/>} data={transportList} loading={!refreshing && fetchAnyTransporting}/>
             </div>
-          </StickyContainer>
+          </div>
         </Screen>
         
       </PullToRefresh>

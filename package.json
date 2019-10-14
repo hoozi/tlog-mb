@@ -22,15 +22,13 @@
     "react": "^16.9.0",
     "react-baidu-maps": "^1.0.8",
     "react-dom": "^16.8.6",
-    "react-reconciler": "^0.21.0",
     "react-redux": "^7.1.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "react-sticky": "^6.0.3",
     "react-transition-group": "^4.1.1",
-    "redux": "^4.0.1",
-    "simple-cache-provider": "^0.10.0"
+    "redux": "^4.0.1"
   },
   "scripts": {
     "start": "react-app-rewired start",
