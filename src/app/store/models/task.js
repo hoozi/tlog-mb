@@ -42,9 +42,9 @@ const effects = {
   async fetchRoute(payload, rootState, callback) {
     const response = await queryRoute({
       crudType: 'retrieve',
-      beginTime: '2019-09-24 00:00:00',
-      endTime: '2019-09-30 00:00:00',
-      mmsi: '413620690',
+      beginTime: '2019-10-01 00:00:00',
+      endTime: '2019-10-15 00:00:00',
+      mmsi: '414402630',
       ...payload
     });
     if(!response) return;

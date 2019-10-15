@@ -132,10 +132,24 @@ class Transport extends PureComponent {
     });
   }
   showActionSheet(item) {
-    const blackList = [10, 20, 30, 70, 90];
+    const blackList = [20, 30, 70, 90];
     const { status, id } = item;
-    if(this.type === 'more' || indexOf(blackList, +status) !== -1 || !checkPermissions(['transport','transport_invalid'])) return;
+    if(
+      this.type === 'more' || 
+      indexOf(blackList, +status) !== -1 || 
+      !checkPermissions(['transport_check','transport_invalid','transport_upload'])
+    ) return;
     const buttonMap = {
+      10: [
+        {
+          code: '20',
+          button: <span style={{color: '#3c73f0'}}>上报</span>,
+          authority: 'transport_upload'
+        },
+        {
+          button: '取消'
+        }
+      ],
       40: [
         {
           code: '60',
@@ -179,6 +193,7 @@ class Transport extends PureComponent {
     }
     const currentButtons = getButtonsByPermissions(buttonMap, status);
     const names = currentButtons.map(item => item.button);
+    if(names.length === 1) return;
     ActionSheet.showActionSheetWithOptions({
       options: names,
       cancelButtonIndex: names.length - 1,
