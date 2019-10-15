@@ -5,7 +5,7 @@ import { parse } from 'qs';
 import Screen from '@/component/Screen';
 import { mapEffects } from '@/utils';
 import StandardList from '@/component/StandardList';
-import list from '@/style/list.less';
+import list from '@/style/list.module.less';
 
 const mapStateToProps = ({ sock }) => {
   return {

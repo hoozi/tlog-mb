@@ -6,7 +6,7 @@ import Screen from '@/component/Screen';
 import RouteName from '@/component/RouteName';
 import StandardList from '@/component/StandardList';
 import { mapEffects } from '@/utils';
-import list from '@/style/list.less';
+import list from '@/style/list.module.less';
 
 const mapStateToProps = ({ product }) => {
   return {

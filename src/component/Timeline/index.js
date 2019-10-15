@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styles from './index.less';
+import styles from './index.module.less';
 import TimelineItem from './TimelineItem';
 
 export default class Timeline extends Component {

@@ -1,6 +1,6 @@
 import React, {forwardRef} from 'react';
 import { Flex } from 'antd-mobile';
-import styles from './index.less';
+import styles from './index.module.less';
 
 export default forwardRef(({from, to, ...props}, ref) => (
   <div className={styles.routeCard} {...props} ref={ref}>

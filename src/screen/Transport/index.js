@@ -10,7 +10,7 @@ import Screen from '@/component/Screen';
 import { getToken } from '@/utils/token';
 import StandardList from '@/component/StandardList';
 import { mapEffects, mapLoading, checkPermissions, getButtonsByPermissions } from '@/utils';
-import list from '@/style/list.less';
+import list from '@/style/list.module.less';
 import color from '@/constants/color';
 
 const { tabsStyle } = color;

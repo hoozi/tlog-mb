@@ -14,7 +14,7 @@ import Screen from '@/component/Screen';
 import Empty from '@/component/Empty';
 import CenterLoading from '@/component/CenterLoading';
 import { mapLoading, mapEffects } from '@/utils';
-import styles from './index.less';
+import styles from './index.module.less';
 import TideCard from './TideCard';
 
 const RadioItem = Radio.RadioItem;

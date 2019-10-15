@@ -7,8 +7,8 @@ import StandardList from '@/component/StandardList';
 import RouteName from '@/component/RouteName';
 import { Link } from 'react-router-dom';
 import { mapEffects, mapLoading } from '@/utils';
-import card from '@/style/card.less';
-import list from '@/style/list.less';
+import card from '@/style/card.module.less';
+import list from '@/style/list.module.less';
 
 const mapStateToProps = ({ task }) => {
   return {

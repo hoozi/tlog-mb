@@ -8,7 +8,7 @@ import Empty from '@/component/Empty';
 import CenterLoading from '@/component/CenterLoading';
 import Screen from '@/component/Screen';
 import { mapEffects, mapLoading } from '@/utils';
-import styles from './index.less';
+import styles from './index.module.less';
 
 const mapStateToProps = (({congestion}) => ({
   ...congestion,

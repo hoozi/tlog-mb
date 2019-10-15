@@ -13,7 +13,7 @@ import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
 import RouteCard from '@/component/RouteCard';
 import { mapEffects, mapLoading, hasError } from '@/utils';
-import form from '@/style/form.less';
+import form from '@/style/form.module.less';
 
 const ListItem = List.Item;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon, Flex } from 'antd-mobile';
 import { BRAND_COLOR } from '@/constants/color';
-import styles from './index.less';
+import styles from './index.module.less';
 
 export default ({className = '', extra = '', ...props}) => (
   <Flex justify='between' className={`${styles.routeContainer} ${className}`}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import card from '@/style/card.less';
+import card from '@/style/card.module.less';
 
 export default props => {
   const { 

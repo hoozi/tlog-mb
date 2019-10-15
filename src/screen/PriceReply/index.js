@@ -9,7 +9,7 @@ import Screen from '@/component/Screen';
 import StandardList from '@/component/StandardList';
 import RouteName from '@/component/RouteName';
 import { mapEffects, mapLoading } from '@/utils';
-import list from '@/style/list.less';
+import list from '@/style/list.module.less';
 import color from '@/constants/color';
 
 const { tabsStyle } = color;

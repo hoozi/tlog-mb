@@ -17,8 +17,8 @@ import Debounce from 'lodash-decorators/debounce';
 import Screen from '@/component/Screen';
 import SearchModal from '@/component/SearchModal';
 import { mapEffects, mapLoading, hasError } from '@/utils';
-import styles from './index.less';
-import form from '@/style/form.less';
+import styles from './index.module.less';
+import form from '@/style/form.module.less';
 import { getUser } from '@/utils/token';
 
 const ListItem = List.Item;

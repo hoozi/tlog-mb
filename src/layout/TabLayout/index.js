@@ -3,7 +3,7 @@ import { TabBar, Icon } from 'antd-mobile';
 //import { connect } from 'react-redux';
 import isEmpty from 'lodash/isEmpty';
 import color from '../../constants/color';
-import styles from './index.less';
+import styles from './index.module.less';
 import withCache from '@/hoc/withCache';
 import Home from '@/screen/Home';
 import News from '@/screen/News';

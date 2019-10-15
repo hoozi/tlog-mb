@@ -7,7 +7,7 @@ import Debounce from 'lodash-decorators/debounce';
 import Screen from '@/component/Screen';
 import { mapEffects, mapLoading } from '@/utils';
 import StandardList from '@/component/StandardList';
-import styles from './index.less';
+import styles from './index.module.less';
 import withCache from '@/hoc/withCache';
 import emptyImg from '@/assets/nopic.svg';
 

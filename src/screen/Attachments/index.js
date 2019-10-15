@@ -7,7 +7,7 @@ import Empty from '@/component/Empty';
 import Screen from '@/component/Screen';
 import { mapLoading, mapEffects } from '@/utils';
 import { FORM_ID } from '@/constants';
-import styles from './index.less';
+import styles from './index.module.less';
 
 const B2MB = 1024 * 1024;
 

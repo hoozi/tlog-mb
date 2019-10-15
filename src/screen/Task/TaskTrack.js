@@ -25,11 +25,11 @@ import Screen from '@/component/Screen';
 import Empty from '@/component/Empty';
 import CenterLoading from '@/component/CenterLoading';
 import { mapLoading, mapEffects, hasError } from '@/utils';
-import map from '@/style/map.less';
-import form from '@/style/form.less';
+import map from '@/style/map.module.less';
+import form from '@/style/form.module.less';
 import { FORM_ID } from '@/constants';
 import Authorized from '@/hoc/Authorized';
-import styles from './index.less';
+import styles from './index.module.less';
 import startTag from '@/assets/start.png';
 import currentTag from '@/assets/current.png';
 

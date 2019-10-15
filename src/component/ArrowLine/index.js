@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './index.less';
+import styles from './index.module.less';
 
 export default props => (
   <div className={`${styles.iconArrow} ${props.className || ''}`} style={{width: (props.num-1)*12+16}}>

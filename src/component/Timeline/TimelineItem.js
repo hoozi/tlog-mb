@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './index.less';
+import styles from './index.module.less';
 
 export default props => {
   const date = props.time ? props.time.split(' ') : [];

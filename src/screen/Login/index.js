@@ -5,7 +5,7 @@ import { createForm } from 'rc-form';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import Screen from '@/component/Screen';
 import loginBg from '@/assets/lbg.png';
-import styles from './index.less';
+import styles from './index.module.less';
 
 const loginItemMap = [
   {

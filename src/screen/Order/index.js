@@ -6,9 +6,9 @@ import StandardList from '@/component/StandardList';
 import RouteName from '@/component/RouteName';
 import { Link } from 'react-router-dom';
 import { mapEffects, mapLoading } from '@/utils';
-import styles from './index.less';
-import list from '@/style/list.less';
-import card from '@/style/card.less';
+import styles from './index.module.less';
+import list from '@/style/list.module.less';
+import card from '@/style/card.module.less';
 
 const mapStateToProps = ({ order }) => {
   return {

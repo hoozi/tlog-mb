@@ -13,8 +13,8 @@ import CenterLoading from '@/component/CenterLoading';
 import Fields from '@/component/Fields';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import { getUser } from '@/utils/token';
-import styles from './index.less';
-import form from '@/style/form.less';
+import styles from './index.module.less';
+import form from '@/style/form.module.less';
 import { BRAND_COLOR } from '@/constants/color';
 import Empty from '../../component/Empty';
 

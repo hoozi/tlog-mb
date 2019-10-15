@@ -6,7 +6,7 @@ import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
 import Empty from '@/component/Empty';
 import { mapEffects, mapLoading } from '@/utils';
-import styles from './index.less';
+import styles from './index.module.less';
 
 const typeMap = {
   "X": "公司新闻",

@@ -3,7 +3,7 @@ import { NavBar } from 'antd-mobile';
 import Screen from '@/component/Screen';
 
 import Empty from '@/component/Empty';
-import styles from './index.less';
+import styles from './index.module.less';
 /* 
 const mapStateToProps = ({ news }) => {
   return {

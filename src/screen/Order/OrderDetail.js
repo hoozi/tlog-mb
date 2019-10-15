@@ -9,7 +9,7 @@ import Empty from '@/component/Empty';
 import Screen from '@/component/Screen';
 import Fields from '@/component/Fields';
 import RouteCard from '@/component/RouteCard';
-import form from '@/style/form.less';
+import form from '@/style/form.module.less';
 
 const STATUS_MAP = {
   '00': '未知',

@@ -15,7 +15,7 @@ import RouteName from '@/component/RouteName';
 import Empty from '@/component/Empty';
 import StandardCard from '@/component/StandardCard';
 import CenterLoading from '@/component/CenterLoading';
-import styles from './index.less';
+import styles from './index.module.less';
 import { mapEffects, mapLoading, getMenuFromStorage } from '@/utils';
 import { BRAND_COLOR } from '@/constants/color';
 import LoginCheckArea from '@/hoc/LoginCheckArea';

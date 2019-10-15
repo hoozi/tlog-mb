@@ -6,7 +6,7 @@ import Fields from '@/component/Fields';
 import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
 import { mapLoading, mapEffects } from '@/utils';
-import styles from '@/style/map.less';
+import styles from '@/style/map.module.less';
 
 const mapStateToProps = ({ sock }) => {
   return {

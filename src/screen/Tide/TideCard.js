@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Chart, Axis, Geom, Tooltip } from 'bizgoblin';
 import { Icon } from 'antd-mobile';
-import styles from './index.less';
+import styles from './index.module.less';
 import Empty from '@/component/Empty';
 import { BRAND_COLOR } from '@/constants/color';
 

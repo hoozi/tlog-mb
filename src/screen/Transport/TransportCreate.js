@@ -18,7 +18,7 @@ import Screen from '@/component/Screen';
 import Debounce from 'lodash-decorators/debounce';
 import SearchModal from '@/component/SearchModal';
 import { mapEffects, mapLoading, hasError } from '@/utils';
-import form from '@/style/form.less';
+import form from '@/style/form.module.less';
 import { getUser } from '@/utils/token';
 
 const userOrgId = getUser().orgId;

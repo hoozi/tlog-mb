@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, SearchBar, List, Radio } from 'antd-mobile';
 import Empty from '@/component/Empty';
 import CenterLoading from '@/component/CenterLoading';
-import styles from './index.less';
+import styles from './index.module.less';
 
 const RadioItem = Radio.RadioItem;
 const ListItem = List.Item;

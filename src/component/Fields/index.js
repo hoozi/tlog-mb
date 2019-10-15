@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, ActivityIndicator, Flex } from 'antd-mobile';
 import isEmpty from 'lodash/isEmpty';
-import form from '@/style/form.less';
+import form from '@/style/form.module.less';
 import Empty from '../Empty';
 
 const ListItem = List.Item;

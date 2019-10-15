@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Screen from '@/component/Screen';
 import LoginCheckArea from '@/hoc/LoginCheckArea';
-import styles from './index.less';
+import styles from './index.module.less';
 import avatar from '@/assets/avatar.png';
 import Authorized from '@/hoc/Authorized';
 import { getUser, getToken } from '@/utils/token';

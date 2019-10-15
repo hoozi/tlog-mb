@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import { Modal, Button, Progress, Toast } from 'antd-mobile';
-import styles from './index.less';
+import styles from './index.module.less';
 import updateBg from '@/assets/updatebg.png';
 
 function closest(el, selector) {

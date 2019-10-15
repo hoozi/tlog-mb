@@ -11,7 +11,7 @@ import RouteName from '@/component/RouteName';
 import { mapEffects, mapLoading, checkPermissions, getButtonsByPermissions } from '@/utils';
 import StandardList from '@/component/StandardList';
 
-import list from '@/style/list.less';
+import list from '@/style/list.module.less';
 import color from '@/constants/color';
 
 const { tabsStyle } = color;

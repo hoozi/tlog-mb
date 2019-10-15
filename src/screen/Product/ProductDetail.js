@@ -12,7 +12,7 @@ import RouteCard from '@/component/RouteCard';
 import { mapEffects, mapLoading } from '@/utils';
 import { getToken } from '@/utils/token';
 import Authorized from '@/hoc/Authorized';
-import styles from './index.less';
+import styles from './index.module.less';
 import Empty from '../../component/Empty';
 
 const ListItem = List.Item;
