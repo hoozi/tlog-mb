@@ -325,7 +325,7 @@ class TaskTrack extends Component {
   render(){
     // eslint-disable-next-line
     const { 
-      task: {recordList, nodes, route}, 
+      task: {taskNodes, nodes, route}, 
       form, 
       fetchTaskTracking, 
       fetchUploadKeying, 
@@ -335,7 +335,7 @@ class TaskTrack extends Component {
       fetchRouteing, 
       bindFileing 
     } = this.props;
-    const tracks = recordList.filter(item => item.nodeTypeName);
+    const tracks = taskNodes.filter(item => item.nodeTypeName);
     const mainNodes = nodes.filter(item => item.keyNode === 'true');
     const polyline = route.length ? route.map(item => ({
       lng: item.lon,

@@ -2,10 +2,6 @@ const { override, fixBabelImports, addLessLoader, addWebpackAlias, addBabelPlugi
 const { resolve } = require('path');
 
 module.exports = override(
-  fixBabelImports('import', {
-    libraryName: 'antd-mobile',
-    style: true,
-  }),
   addBabelPlugins([
     "@babel/plugin-proposal-decorators",
     {
@@ -27,5 +23,9 @@ module.exports = override(
         publicPath: process.env.NODE_ENV === 'production' ? '' : '/'
       }
     }
-  }
+  },
+  fixBabelImports('import', {
+    libraryName: 'antd-mobile',
+    style: true
+  })
 );

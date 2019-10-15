@@ -9,6 +9,7 @@ const state = {
   pageCount: 0,
   recordCount: 0,
   recordList: [],
+  taskNodes: [],
   size: 10,
   nodes: [],
   node: {},
@@ -17,7 +18,9 @@ const state = {
 
 const reducers = {
   save(state, payload) {
-    const recordList = state.recordList.length?[...state.recordList, ...payload.recordList] : payload.recordList;
+    const recordList = state.recordList.length ? 
+        [...state.recordList, ...payload.recordList] : 
+        payload.recordList;
     return Object.assign(state, {...payload, recordList})
   }
 }
@@ -46,7 +49,8 @@ const effects = {
     });
     if(!response) return;
     this.save({
-      route: [...response.data]
+      route: [...response.data],
+      recordList: []
     });
     callback && callback(response.data);
   },
@@ -58,7 +62,10 @@ const effects = {
       ...payload
     });
     if(!response) return;
-    this.save({...response.data});
+    this.save({
+      taskNodes:response.data.recordList,
+      recordList: []
+    });
     callback && callback(response.data);
   },
   async fetchTrackNode(payload, rootState, callback) {
@@ -67,7 +74,7 @@ const effects = {
       ...payload
     });
     if(!response) return;
-    this.save(isArray(response.data) ? {nodes: [...response.data]} : {node: {...response.data}});
+    this.save(isArray(response.data) ? {nodes: [...response.data],recordList: []} : {node: {...response.data},recordList: []});
     callback && callback(response.data);
   },
   async editNode(payload, rootState, callback) {
