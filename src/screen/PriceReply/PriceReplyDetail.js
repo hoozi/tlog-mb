@@ -1,5 +1,16 @@
 import React,{ PureComponent } from 'react';
-import { NavBar, Icon, Flex, List, Toast, InputItem, TextareaItem, DatePicker, Button } from 'antd-mobile';
+import { 
+  NavBar, 
+  Icon, 
+  Flex, 
+  List, 
+  Toast, 
+  InputItem, 
+  TextareaItem, 
+  DatePicker, 
+  Button, 
+  ActivityIndicator
+} from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { createForm } from 'rc-form';
@@ -11,12 +22,12 @@ import Screen from '@/component/Screen';
 import BannerMask from '@/component/BannerMask';
 import CenterLoading from '@/component/CenterLoading';
 import Fields from '@/component/Fields';
+import MultiplePicker from '@/component/MultiplePicker';
 import { mapEffects, mapLoading, hasError } from '@/utils';
 import { getUser } from '@/utils/token';
 import styles from './index.module.less';
 import form from '@/style/form.module.less';
-import { BRAND_COLOR } from '@/constants/color';
-import Empty from '../../component/Empty';
+import Empty from '@/component/Empty';
 
 const ListItem = List.Item;
 //updatePriceReply
@@ -27,19 +38,28 @@ if (isIPhone) {
     onTouchStart: e => e.preventDefault(),
   };
 }
-const getInitialValue = (data, name, expressions='') => ( data.hasOwnProperty(name) ? (name === 'validDateTime' ? new Date(data[name].replace(/-/g, '/')) : data[name]) : expressions );
+const getInitialValue = (data, name, expressions='') => {
+  return (data.hasOwnProperty(name) && data[name]) ? (name === 'validDateTime' ? new Date(data[name].replace(/-/g, '/')) : data[name]) : expressions;
+}
 const getQueryByName = (search, name) => parse(search.substring(1))[name];
 const currentUser = getUser();
 
-const mapStateToProps = ({priceReply, user}) => ({
+const mapStateToProps = ({priceReply, user, transport}) => ({
+  transport,
   ...priceReply,
   ...user,
   ...mapLoading('priceReply',{
     updatePriceReplying: 'updatePriceReply'
+  }),
+  ...mapLoading('transport',{
+    fetchTransporting: 'fetchTransport'
   })
 })
 
-const mapDispatchToProps = ({priceReply}) => mapEffects(priceReply, ['updatePriceReply'])
+const mapDispatchToProps = ({priceReply, transport}) => ({
+  ...mapEffects(transport, ['fetchTransport']),
+  ...mapEffects(priceReply, ['updatePriceReply'])
+})
 
 @connect(mapStateToProps,mapDispatchToProps)
 @createForm()
@@ -50,7 +70,8 @@ class PriceReplyDetail extends PureComponent {
       id: 0,
       type: 0,
       loading: true,
-      data: {}
+      data: {},
+      loadList: []
     }
   }
   componentDidMount() {
@@ -73,10 +94,21 @@ class PriceReplyDetail extends PureComponent {
       loading: false
     }, () => {
       this.props.form.validateFields();
+    });
+    this.props.fetchTransport({
+      operateType: 'queryByName',
+      current: null,
+      size: null
+    })
+  }
+  handleTransportChange = values => {
+    this.setState({
+      loadList: values.map(item => item.loadWeight)
     })
   }
   handleSubmit = () => {
     const { form: { validateFields, resetFields } } = this.props;
+    const { loadList } = this.state;
     validateFields((errors, values) => {
       if(errors) {
         Object.keys(errors).forEach(key => {
@@ -85,15 +117,18 @@ class PriceReplyDetail extends PureComponent {
         return;
       } else {
         const validDateTime = moment(values.validDateTime).format('YYYY-MM-DD');
+        const transportList = values.transportList.map(item => item.id);
         this.props.updatePriceReply({
           ...this.state.data,
           ...values,
-          validDateTime
+          validDateTime,
+          transportList,
+          loadList
         },() => {
           resetFields();
-         /*  this.setState({
-            
-          }) */
+          this.setState({
+            loadList: []
+          })
         })
       }
     })
@@ -101,10 +136,17 @@ class PriceReplyDetail extends PureComponent {
   render(){
     const { 
       form: { getFieldProps, getFieldsError },
+      transport: {recordList},
       history,  
-      updatePriceReplying
+      updatePriceReplying,
+      fetchTransporting
     } = this.props;
-    const { data, type, loading } = this.state;
+    const { data, type, loading, loadList } = this.state;
+    const transports = recordList.map(item => ({
+      ...item,
+      label: item.transportName,
+      value: item.id
+    }))
     const columns = [
       {
         title: '运力名称',
@@ -201,28 +243,23 @@ class PriceReplyDetail extends PureComponent {
                 <>
                   <div className={form.createForm}>
                     <List renderHeader={() => '基本信息'}>
-                      <InputItem
+                      <MultiplePicker
+                        arrow='horizontal'
+                        title='选择运力'
                         {
-                          ...getFieldProps('transport', {
-                            initialValue: getInitialValue(data, 'transport'),
-                            rules: [{ required: true, message: '请输入运力名称' }]
+                          ...getFieldProps('transportList', {
+                            initialValue: getInitialValue(data, 'transportList'),
+                            rules: [{ required: true, message: '请选择运力' }],
+                            onChange: this.handleTransportChange
                           })
                         }
-                        placeholder='请输入(多个名称用","分格)'
-                        clear
-                        extra={<Icon type='search' size='xs' color={BRAND_COLOR}/>}
-                      ><span className={form.required}>*</span>运力名称</InputItem>
-                      <InputItem
-                        {
-                          ...getFieldProps('load', {
-                            initialValue: getInitialValue(data, 'load'),
-                            rules: [{ required: true, message: '请输入载重吨' }]
-                          })
-                        }
-                        placeholder='请输入'
-                        clear
-                        extra='吨'
-                      ><span className={form.required}>*</span>载重吨</InputItem>
+                        data={transports}
+                        extra={fetchTransporting ? <ActivityIndicator size='small'/> : '请选择运力，支持多选'}
+                      >
+                        <span className={form.required}>*</span>运力名称
+                      </MultiplePicker>
+                      
+                      <ListItem extra={loadList.length ? loadList.join(',') : <><Icon type='xinxi' size='xs' style={{verticalAlign: 'middle', margin:'-2px 2px 0 0'}}/>载重吨从运力名称中自动带出</>}><span className={form.required}>*</span>载重吨</ListItem>
                       <InputItem
                         {
                           ...getFieldProps('quotedPrice', {
@@ -253,7 +290,7 @@ class PriceReplyDetail extends PureComponent {
                       <InputItem
                         {
                           ...getFieldProps('contacts', {
-                            initialValue: getInitialValue(data, 'contacts', (!isEmpty(currentUser) ? currentUser.username : '')),
+                            initialValue: getInitialValue(data, 'contacts', currentUser.username),
                             rules: [{ required: true, message: '请输入联系人' }]
                           })
                         }
@@ -262,7 +299,7 @@ class PriceReplyDetail extends PureComponent {
                       <InputItem
                         {
                           ...getFieldProps('phone', {
-                            initialValue: getInitialValue(data, 'phone', (!isEmpty(currentUser) ? currentUser.phone : '')),
+                            initialValue: getInitialValue(data, 'phone', currentUser.phone),
                             rules: [{ required: true, message: '请输入联系电话' }]
                           })
                         }
@@ -287,7 +324,7 @@ class PriceReplyDetail extends PureComponent {
                     <Button 
                       type='primary' 
                       onClick={this.handleSubmit}
-                      disabled={updatePriceReplying || hasError(getFieldsError())}
+                      disabled={updatePriceReplying || hasError(getFieldsError()) || !loadList.length}
                       loading={updatePriceReplying}
                     >提交</Button>
                   </div>

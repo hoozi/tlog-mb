@@ -2,6 +2,7 @@ import anyService from '@/api/anyService';
 import { crudTransport } from '@/api/transport';
 import { push } from 'connected-react-router';
 import { Toast } from 'antd-mobile';
+import isArray from 'lodash/isArray';
 
 const state = {
   beginPageIndex: 1,
@@ -32,8 +33,8 @@ const effects = dispatch => ({
       ...payload
     });
     if(!response) return;
-    
-    this.save({...response.data});
+    const params = isArray(response.data) ? { recordList: response.data } : { ...response.data }
+    this.save({...params});
     callback && callback(response.data);
   },
   async fetchAnyTransport(payload, rootState, callback) {

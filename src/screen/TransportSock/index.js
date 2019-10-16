@@ -83,8 +83,11 @@ class WharfSock extends Component {
     })
   }
   handleOverlaySelected = e => {
+    const target = e.target;
     const { sock: { list } } = this.props;
-    const transportIndex = e.target.dataset.index;
+    const transportIndex = target.dataset.index;
+    let zIndex = target.style.zIndex || 1;
+    target.style.zIndex = ++zIndex;
     this.handleShowModal(true);
     this.setState({
       detail: list[transportIndex]
