@@ -9,7 +9,7 @@ const CheckboxItem = Checkbox.CheckboxItem;
 export default class MultiplePicker extends Component {
   state = {
     visible: false,
-    selected: this.props.value.filter(item => item) || []
+    selected: []
   }
   handleShowPicker = flag => {
     this.setState({
@@ -24,11 +24,11 @@ export default class MultiplePicker extends Component {
   handleOk = () => {
     const { selected } = this.state;
     this.handleShowPicker();
-    this.props.onChange && this.props.onChange(selected)
+    this.props.onChange && this.props.onChange(selected.map(item => ({...item})))
   }
   render() {
     const { data=[], value, title='', extra='' } = this.props
-    const { visible } = this.state;
+    const { visible, selected } = this.state;
     const _value = value.filter(item => item);
     return (
       <>
@@ -48,7 +48,7 @@ export default class MultiplePicker extends Component {
           <List style={{height: 238, overflowY: 'auto'}}>
             {
               data.map(item => (
-                <CheckboxItem defaultChecked={includes(this.props.value.map(item=>item.value), item.value)} key={item.value} onChange={() => this.handleChange(item)}>{item.label}</CheckboxItem>
+                <CheckboxItem defaultChecked={includes(selected.map(item=>item.value), item.value)} key={item.value} onChange={() => this.handleChange(item)}>{item.label}</CheckboxItem>
               ))
             }
           </List>

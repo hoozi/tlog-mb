@@ -118,11 +118,13 @@ class PriceReplyDetail extends PureComponent {
       } else {
         const validDateTime = moment(values.validDateTime).format('YYYY-MM-DD');
         const transportList = values.transportList.map(item => item.id);
+        const transportNameList = values.transportList.map(item => item.transportName);
         this.props.updatePriceReply({
           ...this.state.data,
           ...values,
           validDateTime,
           transportList,
+          transportNameList,
           loadList
         },() => {
           resetFields();
