@@ -56,12 +56,9 @@ if (isIPhone) {
 @createForm()
 class TransportCreate extends PureComponent {
   state = {
-    transportName: '',
-    transportVisible: false,
-    transportId: -1,
     logisticsProviderId: -1,
     logisticsProviderName: '',
-    orgVisible: false
+    transportName: ''
   }
   componentDidMount() {
     const { form:{setFieldsValue} } = this.props
@@ -106,16 +103,6 @@ class TransportCreate extends PureComponent {
       }
     })
   }
-  handleShowTransportSearch = flag => {
-    this.setState({
-      transportVisible: !!flag
-    })
-  }
-  handleShowOrgSearch = flag => {
-    this.setState({
-      orgVisible: !!flag
-    })
-  }
   @Debounce(200)
   handleTransportSearchChange = name => {
     this.props.findTransports({name});
@@ -125,10 +112,9 @@ class TransportCreate extends PureComponent {
     this.props.findOrgs({name});
   }
   handleTransportNameChange = (value, data) => {
-    const { id:transportId, chineseName:transportName, vesselLoadWeight:loadWeight } = data;
+    const { chineseName:transportName, vesselLoadWeight:loadWeight } = data;
     this.props.form.setFieldsValue({loadWeight})
     this.setState({
-      transportId,
       transportName
     });
   }

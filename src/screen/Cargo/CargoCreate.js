@@ -49,11 +49,8 @@ class CargoCreate extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      visibleSearchModal: false,
       cargo:{
-        cargoId: -1,
-        cargoChineseName: '',
-        selectedCargoType: -1
+        cargoChineseName: ''
       },
       originName: '',
       terminalName: ''
@@ -83,13 +80,12 @@ class CargoCreate extends PureComponent {
   }
   handleCargoNameChange =(value, data) => {
     const { form:{setFieldsValue} } = this.props
-    const { id:cargoId, cargoChineseName, cargoType } = data;
+    const {  cargoChineseName, cargoType } = data;
     const cargoTypeId = this.props.cargoType.length ? this.props.cargoType.filter(item => {
       return parseInt(cargoType,10) === parseInt(item.cargoType,10);
     }).map(item => item.id) : [];
     this.setState({
       cargo: {
-        cargoId,
         cargoChineseName
       }
     });
@@ -140,8 +136,7 @@ class CargoCreate extends PureComponent {
           resetFields();
           this.setState({
             cargo: {
-              cargoChineseName: '',
-              selectedCargoType: -1
+              cargoChineseName: ''
             },
             originName: '',
             terminalName: ''
@@ -161,7 +156,7 @@ class CargoCreate extends PureComponent {
       cargoInfo,
       location 
     } = this.props;
-    const { cargo: { cargoChineseName, selectedCargoType }, originName, terminalName } = this.state
+    const { cargo: { cargoChineseName }, originName, terminalName } = this.state
     const cargoTypes = cargoType.map(t => ({
       ...t,
       label: t.cargoName,
