@@ -64,21 +64,21 @@ class TransportCreate extends PureComponent {
     orgVisible: false
   }
   componentDidMount() {
+    const { form:{setFieldsValue} } = this.props
     this.props.form.validateFields();
     this.props.fetchTransportType();
     this.props.fetchTransportName();
     this.props.fetchOrg(data => {
       const logisticsProvider = data.filter(item => item.id === userOrgId);
       const { id:logisticsProviderId, name:logisticsProviderName } = logisticsProvider[0];
+      setFieldsValue({logisticsProviderId})
       this.setState({
-        logisticsProviderId, 
         logisticsProviderName
-      })
+      });
     });
   }
   handleSubmit = () => {
     const { form: { validateFields, resetFields } } = this.props;
-    const { transportId, transportName, logisticsProviderId } = this.state
     validateFields((errors, values) => {
       if(errors) {
         Object.keys(errors).forEach(key => {
@@ -96,9 +96,6 @@ class TransportCreate extends PureComponent {
           status: 10,
           message: '运力发布成功',
           transportTypeId,
-          logisticsProviderId,
-          transportId,
-          transportName,
           freeStartTime,
           freeEndTime,
           invalidateTime,
@@ -126,54 +123,45 @@ class TransportCreate extends PureComponent {
   @Debounce(200)
   handleOrgSearchChange = name => {
     this.props.findOrgs({name});
-    console.log(name)
   }
-  handleTransportNameChange = data => {
+  handleTransportNameChange = (value, data) => {
     const { id:transportId, chineseName:transportName, vesselLoadWeight:loadWeight } = data;
     this.props.form.setFieldsValue({loadWeight})
     this.setState({
       transportId,
       transportName
     });
-    this.handleShowTransportSearch();
   }
-  handleOrgNameChange = data => {
-    const { id:logisticsProviderId, name:logisticsProviderName } = data;
+  handleOrgNameChange = (value, data) => {
+    const { name:logisticsProviderName } = data;
     this.setState({
-      logisticsProviderId,
       logisticsProviderName
     });
-    this.handleShowOrgSearch();
   }
   render() {
     const { 
       form: { getFieldProps, getFieldsError }, 
       createTransporting,
       fetchTransportTyping,
+      fetchTransportNameing,
       transportSplice,
       orgSplice,
       transportType,
       fetchOrging
     } = this.props;
-    const { transportName, transportVisible,transportId, logisticsProviderName, orgVisible, logisticsProviderId,  } = this.state;
-    const transportModalMethods = {
-      onCancel: () => this.handleShowTransportSearch(),
-      onSearchChange: this.handleTransportSearchChange,
-      onItemChange: this.handleTransportNameChange
-    }
-    const orgModalMethods = {
-      onCancel: () => this.handleShowOrgSearch(),
-      onSearchChange: this.handleOrgSearchChange,
-      onItemChange: this.handleOrgNameChange
-    }
+    const { transportName, logisticsProviderName, logisticsProviderId } = this.state;
     const transportSplices = transportSplice.length ? transportSplice.map(item => ({
       ...item,
       label: item.chineseName,
-      brief: item.englishName
+      brief: item.englishName,
+      key: item.id,
+      value: item.id
     })) : []
     const orgSplices = orgSplice.length ? orgSplice.map(item => ({
       ...item,
       label: item.name,
+      value: item.id,
+      key: item.id,
       brief: item.code
     })) : []
     return (
@@ -206,11 +194,24 @@ class TransportCreate extends PureComponent {
             >
               <ListItem arrow='horizontal'><span className={form.required}>*</span>运力类型</ListItem>
             </Picker>
-            <ListItem
-              arrow='horizontal'
-              extra={transportName ? transportName : '请选择'}
-              onClick={() => this.handleShowTransportSearch(true)}
-            ><span className={form.required}>*</span>运力名称</ListItem>
+            <SearchModal
+              {...getFieldProps('transportId',
+              {
+                onChange: this.handleTransportNameChange,
+                rules: [
+                  { required: true, message: '请选择运力' }
+                ]
+              })}
+              placeholder='请输入运力名称'
+              data={transportSplices}
+              loading={fetchTransportNameing}
+              onSearchChange={this.handleTransportSearchChange}
+            >
+              <ListItem
+                arrow='horizontal'
+                extra={transportName ? transportName : '请选择'}
+              ><span className={form.required}>*</span>运力名称</ListItem>
+            </SearchModal>
             <InputItem
               {...getFieldProps('loadWeight', {
                 rules: [
@@ -224,11 +225,25 @@ class TransportCreate extends PureComponent {
               moneyKeyboardWrapProps={moneyKeyboardWrapProps}
               extra='吨'
             ><span className={form.required}>*</span>载重吨</InputItem>
-            <ListItem
-              arrow='horizontal'
-              extra={fetchOrging ? <ActivityIndicator size='small'/> : logisticsProviderName ? logisticsProviderName : '请选择'}
-              onClick={() => this.handleShowOrgSearch(true)}
-            ><span className={form.required}>*</span>服务商</ListItem>
+            <SearchModal
+              {...getFieldProps('logisticsProviderId',
+              {
+                onChange: this.handleOrgNameChange,
+                rules: [
+                  { required: true, message: '请选择组织' }
+                ]
+              })}
+              placeholder='请输入组织名称'
+              data={orgSplices}
+              loading={fetchOrging}
+              onSearchChange={this.handleOrgSearchChange}
+            >
+              <ListItem
+                arrow='horizontal'
+                extra={fetchOrging ? <ActivityIndicator size='small'/> : logisticsProviderName ? logisticsProviderName : '请选择'}
+              ><span className={form.required}>*</span>服务商</ListItem>
+            </SearchModal>
+            
             <InputItem
               {...getFieldProps('freePlace')}
               placeholder='请输入'
@@ -300,26 +315,10 @@ class TransportCreate extends PureComponent {
           <Button 
             type='primary' 
             onClick={this.handleSubmit}
-            disabled={createTransporting || hasError(getFieldsError()) || logisticsProviderId < 0 || transportId < 0}
+            disabled={createTransporting || hasError(getFieldsError())}
             loading={createTransporting}
           >提交</Button>
         </div>
-        <SearchModal
-          visible={transportVisible}
-          data={transportSplices}
-          value={transportName}
-          selectedValue={transportId}
-          placeholder='请输入中文或者英文船名'
-          { ...transportModalMethods }
-        />
-        <SearchModal
-          visible={orgVisible}
-          data={orgSplices}
-          value={logisticsProviderName}
-          selectedValue={logisticsProviderId}
-          placeholder='请输入组织名称'
-          { ...orgModalMethods }
-        />
       </Screen>
     )
   }

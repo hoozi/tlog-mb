@@ -18,7 +18,8 @@ export async function queryCargoType(params) {
 export async function queryLocation(params) {
   return request(`/ierp/kapi/app/nbg_qcwl/configLocationApi`, {
     data: {
-      crudType: 'retrieve'
+      crudType: 'retrieve',
+      ...params
     }
   })
 }

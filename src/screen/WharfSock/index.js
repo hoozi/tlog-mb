@@ -24,7 +24,8 @@ const mapDispatchToProps = ({ sock }) => ({
 @connect(mapStateToProps, mapDispatchToProps)
 class WharfSock extends Component {
   state = {
-    center: [121.84922218322755, 30.673635005950928]
+    center: [121.84922218322755, 30.673635005950928],
+    zoom: 8
   }
   overlays = []
   shouldComponentUpdate(prevProps) {
@@ -77,6 +78,7 @@ class WharfSock extends Component {
   render(){
     // eslint-disable-next-line
     const { sock: {location}, fetchTerminalLocationing, history } = this.props;
+    const { zoom } = this.state
     const createOverlayMethods = {
       customConstructor: this.overlayConstructor,
       initialize: this.overlayInitialize,
@@ -91,9 +93,10 @@ class WharfSock extends Component {
             </div>
           </div>
         </div>
+        
         <BaiduMap 
           mapContainer={<div style={{ height: '100%', width: '100%' }} />} 
-          zoom={9} 
+          zoom={zoom} 
           center={{lng:121.721133,lat:30.605635}}
           enableScrollWheelZoom
         >

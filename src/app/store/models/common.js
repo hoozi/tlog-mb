@@ -109,11 +109,11 @@ const effects = dispatch => ({
       cargoType: response.data
     })
   },
-  async fetchLocation() {
-    const response = await queryLocation();
+  async fetchLocation(payload) {
+    const response = await queryLocation(payload);
     if(!response) return;
     this.save({
-      location: response.data
+      location: response.data.slice(0,20)
     })
   },
   async fetchTransportType() {

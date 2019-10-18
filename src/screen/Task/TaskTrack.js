@@ -375,7 +375,14 @@ class TaskTrack extends Component {
                   icon={{ imageUrl: startTag, size: { width: 32, height: 32 } }} 
                   offset={{width: -1, height: -17}}
                 />
-                {polyline.length && <Polyline path={polyline.filter(item => item.lng!=='0' && item.lat!=='0')} strokeWeight={5} strokeColor='#3c73f0' />}
+                {polyline.length && 
+                  <Polyline 
+                    path={polyline.filter(item => item.lng!=='0' && item.lat!=='0')} 
+                    strokeWeight={6} 
+                    strokeColor='#3c73f0'
+                    strokeOpacity={0.8}
+                  />
+                }
                 <Marker
                   position={this.state.endPoint}
                   icon={{ imageUrl: currentTag, size: { width: 32, height: 32 } }}

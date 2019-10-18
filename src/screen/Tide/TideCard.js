@@ -9,7 +9,7 @@ const defs = [
   {
     dataKey: 'time',
     range: [0, 1],
-    tickCount: 24,
+    tickCount: 12,
   },
   {
     dataKey: 'value',
@@ -27,9 +27,7 @@ const showTooltip = e => {
 
 function formatLabel() {
   return {
-    rotate: -45,
-    textAlign: 'end',
-    textBaseline: 'middle'
+    
   };
 }
 
