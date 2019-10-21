@@ -7,13 +7,13 @@ import {
   InputItem, 
   TextareaItem,
   DatePicker,
-  ActivityIndicator,
   Button,
   Toast
 } from 'antd-mobile';
 import { connect } from 'react-redux';
-import { createForm } from 'rc-form';
+import { createForm, createFormField } from 'rc-form';
 import moment from 'moment';
+import { parse } from 'qs';
 import Debounce from 'lodash-decorators/debounce';
 import Screen from '@/component/Screen';
 import SearchModal from '@/component/SearchModal';
@@ -25,8 +25,9 @@ import { getUser } from '@/utils/token';
 const ListItem = List.Item;
 const { username, phone } = getUser();
 
-const mapStateToProps = ({ common }) => {
+const mapStateToProps = ({ common, cargo }) => {
   return {
+    cargo,
     ...common,
     ...mapLoading('common',{
       fetchCargoInfoing: 'fetchCargoInfo',
@@ -44,16 +45,48 @@ const mapDispatchToProps = ({ common, cargo }) => ({
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
-@createForm()
+@createForm({
+  mapPropsToFields(props) {
+    const { cargo:{recordList} } = props;
+    const filds = {};
+    const search = props.history.location.search;
+    const id = search ? parse(search.substring(1)).id : '';
+    const currentRow = id ? recordList.filter(item => item.id === id).map(item => {
+      const { beginDate='', endDate='', effectiveDate='', expireDate='', cargoTypeId } = item
+      return {
+        ...item,
+        cargoTypeId: [cargoTypeId],
+        beginDate: beginDate ? new Date(beginDate.replace(/-/g,'/')) : '',
+        endDate: endDate ? new Date(endDate.replace(/-/g,'/')) : '',
+        effectiveDate: effectiveDate ? new Date(effectiveDate.replace(/-/g,'/')) : '',
+        expireDate: expireDate ? new Date(expireDate.replace(/-/g,'/')) : ''
+      }
+    })[0] : {};
+    if(currentRow) {
+      Object.keys(currentRow).forEach(key => {
+        filds[key] = createFormField({
+          value: currentRow[key]
+        })
+      })
+    }
+    return filds;
+  }
+})
 class CargoCreate extends PureComponent {
   constructor(props) {
+    document.documentElement.scrollTop = document.body.scrollTop = 0;
     super(props);
+    const { cargo:{recordList} } = props;
+    const search = props.history.location.search;
+    const id = search ? parse(search.substring(1)).id : '';
+    this.currentRow = id ? recordList.filter(item => item.id === id)[0]: {};
+    const { cargo,originName,terminalName } = this.currentRow;
     this.state = {
       cargo:{
-        cargoChineseName: ''
+        cargoChineseName: cargo
       },
-      originName: '',
-      terminalName: ''
+      originName,
+      terminalName
     }
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleLoctionSearchChange = this.handleLoctionSearchChange.bind(this);
@@ -68,7 +101,6 @@ class CargoCreate extends PureComponent {
     this.props.fetchLocation();
   }
   componentDidMount() {
-    this.props.form.validateFields();
     this.getCargoType();
     this.getLocation();
   }
@@ -80,7 +112,7 @@ class CargoCreate extends PureComponent {
   }
   handleCargoNameChange =(value, data) => {
     const { form:{setFieldsValue} } = this.props
-    const {  cargoChineseName, cargoType } = data;
+    const { cargoChineseName, cargoType } = data;
     const cargoTypeId = this.props.cargoType.length ? this.props.cargoType.filter(item => {
       return parseInt(cargoType,10) === parseInt(item.cargoType,10);
     }).map(item => item.id) : [];
@@ -125,8 +157,10 @@ class CargoCreate extends PureComponent {
         const effectiveDate = moment(values.effectiveDate).format('YYYY-MM-DD');
         const expireDate = moment(values.expireDate).format('YYYY-MM-DD');
         this.props.createCargo({
+          crudType: this.id ? 'update' : 'create',
+          ...this.currentRow,
           ...values,
-          message: '货盘发布成功',
+          message: this.id ? '货盘编辑成功' : '货盘发布成功',
           cargoTypeId,
           beginDate,
           endDate,

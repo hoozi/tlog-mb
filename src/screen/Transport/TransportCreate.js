@@ -12,7 +12,8 @@ import {
   Toast
 } from 'antd-mobile';
 import { connect } from 'react-redux';
-import { createForm } from 'rc-form';
+import { createForm,createFormField } from 'rc-form';
+import { parse } from 'qs';
 import moment from 'moment';
 import Screen from '@/component/Screen';
 import Debounce from 'lodash-decorators/debounce';
@@ -25,8 +26,9 @@ const userOrgId = getUser().orgId;
 const ListItem = List.Item;
 const { username, phone } = getUser();
 
-const mapStateToProps = ({ common }) => {
+const mapStateToProps = ({ common, transport:transportModel }) => {
   return {
+    transportModel,
     ...common,
     ...mapLoading('common',{
       fetchTransportTyping: 'fetchTransportType',
@@ -53,25 +55,61 @@ if (isIPhone) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-@createForm()
+@createForm({
+  mapPropsToFields(props) {
+    const { transportModel:{recordList} } = props;
+    const filds = {};
+    const search = props.history.location.search;
+    const id = search ? parse(search.substring(1)).id : '';
+    const currentRow = id ? recordList.filter(item => item.id === id).map(item => {
+      const { freeStartTime='', freeEndTime='', invalidateTime='', validateTime='', transportTypeId} = item
+      return {
+        ...item,
+        transportTypeId: [transportTypeId],
+        freeStartTime: freeStartTime ? new Date(freeStartTime.replace(/-/g,'/')) : '',
+        freeEndTime: freeEndTime ? new Date(freeEndTime.replace(/-/g,'/')) : '',
+        invalidateTime: invalidateTime ? new Date(invalidateTime.replace(/-/g,'/')) : '',
+        validateTime: validateTime ? new Date(validateTime.replace(/-/g,'/')) : ''
+      }
+    })[0] : {};
+    if(currentRow) {
+      Object.keys(currentRow).forEach(key => {
+        filds[key] = createFormField({
+          value: currentRow[key]
+        })
+      })
+    }
+    return id ? filds : {
+      logisticsProviderId: createFormField({
+        value: userOrgId
+      })
+    };
+  }
+})
 class TransportCreate extends PureComponent {
-  state = {
-    logisticsProviderId: -1,
-    logisticsProviderName: '',
-    transportName: ''
+  constructor(props) {
+    super(props);
+    const { transportModel:{recordList} } = props;
+    const search = props.history.location.search;
+    const id = this.id = search ? parse(search.substring(1)).id : '';
+    this.currentRow = this.id ? recordList.filter(item => item.id === id)[0]: {};
+    const logisticsProviderId = this.id ? this.currentRow.logisticsProviderId : userOrgId; 
+    const { transportName='' } = this.currentRow;
+    this.state = {
+      logisticsProviderId,
+      logisticsProviderName: '',
+      transportName
+    }
   }
   componentDidMount() {
-    const { form:{setFieldsValue} } = this.props
-    this.props.form.validateFields();
     this.props.fetchTransportType();
     this.props.fetchTransportName();
     this.props.fetchOrg(data => {
-      const logisticsProvider = data.filter(item => item.id === userOrgId);
-      const { id:logisticsProviderId, name:logisticsProviderName } = logisticsProvider[0];
-      setFieldsValue({logisticsProviderId})
+      const logisticsProvider = data.filter(item => item.id === this.state.logisticsProviderId)
+      const { name:logisticsProviderName } = logisticsProvider[0];
       this.setState({
         logisticsProviderName
-      });
+      }, () => this.props.form.validateFields());
     });
   }
   handleSubmit = () => {
@@ -89,9 +127,11 @@ class TransportCreate extends PureComponent {
         const invalidateTime = moment(values.invalidateTime).format('YYYY-MM-DD');
         const validateTime = moment(values.validateTime).format('YYYY-MM-DD');
         this.props.createTransport({
+          crudType: this.id ? 'update' : 'create',
+          ...this.currentRow,
           ...values,
           status: 10,
-          message: '运力发布成功',
+          message: this.id ? '运力编辑成功' : '运力发布成功',
           transportTypeId,
           freeStartTime,
           freeEndTime,
@@ -135,7 +175,7 @@ class TransportCreate extends PureComponent {
       transportType,
       fetchOrging
     } = this.props;
-    const { transportName, logisticsProviderName, logisticsProviderId } = this.state;
+    const { transportName, logisticsProviderName } = this.state;
     const transportSplices = transportSplice.length ? transportSplice.map(item => ({
       ...item,
       label: item.chineseName,

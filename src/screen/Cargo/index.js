@@ -135,14 +135,21 @@ class Cargo extends PureComponent {
   }
   showActionSheet(item) {
     const blackList = [20, 30, 70, 90];
+    const { history } = this.props
     const { status, id } = item;
     if(
       this.type === 'more' || 
       indexOf(blackList, +status) !== -1 || 
-      !checkPermissions(['cargo_check','change_bill','cargo_invalid','cargo_upload'])
+      !checkPermissions(['cargo_check','change_bill','cargo_invalid','cargo_upload','cargo_edit'])
     ) return; 
     const buttonMap = {
       10: [
+        {
+          code: '-1',
+          button: '编辑',
+          authority: 'cargo_edit',
+          url: `/cargo-create?id=${item.id}`
+        },
         {
           code: '20',
           button: <span style={{color: '#3c73f0'}}>上报</span>,
@@ -215,6 +222,9 @@ class Cargo extends PureComponent {
       maskClosable: true
     },
     buttonIndex => {
+      if(currentButtons[buttonIndex].code === '-1') {
+        return history.push(currentButtons[buttonIndex].url)
+      }
       if(buttonIndex < 0 || !currentButtons[buttonIndex].code) return;
       const statusCode = currentButtons[buttonIndex].code;
       const isCreate = statusCode === 'c';
