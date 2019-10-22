@@ -221,13 +221,14 @@ class TransportCreate extends PureComponent {
               <ListItem arrow='horizontal'><span className={form.required}>*</span>运力类型</ListItem>
             </Picker>
             <SearchModal
-              {...getFieldProps('transportId',
               {
-                onChange: this.handleTransportNameChange,
-                rules: [
-                  { required: true, message: '请选择运力' }
-                ]
-              })}
+                ...getFieldProps('transportId',{
+                  onChange: this.handleTransportNameChange,
+                  rules: [
+                    { required: true, message: '请选择运力' }
+                  ]
+                })
+              }
               placeholder='请输入运力名称'
               data={transportSplices}
               loading={fetchTransportNameing}

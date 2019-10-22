@@ -116,11 +116,13 @@ class CargoCreate extends PureComponent {
     const cargoTypeId = this.props.cargoType.length ? this.props.cargoType.filter(item => {
       return parseInt(cargoType,10) === parseInt(item.cargoType,10);
     }).map(item => item.id) : [];
+    
     this.setState({
+      ...this.state,
       cargo: {
         cargoChineseName
       }
-    });
+    },() => console.log(this.state));
     setFieldsValue({cargoTypeId});
   }
   handleLocationChange = (locationName, name) => {
@@ -232,6 +234,7 @@ class CargoCreate extends PureComponent {
             <InputItem
               {...getFieldProps('originName', {
                 initialValue: originName,
+                onChange: value => this.handleLocationChange('originName', value),
                 rules: [
                   { required: true, message: '请输入出发地' }
                 ]
@@ -255,6 +258,7 @@ class CargoCreate extends PureComponent {
             <InputItem
               {...getFieldProps('terminalName', {
                 initialValue: terminalName,
+                onChange: value => this.handleLocationChange('terminalName', value),
                 rules: [
                   { required: true, message: '请输入目的地' }
                 ]

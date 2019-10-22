@@ -232,17 +232,17 @@ class TransportSock extends Component {
               list ? 
               list.map((item, index) => (
                 <Overlay key={`lng${item.longitude}_lat${item.latitude}`} 
-                    constructorParams={{
-                      point: {
-                        lng: item.longitude,
-                        lat: item.latitude
-                      },
-                      text: `运输工具: ${item.vesselExportEname || item.vesselImportEname || '未知'}/${item.exportVoyage || item.importVoyage || '未知'}`,
-                      extra:  `货物: ${item.cargoShortName},${item.weight || '0'}吨`,
-                      index
-                    }}
-                    {...createOverlayMethods}
-                  />
+                  constructorParams={{
+                    point: {
+                      lng: item.longitude,
+                      lat: item.latitude
+                    },
+                    text: `运输工具: ${item.vesselExportEname || item.vesselImportEname || '未知'}/${item.exportVoyage || item.importVoyage || '未知'}`,
+                    extra:  `货物: ${item.cargoShortName},${item.weight || '0'}吨`,
+                    index
+                  }}
+                  {...createOverlayMethods}
+                />
               )) : null
             }
           </BaiduMap>
