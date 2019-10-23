@@ -51,8 +51,9 @@ class Cargo extends PureComponent {
     });
     const { location: {search} } = props;
     const type = this.type = parse(search.substring(1))['type'] || '';
+    const status = +parse(search.substring(1))['status'] || -1;
     this.current = 1;
-    this.data = []
+    this.data = [];
     this.state = {
       loading: true,
       refreshing: true,
@@ -60,7 +61,7 @@ class Cargo extends PureComponent {
       ds,
       hasMore: true,
       current: this.current,
-      status: type ? (type === 'all' ? 10 : 30) : 40
+      status: type ? (type === 'all' ? 10 : 30) : status
     }
   }
   reset() {
@@ -270,8 +271,7 @@ class Cargo extends PureComponent {
   )
   render() {
     const { refreshing, firstLoading, loading, status, ds, hasMore  } = this.state;
-    const { history, updateCargoing, changeCargoToBilling, location: {search} } = this.props;
-    const type = parse(search.substring(1))['type'];
+    const { history, updateCargoing, changeCargoToBilling } = this.props;
     return (
       <Screen
         className={list.listScreen}
@@ -281,13 +281,13 @@ class Cargo extends PureComponent {
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
           >
-            {`货盘${!type ? '审核' : '信息'}`}
+            {`货盘${!this.type ? '审核' : '信息'}`}
           </NavBar>
         )}
       >
         <StickyContainer className={list.stickyContainer}>
           {
-            !type || (type && type === 'all') ? 
+            !this.type || (this.type && this.type === 'all') ? 
             <Sticky>
               {
                 ({ style }) => (

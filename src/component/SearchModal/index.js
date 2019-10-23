@@ -15,7 +15,6 @@ export default forwardRef((props, ref) => {
   }, [visible]);
   const handleChange = (value, item) => {
     handleModalVisible();
-    console.log(value)
     onChange && onChange(value, item);
   }
   return (

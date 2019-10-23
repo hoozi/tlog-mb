@@ -362,7 +362,7 @@ class TaskTrack extends Component {
         <div className={styles.routeMap}>
           <BaiduMap 
             mapContainer={<div style={{ height: '100%', width: '100%' }} />}
-            zoom={7} 
+            zoom={6} 
             center={this.state.center}
             enableScrollWheelZoom
           >

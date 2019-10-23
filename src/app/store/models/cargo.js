@@ -58,12 +58,31 @@ const effects = dispatch => ({
       ...params
     });
     if(!response) return;
-    Toast.success(message, 2, () => {
+    Toast.success(message/* , 2, () => {
       document.documentElement.scrollTop = 0;
       dispatch(push('/cargo?type=all'));
-    });
+    } */);
     callback && callback();
-  }
+  }/* ,
+  async createCargoAndUpload(payload, rootState, callback) {
+    const createCargoResponse = await crudCargo({
+      crudType: 'create',
+      ...payload
+    });
+    if(!createCargoResponse) return;
+    const createdCargoId = createCargoResponse.data;
+    const uploadCargoResponse = await crudCargo({
+      crudType: 'update',
+      id: createdCargoId,
+      status: 20
+    });
+    if(!uploadCargoResponse) return;
+    Toast.success('提交并上报成功'/* , 2, () => {
+      document.documentElement.scrollTop = 0;
+      dispatch(push('/cargo?status=20'));
+    } *//*);
+    callback && callback();
+  } */
 })
 
 export default {

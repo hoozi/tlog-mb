@@ -78,7 +78,7 @@ class CargoCreate extends PureComponent {
     super(props);
     const { cargo:{recordList} } = props;
     const search = props.history.location.search;
-    const id = search ? parse(search.substring(1)).id : '';
+    const id = this.id = search ? parse(search.substring(1)).id : '';
     this.currentRow = id ? recordList.filter(item => item.id === id)[0]: {};
     const { cargo,originName,terminalName } = this.currentRow;
     this.state = {
@@ -101,6 +101,7 @@ class CargoCreate extends PureComponent {
     this.props.fetchLocation();
   }
   componentDidMount() {
+    this.getCargoInfo();
     this.getCargoType();
     this.getLocation();
   }
@@ -122,7 +123,7 @@ class CargoCreate extends PureComponent {
       cargo: {
         cargoChineseName
       }
-    },() => console.log(this.state));
+    });
     setFieldsValue({cargoTypeId});
   }
   handleLocationChange = (locationName, name) => {
@@ -142,7 +143,8 @@ class CargoCreate extends PureComponent {
     if(!name) return;
     this.props.fetchLocation({name})
   }
-  handleSubmit = () => {
+  handleSubmit = flag => {
+    const type = !!flag;
     const { form: { validateFields, resetFields } } = this.props;
     const { cargo: { cargoChineseName } } = this.state;
     validateFields((errors, values) => {
@@ -158,16 +160,20 @@ class CargoCreate extends PureComponent {
         const endDate = moment(values.endDate).format('YYYY-MM-DD');
         const effectiveDate = moment(values.effectiveDate).format('YYYY-MM-DD');
         const expireDate = moment(values.expireDate).format('YYYY-MM-DD');
-        this.props.createCargo({
-          crudType: this.id ? 'update' : 'create',
+        const params = {
           ...this.currentRow,
           ...values,
-          message: this.id ? '货盘编辑成功' : '货盘发布成功',
+          message: this.id ? '货盘编辑成功' : (type ? '提交并上报成功' : '货盘发布成功'),
+          status: type ? 20 : 10,
           cargoTypeId,
           beginDate,
           endDate,
           effectiveDate,
           expireDate
+        }
+        this.props.createCargo({
+          crudType: this.id ? 'update' : 'create',
+          ...params
         },() => {
           resetFields();
           this.setState({
@@ -206,7 +212,6 @@ class CargoCreate extends PureComponent {
       key: l.id,
       ...l
     }));
-    
     const cargos = cargoInfo.length ? cargoInfo.map(item => ({
       label: item.cargoChineseName,
       value: item.id,
@@ -214,6 +219,7 @@ class CargoCreate extends PureComponent {
       brief: item.cargoCode,
       ...item
     })) : [];
+    const buttonDisabled = createCargoing || hasError(getFieldsError())
     return (
       <Screen
         fixed
@@ -397,12 +403,16 @@ class CargoCreate extends PureComponent {
         
         <div className={form.bottomButton}>
           <Button 
+            type='ghost' 
+            className='mr8'
+            onClick={() => this.handleSubmit(true)}
+            disabled={buttonDisabled}
+            loading={createCargoing}
+          >提交并上报</Button>
+          <Button 
             type='primary' 
-            onClick={this.handleSubmit}
-            disabled={
-              createCargoing || 
-              hasError(getFieldsError())
-            }
+            onClick={() => this.handleSubmit()}
+            disabled={buttonDisabled}
             loading={createCargoing}
           >提交</Button>
         </div>

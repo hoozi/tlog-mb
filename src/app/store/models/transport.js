@@ -64,12 +64,31 @@ const effects = dispatch => ({
       ...params
     });
     if(!response) return;
-    Toast.success(message, 2, () => {
+    Toast.success(message/* , 2, () => {
       document.documentElement.scrollTop = 0;
       dispatch(push('/transport?type=all'));
-    });
+    } */);
     callback && callback();
-  }
+  }/* ,
+  async createTransportAndUpload(payload, rootState, callback) {
+    const createTransportResponse = await crudTransport({
+      crudType: 'create',
+      ...payload
+    });
+    if(!createTransportResponse) return;
+    const createdTransportId = createTransportResponse.data;
+    const uploadTransportResponse = await crudTransport({
+      crudType: 'update',
+      id: createdTransportId,
+      status: 20
+    });
+    if(!uploadTransportResponse) return;
+    Toast.success('提交并上报成功'/* , 2, () => {
+      document.documentElement.scrollTop = 0;
+      dispatch(push('/cargo?status=20'));
+    } *//*);
+    callback && callback();
+  } */
 })
 
 

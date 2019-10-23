@@ -59,7 +59,7 @@ class TransportSock extends Component {
     self.map = map;
     const div = document.createElement('div');
     div.className = styles.ship;
-    div.dataset.index = self.index;
+    div.dataset.index = div.style.zIndex = self.index;
     const text = document.createElement('div');
     text.className = 'loc-item';
     text.dataset.index = self.index;
@@ -110,7 +110,6 @@ class TransportSock extends Component {
   }
   handleTransportSeleted = item => {
     const { longitude, latitude } = item;
-    console.log([longitude, latitude])
     this.setState({
       center: {lng:longitude,lat:latitude},
       list: false,
@@ -120,11 +119,11 @@ class TransportSock extends Component {
     })
   }
   renderTransportList = () => {
-    const { sock: {list} } = this.props;
+    const { sock: {list}, fetchIntransitSocking } = this.props;
     return (
       <List style={{width: 300}}>
         {
-          list.length ? 
+          (list.length && !fetchIntransitSocking) ? 
           list.map(item => (
             <List.Item 
               key={`lng${item.longitude}_lat${item.latitude}`} 
@@ -264,6 +263,7 @@ class TransportSock extends Component {
         <Drawer
           style={{zIndex:this.state.zIndex}}
           open={this.state.list}
+          sidebarStyle={{backgroundColor: '#fff'}}
           onOpenChange={this.handleListOpenChange}
           sidebar={this.renderTransportList()}
           position='right'

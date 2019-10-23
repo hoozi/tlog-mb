@@ -9,7 +9,7 @@ const defs = [
   {
     dataKey: 'time',
     range: [0, 1],
-    tickCount: 12,
+    tickCount: 24,
   },
   {
     dataKey: 'value',
@@ -23,6 +23,7 @@ const pixelRatio = window.devicePixelRatio * 2;
 const showTooltip = e => {
   const { items } = e;
   items[0].name = '潮高';
+  items[0].title = `${items[0].title}时`;
 }
 
 function formatLabel() {

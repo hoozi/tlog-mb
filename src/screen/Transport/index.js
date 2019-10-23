@@ -49,6 +49,7 @@ class Transport extends PureComponent {
     });
     const { location: {search} } = props;
     const type = this.type = parse(search.substring(1))['type'] || '';
+    const status = +parse(search.substring(1))['status'] || -1;
     this.current = 1;
     this.data = []
     this.state = {
@@ -58,7 +59,7 @@ class Transport extends PureComponent {
       ds,
       hasMore: true,
       current: this.current,
-      status: type ? (type === 'all' ? 10 : 30) : 40
+      status: type ? (type === 'all' ? 10 : 30) : status
     }
   }
   reset() {

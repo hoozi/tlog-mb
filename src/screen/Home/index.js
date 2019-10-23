@@ -23,7 +23,7 @@ import LoginCheckArea from '@/hoc/LoginCheckArea';
 const menus = [{
   icon: <Icon type='huopanshenhe' size='f' color={BRAND_COLOR}/>,
   text: '货盘审核',
-  url: '/cargo'
+  url: '/cargo?status=40'
 }, {
   icon: <Icon type='huopan' size='f' color={BRAND_COLOR}/>,
   text: '货盘信息',
@@ -35,7 +35,7 @@ const menus = [{
 }, {
   icon: <Icon type='yunlishenhe' size='f' color='#f39927'/>,
   text: '运力审核',
-  url: '/transport'
+  url: '/transport?status=40'
 }, {
   icon: <Icon type='yunli' size='f' color='#29ab91'/>,
   text: '运力信息',

@@ -93,7 +93,7 @@ class TransportCreate extends PureComponent {
     const search = props.history.location.search;
     const id = this.id = search ? parse(search.substring(1)).id : '';
     this.currentRow = this.id ? recordList.filter(item => item.id === id)[0]: {};
-    const logisticsProviderId = this.id ? this.currentRow.logisticsProviderId : userOrgId; 
+    const logisticsProviderId = this.id ? this.currentRow.logisticsProviderId : userOrgId;
     const { transportName='' } = this.currentRow;
     this.state = {
       logisticsProviderId,
@@ -106,13 +106,15 @@ class TransportCreate extends PureComponent {
     this.props.fetchTransportName();
     this.props.fetchOrg(data => {
       const logisticsProvider = data.filter(item => item.id === this.state.logisticsProviderId)
+      
       const { name:logisticsProviderName } = logisticsProvider[0];
       this.setState({
         logisticsProviderName
       }, () => this.props.form.validateFields());
     });
   }
-  handleSubmit = () => {
+  handleSubmit = flag => {
+    const type = !!flag;
     const { form: { validateFields, resetFields } } = this.props;
     validateFields((errors, values) => {
       if(errors) {
@@ -126,17 +128,20 @@ class TransportCreate extends PureComponent {
         const freeEndTime = moment(values.freeEndTime).format('YYYY-MM-DD');
         const invalidateTime = moment(values.invalidateTime).format('YYYY-MM-DD');
         const validateTime = moment(values.validateTime).format('YYYY-MM-DD');
-        this.props.createTransport({
-          crudType: this.id ? 'update' : 'create',
+        const params = {
           ...this.currentRow,
           ...values,
-          status: 10,
-          message: this.id ? '运力编辑成功' : '运力发布成功',
+          status: type ? 20 : 10,
+          message: this.id ? '运力编辑成功' : ( type ? '运力提交并上报成功' : '运力发布成功'),
           transportTypeId,
           freeStartTime,
           freeEndTime,
           invalidateTime,
           validateTime
+        }
+        this.props.createTransport({
+          crudType: this.id ? 'update' : 'create',
+          ...params
         },() => {
           resetFields();
         })
@@ -189,7 +194,8 @@ class TransportCreate extends PureComponent {
       value: item.id,
       key: item.id,
       brief: item.code
-    })) : []
+    })) : [];
+    const buttonDisabled = createTransporting || hasError(getFieldsError())
     return (
       <Screen
         fixed
@@ -252,7 +258,7 @@ class TransportCreate extends PureComponent {
               moneyKeyboardWrapProps={moneyKeyboardWrapProps}
               extra='吨'
             ><span className={form.required}>*</span>载重吨</InputItem>
-            <SearchModal
+            {/* <SearchModal
               {...getFieldProps('logisticsProviderId',
               {
                 onChange: this.handleOrgNameChange,
@@ -269,7 +275,7 @@ class TransportCreate extends PureComponent {
                 arrow='horizontal'
                 extra={fetchOrging ? <ActivityIndicator size='small'/> : logisticsProviderName ? logisticsProviderName : '请选择'}
               ><span className={form.required}>*</span>服务商</ListItem>
-            </SearchModal>
+            </SearchModal> */}
             
             <InputItem
               {...getFieldProps('freePlace')}
@@ -340,9 +346,16 @@ class TransportCreate extends PureComponent {
         </div>
         <div className={form.bottomButton}>
           <Button 
+            type='ghost' 
+            className='mr8'
+            onClick={() => this.handleSubmit(true)}
+            disabled={buttonDisabled}
+            loading={createTransporting}
+          >提交并上报</Button>
+          <Button 
             type='primary' 
-            onClick={this.handleSubmit}
-            disabled={createTransporting || hasError(getFieldsError())}
+            onClick={() => this.handleSubmit()}
+            disabled={buttonDisabled}
             loading={createTransporting}
           >提交</Button>
         </div>
