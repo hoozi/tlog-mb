@@ -86,14 +86,14 @@ class TransportSock extends Component {
   }
   handleOverlaySelected = e => {
     const target = e.target;
-    const { sock: { list } } = this.props;
+    const { sock: { transportSockList } } = this.props;
     const transportIndex = target.dataset.index;
     let zIndex = target.style.zIndex || 1;
     target.style.zIndex = ++zIndex;
     console.log(1)
     this.handleShowModal(true);
     this.setState({
-      detail: list[transportIndex]
+      detail: transportSockList[transportIndex]
     });
   }
   handleMapZoom = type => {
@@ -119,12 +119,12 @@ class TransportSock extends Component {
     })
   }
   renderTransportList = () => {
-    const { sock: {list}, fetchIntransitSocking } = this.props;
+    const { sock: {transportSockList}, fetchIntransitSocking } = this.props;
     return (
       <List style={{width: 300}}>
         {
-          (list.length && !fetchIntransitSocking) ? 
-          list.map(item => (
+          (!fetchIntransitSocking && transportSockList.length) ? 
+          transportSockList.map(item => (
             <List.Item 
               key={`lng${item.longitude}_lat${item.latitude}`} 
               extra={
@@ -145,7 +145,7 @@ class TransportSock extends Component {
   }
   render(){
     // eslint-disable-next-line
-    const { sock: {list}, fetchIntransitSocking, history } = this.props;
+    const { sock: {transportSockList}, fetchIntransitSocking, history } = this.props;
     const createOverlayMethods = {
       customConstructor: this.overlayConstructor,
       initialize: this.overlayInitialize,
@@ -206,10 +206,10 @@ class TransportSock extends Component {
                 <span onClick={() => this.handleMapZoom(false)}>-</span>
               </div>
               {
-                list && list.length ? 
+                transportSockList && transportSockList.length && !fetchIntransitSocking ? 
                 <div className={styles.toggleList}>
                   <span className='mt8' onClick={this.handleListOpenChange}>
-                    <Badge text={list.length}>
+                    <Badge text={transportSockList.length}>
                       <Icon type='liebiao' color={this.state.list ? BRAND_COLOR : ''}/>
                     </Badge>
                   </span>
@@ -228,8 +228,8 @@ class TransportSock extends Component {
             {
               fetchIntransitSocking ? 
               <CenterLoading className='center-loading' text='在途数据加载中...'/> :
-              list ? 
-              list.map((item, index) => (
+              transportSockList ? 
+              transportSockList.map((item, index) => (
                 <Overlay key={`lng${item.longitude}_lat${item.latitude}`} 
                   constructorParams={{
                     point: {

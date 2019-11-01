@@ -12,7 +12,7 @@ export default forwardRef((props, ref) => {
   const [ visible, setVisible ] = useState(false);
   const handleModalVisible = useCallback(flag => {
     setVisible(!!flag)
-  }, [visible]);
+  },[]);
   const handleChange = (value, item) => {
     handleModalVisible();
     onChange && onChange(value, item);

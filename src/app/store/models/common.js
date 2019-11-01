@@ -16,6 +16,7 @@ const state = {
   cargoType: [],
   location: [],
   transportType: [],
+  workType: [],
   transports: [],
   transportSplice: [],
   orgs: [],
@@ -121,6 +122,13 @@ const effects = dispatch => ({
     if(!response) return;
     this.save({
       transportType: response.data
+    })
+  },
+  async fetchWorkType() {
+    const response = await queryDict({dictName: '作业类型'});
+    if(!response) return;
+    this.save({
+      workType: response.data
     })
   },
   async upload(payload, rootState, callback) {

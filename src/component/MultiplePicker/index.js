@@ -27,9 +27,9 @@ export default class MultiplePicker extends Component {
     this.props.onChange && this.props.onChange(selected.map(item => ({...item})))
   }
   render() {
-    const { data=[], value, title='', extra='' } = this.props
+    const { data=[], value=[], title='', extra='' } = this.props
     const { visible, selected } = this.state;
-    const _value = value.filter(item => item);
+    const _value = (value && value.length) ? value.filter(item => item) : [];
     return (
       <>
         <ListItem onClick={() => this.handleShowPicker(true)} arrow='horizontal' extra={_value.length ? _value.map(item => item.label).join(',') : extra}>{this.props.children}</ListItem>

@@ -253,15 +253,16 @@ class Cargo extends PureComponent {
       to={item.terminalName}
       extra={
         <>
-          <b className='text-primary'>{item.tonnage || '未知'}</b>
-          <span>货物吨位</span>
+          <b className='text-primary'>{item.operationTypeName || '未知'}</b>
+          <span>作业类型</span>
         </>
       }
     />
   )
   renderListCardBody = item => (
     <>
-      <p>托运人<b>{item.customerName}</b>, 【{item.cargoTypeName}】<b>{item.cargo}</b></p>
+      <p>托运人<b>{item.customerName}</b></p>
+      <p>货名<b>{item.cargo}</b>,<b className='text-primary'>{item.tonnage || '0'}</b>吨</p>
     </>
   )
   renderListCardExtra = item => (

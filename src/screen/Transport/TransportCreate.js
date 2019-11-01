@@ -176,24 +176,15 @@ class TransportCreate extends PureComponent {
       fetchTransportTyping,
       fetchTransportNameing,
       transportSplice,
-      orgSplice,
-      transportType,
-      fetchOrging
+      transportType
     } = this.props;
-    const { transportName, logisticsProviderName } = this.state;
+    const { transportName } = this.state;
     const transportSplices = transportSplice.length ? transportSplice.map(item => ({
       ...item,
       label: item.chineseName,
       brief: item.englishName,
       key: item.id,
       value: item.id
-    })) : []
-    const orgSplices = orgSplice.length ? orgSplice.map(item => ({
-      ...item,
-      label: item.name,
-      value: item.id,
-      key: item.id,
-      brief: item.code
     })) : [];
     const buttonDisabled = createTransporting || hasError(getFieldsError())
     return (

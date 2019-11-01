@@ -3,6 +3,7 @@ import { queryTerminalLocation, queryTerminalSock, queryIntransitSock } from '@/
 const state = {
   location: [],
   list: [],
+  transportSockList: [],
   total: 0
 }
 
@@ -45,7 +46,7 @@ const effects = {
       ...payload
     });
     if(!response) return;
-    this.save({list:[...response.data]});
+    this.save({transportSockList:[...response.data]});
     callback && callback(response.data);
   }
 }

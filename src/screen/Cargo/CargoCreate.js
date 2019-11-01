@@ -32,7 +32,8 @@ const mapStateToProps = ({ common, cargo }) => {
     ...mapLoading('common',{
       fetchCargoInfoing: 'fetchCargoInfo',
       fetchCargoTyping: 'fetchCargoType',
-      fetchLocationing: 'fetchLocation'
+      fetchLocationing: 'fetchLocation',
+      fetchWorkTypeing: 'fetchWorkType'
     }),
     ...mapLoading('cargo', {
       createCargoing: 'createCargo'
@@ -40,7 +41,7 @@ const mapStateToProps = ({ common, cargo }) => {
   }
 }
 const mapDispatchToProps = ({ common, cargo }) => ({
-  ...mapEffects(common, ['fetchCargoInfo', 'fetchCargoType', 'fetchLocation']),
+  ...mapEffects(common, ['fetchCargoInfo', 'fetchCargoType', 'fetchLocation', 'fetchWorkType']),
   ...mapEffects(cargo, ['createCargo']),
 });
 
@@ -52,10 +53,11 @@ const mapDispatchToProps = ({ common, cargo }) => ({
     const search = props.history.location.search;
     const id = search ? parse(search.substring(1)).id : '';
     const currentRow = id ? recordList.filter(item => item.id === id).map(item => {
-      const { beginDate='', endDate='', effectiveDate='', expireDate='', cargoTypeId } = item
+      const { beginDate='', endDate='', effectiveDate='', expireDate='', cargoTypeId, operationType='' } = item
       return {
         ...item,
         cargoTypeId: [cargoTypeId],
+        operationType: [operationType],
         beginDate: beginDate ? new Date(beginDate.replace(/-/g,'/')) : '',
         endDate: endDate ? new Date(endDate.replace(/-/g,'/')) : '',
         effectiveDate: effectiveDate ? new Date(effectiveDate.replace(/-/g,'/')) : '',
@@ -100,10 +102,14 @@ class CargoCreate extends PureComponent {
   getLocation() {
     this.props.fetchLocation();
   }
+  getWorkType() {
+    this.props.fetchWorkType();
+  }
   componentDidMount() {
     this.getCargoInfo();
     this.getCargoType();
     this.getLocation();
+    this.getWorkType();
   }
   handleShowCargoSearch = flag => {
     document.documentElement.style.overflow = 'hidden';
@@ -155,6 +161,7 @@ class CargoCreate extends PureComponent {
         });
         return;
       } else {
+        const operationType = values.operationType[0];
         const cargoTypeId = values.cargoTypeId[0];
         const beginDate = moment(values.beginDate).format('YYYY-MM-DD');
         const endDate = moment(values.endDate).format('YYYY-MM-DD');
@@ -165,6 +172,7 @@ class CargoCreate extends PureComponent {
           ...values,
           message: this.id ? '货盘编辑成功' : (type ? '提交并上报成功' : '货盘发布成功'),
           status: type ? 20 : 10,
+          operationType,
           cargoTypeId,
           beginDate,
           endDate,
@@ -193,9 +201,11 @@ class CargoCreate extends PureComponent {
       fetchCargoTyping, 
       fetchLocationing,
       fetchCargoInfoing, 
+      fetchWorkTypeing,
       createCargoing,
       cargoType, 
       cargoInfo,
+      workType,
       location 
     } = this.props;
     const { cargo: { cargoChineseName }, originName, terminalName } = this.state
@@ -290,6 +300,19 @@ class CargoCreate extends PureComponent {
               clear
               extra='¥'
             >价格</InputItem> */}
+            <Picker
+              cols={1}
+              {...getFieldProps('operationType', {
+                rules: [
+                  { required: true, message: '请选择作业类型' }
+                ]
+              })}
+              title=''
+              data={workType}
+              extra={fetchWorkTypeing? '加载中...' : '请选择'}
+            >
+              <ListItem arrow='horizontal'><span className={form.required}>*</span>作业类型</ListItem>
+            </Picker>
           </List>
           <List renderHeader={() =>'货物信息'}>
             <SearchModal
