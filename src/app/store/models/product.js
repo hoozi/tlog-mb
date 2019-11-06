@@ -1,6 +1,7 @@
 import anyService from '@/api/anyService';
 import { productKeep } from '@/api/product';
 import { Toast } from 'antd-mobile';
+import { getToken } from '@/utils/token';
 
 const state = {
   beginPageIndex: 1,
@@ -37,6 +38,7 @@ const effects = {
       ...payload
     });
     if(!response) return;
+    response.data.enshrineStatus = !getToken() ? false : response.data.enshrineStatus;
     this.save({
       detail: {...response.data}
     });

@@ -52,7 +52,7 @@ class Account extends Component {
         header={() =>(
           <NavBar   
             mode='dark'
-            rightContent={getToken() ? <a href='javascript:;' className={styles.logout} onClick={this.handleShowAction}>退出</a> : null}
+            rightContent={getToken() ? <span className={styles.logout} onClick={this.handleShowAction}>退出</span> : null}
           >
             我的
           </NavBar>

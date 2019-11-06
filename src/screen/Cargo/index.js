@@ -35,9 +35,9 @@ const allTabs = [
   { title: '已创建', status: 10 },
   { title: '待发布', status: 20 },
   { title: '已发布', status: 30 },
-  { title: '待审核', status: 40 },
+  /* { title: '待审核', status: 40 },
   { title: '已锁定', status: 50 },
-  { title: '已打回', status: 60 },
+  { title: '已打回', status: 60 }, */
   { title: '已受理', status: 70 },
   { title: '已失效', status: 90 }
 ]

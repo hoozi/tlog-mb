@@ -20,7 +20,7 @@ const effects = dispatch => ({
     Toast.loading('登录中...', 0);
     const response = await queryToken({
       tenantid: 'next',
-      accountId: '733974411840848896',
+      //accountId: '733974411840848896',
       logintype: '2',
       ...payload
     });
@@ -28,9 +28,9 @@ const effects = dispatch => ({
     const { access_token } = response.data;
     setToken(access_token);
     
-    this.fetchCurrentUser();
-    this.fetchCurrentMenu();
-    
+    await this.fetchCurrentUser();
+    await this.fetchCurrentMenu();
+    dispatch(goBack());
     callback && callback();
   },
   async fetchCurrentUser() {
@@ -39,7 +39,6 @@ const effects = dispatch => ({
     this.save({...response.data});
     setUser(response.data);
     Toast.hide();
-    dispatch(goBack());
   },
   async fetchCurrentMenu() {
     const response = await queryCurrentMenu({

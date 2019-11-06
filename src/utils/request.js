@@ -75,7 +75,7 @@ export default function request(url, options) {
       (('state' in response) && response.state !== 'success')
     );
     if(fail) {
-      Toast.fail(response.message || response.errorMsg || '请求失败');
+      Toast.fail(response.message || response.errorMsg || response.data || '请求失败');
       throw new Error(`${serviceUrl}${url}（${response.message || response.errorMsg}）`);
     }
     return response;

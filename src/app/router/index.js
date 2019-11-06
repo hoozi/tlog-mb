@@ -7,7 +7,9 @@ import {
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { ConnectedRouter } from 'connected-react-router';
 import { ActivityIndicator } from 'antd-mobile';
+import { connect } from 'react-redux';
 import UpdateModal from '@/component/UpdateModal';
+import { parse } from 'qs';
 import routesConfig from './routesConfig';
 import './screenTransition.css';
 const DEFAULT_SCREEN_CONFIG = {
@@ -53,11 +55,17 @@ const Routes = withRouter(({location, history}) => {
   )
 });
 
-export default class AppRouter extends PureComponent {
+@connect(null, ({sso:{loginSSO}}) => ({loginSSO}))
+class AppRouter extends PureComponent {
+  componentDidMount() {
+    const search = window.location.search;
+    const ticket = parse(search.substring(1))['ticket'] || '';
+    this.props.loginSSO(ticket);
+  }
   render() {
     return (
       <>
-        { window.cordova && <UpdateModal/> }
+        { /* window.cordova && <UpdateModal/> */ }
         <ConnectedRouter history={this.props.history}>
           <Routes/>
         </ConnectedRouter>
@@ -65,6 +73,8 @@ export default class AppRouter extends PureComponent {
     )
   }
 }
+
+export default AppRouter;
 
 const styles = {
   fullCenter: {
