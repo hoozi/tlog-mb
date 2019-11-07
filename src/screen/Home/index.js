@@ -9,6 +9,8 @@ import {
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import moment from 'moment';
+import { getToken } from '@/utils/token';
+import { parse } from 'qs';
 import Screen from '@/component/Screen';
 import BannerMask from '@/component/BannerMask';
 import RouteName from '@/component/RouteName';
@@ -194,10 +196,11 @@ const mapStateToProps = ({ product, cargo, transport }) => {
   }
 }
 
-const mapDispatchToProps = ({ product, cargo, transport, user }) => ({
+const mapDispatchToProps = ({ product, cargo, transport, sso }) => ({
   ...mapEffects(product, ['fetchProduct']),
   ...mapEffects(cargo, ['fetchAnyCargo']),
-  ...mapEffects(transport, ['fetchAnyTransport'])
+  ...mapEffects(transport, ['fetchAnyTransport']),
+  loginSSO: sso.loginSSO
 })
 @connect(mapStateToProps, mapDispatchToProps)
 class Home extends PureComponent {
@@ -219,6 +222,11 @@ class Home extends PureComponent {
     }); 
   }
   componentDidMount() {
+    const search = window.location.search;
+    const ticket = parse(search.substring(1))['ticket'] || '';
+    if(!getToken()) {
+      ticket && this.props.loginSSO(ticket);
+    }
     this.getIndexList();
   }
   handleLinkTo = el => {

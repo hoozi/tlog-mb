@@ -7,9 +7,10 @@ import {
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { ConnectedRouter } from 'connected-react-router';
 import { ActivityIndicator } from 'antd-mobile';
-import { connect } from 'react-redux';
+/* import { connect } from 'react-redux';
 import UpdateModal from '@/component/UpdateModal';
-import { parse } from 'qs';
+import { getToken } from '@/utils/token';
+import { parse } from 'qs'; */
 import routesConfig from './routesConfig';
 import './screenTransition.css';
 const DEFAULT_SCREEN_CONFIG = {
@@ -55,13 +56,7 @@ const Routes = withRouter(({location, history}) => {
   )
 });
 
-@connect(null, ({sso:{loginSSO}}) => ({loginSSO}))
 class AppRouter extends PureComponent {
-  componentDidMount() {
-    const search = window.location.search;
-    const ticket = parse(search.substring(1))['ticket'] || '';
-    this.props.loginSSO(ticket);
-  }
   render() {
     return (
       <>

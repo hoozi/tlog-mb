@@ -40,7 +40,7 @@ const effects = dispatch => ({
       { text: '取消' },
       { text: '去登录', onPress:() => dispatch(push('/login')) })
     }
-    setToken(payload.access_token);
+    setToken(response.data.access_token);
     dispatch.user.fetchCurrentUser();
     dispatch.user.fetchCurrentMenu();
     Toast.hide();
@@ -48,7 +48,7 @@ const effects = dispatch => ({
   async loginSSO(ticket) {
     Toast.loading('请稍候...');
     const access_token = await this.fetchCloudToken();
-    const currentUser = this.fetchCloudCurrentUser({ticket, access_token});
+    const currentUser = await this.fetchCloudCurrentUser({ticket, access_token});
     if(!access_token || !currentUser) {
       return dispatch.user.logout();
     }

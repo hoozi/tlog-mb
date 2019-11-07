@@ -1,9 +1,19 @@
 import axios from 'axios';
 //import { getToken } from './token';
 import { Toast } from 'antd-mobile';
-/* import store from '@/store/index';
-import router from '@/router'; */
-let serviceUrl = process.env.NODE_ENV === 'production' ? 'http://169.169.171.21' : '';
+import { getToken } from './token';
+import store from '@/app/store';
+import { push } from 'connected-react-router';
+
+let serviceUrl = /* process.env.NODE_ENV === 'production' ? 'http://169.169.171.21' :  */'';
+
+const whiteList = [
+  'getProductInfo',
+  'anon_pallet',
+  'anon_transport',
+  'app_token',
+  'login.do'
+]
 
 const codeMessage = {
   200: '服务器成功返回请求的数据',
@@ -48,8 +58,16 @@ service.interceptors.request.use( request => {
       };
     }
   }
-  
-  //request.headers['Authorization'] = getToken() ? `Bearer ${getToken()}` : 'Basic dGVzdDp0ZXN0';
+  const headers = whiteList.some(item => {
+    return request.url.indexOf(item) !== -1
+  }) ? {} : {
+    api: true,
+    accessToken: getToken()
+  }
+  request.headers = {
+    ...request.headers,
+    ...headers
+  }
   
   return request;
 }, error => {
@@ -58,8 +76,12 @@ service.interceptors.request.use( request => {
 
 // 返回时候的拦截处理
 service.interceptors.response.use( response => response.data, response => {
-  const { status } = response.response;
-  Toast.fail(codeMessage[status]);
+  const { status,config:{url} } = response.response;
+  if(url.indexOf('/cloud') !== -1) {
+    Toast.fail('单点登录失败，请手动登录');
+  } else {
+    Toast.fail(codeMessage[status]);
+  }
   throw response.response;
 });
 
