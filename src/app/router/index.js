@@ -18,9 +18,18 @@ const DEFAULT_SCREEN_CONFIG = {
   exit: 'to-exit'
 }
 
+const getCurrentRoute = location => {
+  return routesConfig.find(route => new RegExp(`^${route.path}$`).test(location.pathname));
+}
+
 const getScreenConfig = location => {
-  const matchedRoute = routesConfig.find(route => new RegExp(`^${route.path}$`).test(location.pathname));
+  const matchedRoute = getCurrentRoute(location);
   return (matchedRoute && matchedRoute.transitionConfig) || DEFAULT_SCREEN_CONFIG;
+}
+
+const getScreenTitle = location => {
+  const matchedRoute = getCurrentRoute(location);
+  return (matchedRoute && matchedRoute.title) || '全程物流';
 }
 
 let oldLocation = null;
@@ -37,7 +46,7 @@ const Routes = withRouter(({location, history}) => {
   }
   // 更新旧location
   oldLocation = location;
-
+  document.title = getScreenTitle(location);
   return (
     <TransitionGroup
       className='router-wrapper'

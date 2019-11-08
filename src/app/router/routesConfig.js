@@ -35,6 +35,7 @@ const routesConfig = [
   {
     path: '/login',
     component: LoginAsync,
+    title: '登录',
     transitionConfig: {
       enter: 'from-bottom',
       exit: 'to-bottom'
@@ -43,6 +44,7 @@ const routesConfig = [
   {
     path: '/news-detail',
     component: NewsDetailAsync,
+    title: '新闻详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -51,6 +53,7 @@ const routesConfig = [
   {
     path: '/cargo',
     component: CargoAsync,
+    title: '货盘信息',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -59,6 +62,7 @@ const routesConfig = [
   {
     path: '/cargo-create',
     component: CargoCreateAsync,
+    title: '货盘发布',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -67,6 +71,7 @@ const routesConfig = [
   {
     path: '/transport',
     component: TransportAsync,
+    title: '运力信息',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -75,6 +80,7 @@ const routesConfig = [
   {
     path: '/transport-create',
     component: TransportCreateAsync,
+    title: '运力发布',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -83,6 +89,7 @@ const routesConfig = [
   {
     path: '/price-reply',
     component: PriceReplyAsync,
+    title: '询价回复',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -91,6 +98,7 @@ const routesConfig = [
   {
     path: '/price-reply-detail',
     component: PriceReplyDetailAsync,
+    title: '询价回复详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -99,6 +107,7 @@ const routesConfig = [
   {
     path: '/order',
     component: OrderAsync,
+    title: '订单查询',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -107,6 +116,7 @@ const routesConfig = [
   {
     path: '/order-comment',
     component: OrderCommentAsync,
+    title: '订单评价',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -115,6 +125,7 @@ const routesConfig = [
   {
     path: '/product',
     component: ProductAsync,
+    title: '产品信息',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -123,6 +134,7 @@ const routesConfig = [
   {
     path: '/product-detail',
     component: ProductDetailAsync,
+    title: '产品详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -131,6 +143,7 @@ const routesConfig = [
   {
     path: '/wharf-sock',
     component: WharfSockAsync,
+    title: '码头库存',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -139,6 +152,7 @@ const routesConfig = [
   {
     path: '/wharf-sock-detail',
     component: WharfSockDetailAsync,
+    title: '码头库存详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -147,6 +161,7 @@ const routesConfig = [
   {
     path: '/task',
     component: TaskAsync,
+    title: '任务管理',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -155,6 +170,7 @@ const routesConfig = [
   {
     path: '/task-detail',
     component: TaskDetailAsync,
+    title: '任务详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -163,6 +179,7 @@ const routesConfig = [
   {
     path: '/task-track',
     component: TaskTrackAsync,
+    title: '任务跟踪',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -171,6 +188,7 @@ const routesConfig = [
   {
     path: '/attachments',
     component: AttachmentsAsync,
+    title: '附件列表',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -179,6 +197,7 @@ const routesConfig = [
   {
     path: '/transport-sock',
     component: TransportSockAsync,
+    title: '在途库存',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -187,6 +206,7 @@ const routesConfig = [
   {
     path: '/transport-sock-detail',
     component: TransportSockDetailAsync,
+    title: '在途库存详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -195,6 +215,7 @@ const routesConfig = [
   {
     path: '/order-detail',
     component: OrderDetailAsync,
+    title: '订单详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -203,6 +224,7 @@ const routesConfig = [
   {
     path: '/wharf-congestion',
     component: WharfCongestionAsync,
+    title: '拥堵情况',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -211,6 +233,7 @@ const routesConfig = [
   {
     path: '/tide',
     component: TideAsync,
+    title: '潮汐信息',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

@@ -54,10 +54,11 @@ export default withCache(props => {
     hasCache && setSelected(props.cache['selected']); 
     return;
   }, [props.cache]);
-  const handleSelect = name => {
-    if(name!==selected) {
-      setSelected(name);
-      props.onCache({selected: name});
+  const handleSelect = item => {
+    if(item.key!==selected) {
+      document.title = item.title;
+      setSelected(item.key);
+      props.onCache({selected: item.key});
     }
   }
   return (
@@ -74,7 +75,7 @@ export default withCache(props => {
                 {...item} 
                 //dot={!!(key === 'Message' && dot)}
                 selected={selected === key} 
-                onPress={() => handleSelect(key)}
+                onPress={() => handleSelect(item)}
               >
                 <Component/>
               </TabBarItem>

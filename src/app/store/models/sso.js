@@ -41,8 +41,8 @@ const effects = dispatch => ({
       { text: '去登录', onPress:() => dispatch(push('/login')) })
     }
     setToken(response.data.access_token);
-    dispatch.user.fetchCurrentUser();
     dispatch.user.fetchCurrentMenu();
+    dispatch.user.fetchCurrentUser();
     Toast.hide();
   },
   async loginSSO(ticket) {

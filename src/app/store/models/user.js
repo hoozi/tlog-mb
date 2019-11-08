@@ -27,8 +27,8 @@ const effects = dispatch => ({
     if(!response) return;
     const { access_token } = response.data;
     setToken(access_token);
-    this.fetchCurrentUser();
-    this.fetchCurrentMenu();
+    await this.fetchCurrentUser();
+    await this.fetchCurrentMenu();
     Toast.hide();
     dispatch(goBack());
     callback && callback();
