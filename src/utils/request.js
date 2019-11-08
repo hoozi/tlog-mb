@@ -2,8 +2,6 @@ import axios from 'axios';
 //import { getToken } from './token';
 import { Toast } from 'antd-mobile';
 import { getToken } from './token';
-import store from '@/app/store';
-import { push } from 'connected-react-router';
 
 let serviceUrl = /* process.env.NODE_ENV === 'production' ? 'http://169.169.171.21' :  */'';
 

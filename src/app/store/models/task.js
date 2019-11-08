@@ -1,4 +1,4 @@
-import { queryTask, crudTaskTrack, queryTrackNode, queryRoute } from '@/api/task';
+import { queryTask, crudTaskTrack, queryTrackNode, queryRoute, queryMMSI } from '@/api/task';
 import { Toast } from 'antd-mobile';
 import isArray from 'lodash/isArray';
 
@@ -40,12 +40,18 @@ const effects = {
     callback && callback(response.data);
   },
   async fetchRoute(payload, rootState, callback) {
+    const { chineseName, ...restPayload } = payload;
+    const mmsiResponse = await queryMMSI({
+      crudType: 'retrieve',
+      chineseName
+    })
+    if(!mmsiResponse || !mmsiResponse.data.length) return;
+    const { mmsi='' } = mmsiResponse.data[0]
+    if(!mmsi) return;
     const response = await queryRoute({
       crudType: 'retrieve',
-      beginTime: '2019-10-01 00:00:00',
-      endTime: '2019-10-15 00:00:00',
-      mmsi: '413510000',
-      ...payload
+      mmsi,
+      ...restPayload
     });
     if(!response) return;
     this.save({

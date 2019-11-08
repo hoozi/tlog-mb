@@ -23,3 +23,9 @@ export async function queryRoute(params) {
     data: params
   })
 }
+
+export async function queryMMSI(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/base_vessel`, {
+    data: params
+  })
+}

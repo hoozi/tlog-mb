@@ -20,6 +20,7 @@ import { Sticky, StickyContainer } from 'react-sticky';
 import moment from 'moment';
 import { parse } from 'qs';
 import { BaiduMap, Polyline, Marker } from 'react-baidu-maps';
+import find from 'lodash/find';
 import Timeline from '@/component/Timeline';
 import Screen from '@/component/Screen';
 import Empty from '@/component/Empty';
@@ -247,19 +248,19 @@ const mapDispatchToProps = ({ task, common }) => ({
 class TaskTrack extends Component {
   constructor(props) {
     super(props);
-    const { search } = this.props.location
+    const { location:{search}, task:{recordList} } = this.props
     this.state = {
       center: {lng:121.721133,lat:30.605635},
       modalVisible: false,
       startPoint: {},
       endPoint: {}
     }
-    this.taskId = parse(search.substring(1))['id'];
+    const id = parse(search.substring(1))['id'];
+    this.task = find(recordList.map(item => ({...item})), item => item.id === id);
   }
   getTaskTrack() {
-    this.props.fetchTaskTrack({
-      taskId: this.taskId
-    });
+    const { id:taskId } = this.task;
+    this.props.fetchTaskTrack({taskId});
   }
   closeModalAndRefreshList() {
     this.setState({
@@ -268,9 +269,14 @@ class TaskTrack extends Component {
     this.getTaskTrack();
   }
   componentDidMount() { 
+    const { layDaysFrom:beginTime, layDaysTo:endTime, vesselChineseName:chineseName  } = this.task;
     this.getTaskTrack();
     this.props.fetchTrackNode();
-    this.props.fetchRoute({}, data => {
+    this.props.fetchRoute({
+      chineseName, 
+      beginTime,
+      endTime
+    }, data => {
       const endPoint = data.pop();
       const startPoint = data.shift();
       const { lon:lng, lat } = endPoint;
@@ -293,11 +299,12 @@ class TaskTrack extends Component {
   }
 
   hanndleNodeSubmit = params => {
+    const { id:taskId } = this.task;
     const { common:{uploadKey} } = this.props
     const { attachment, ...restParams } = params;
     this.props.editNode({
       message: '节点添加成功',
-      taskId: this.taskId,
+      taskId,
       id: uploadKey,
       ...restParams
     },() => {

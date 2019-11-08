@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavBar, Icon, Flex } from 'antd-mobile';
+import { NavBar, Icon } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { Link } from 'react-router-dom';
@@ -108,18 +108,12 @@ export default connect(mapStateToProps)(props => {
           <RouteCard from={data.loadName} to={data.unloadName}/>
           <div className={form.createForm}><Fields columns={columns} data={data}/></div>
           <div className={form.bottomButton}>
-            <Flex>
-              <Flex.Item className='text-center'>
-                <Link to={`/task?id=${data.id}`}>
-                  <span>物流任务</span>
-                </Link>
-              </Flex.Item>
-              <Flex.Item className='text-center'>
-                <Link to={`/order-comment?id=${data.id}`}>
-                  <span>订单评价</span>
-                </Link>
-              </Flex.Item>
-            </Flex>
+            <Link to={`/task?id=${data.id}`} className='text-center'>
+              <span>物流任务</span>
+            </Link>
+            <Link to={`/order-comment?id=${data.id}`} className='text-center'>
+              <span>订单评价</span>
+            </Link>
           </div>
         </> : 
         <Empty/>
