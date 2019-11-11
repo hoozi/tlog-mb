@@ -1,0 +1,67 @@
+@import '../../theme.less';
+
+.numberInfo {
+  .suffix {
+    color: @color-text-base;
+    font-size: 16px;
+    font-style: normal;
+    margin-left: 4px;
+  }
+  .numberInfoTitle {
+    color: @color-text-base;
+    font-size: 16px;
+    margin-bottom: 16px;
+    transition: all 0.3s;
+  }
+  .numberInfoSubTitle {
+    color: @color-text-secondary;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+  }
+  .numberInfoValue {
+    margin-top: 4px;
+    //font-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+    span {
+      color: @color-text-base;
+     /*  line-height: 32px;
+      height: 32px; */
+      font-size: 18px;
+      /* margin-right: 32px; */
+    }
+    .subTotal {
+      color: @color-text-secondary;
+      font-size: 12px;
+      margin-right: 0;
+      svg {
+        font-size: 12px;
+        transform: scale(0.82);
+      }
+      :global {
+        .am-icon-up {
+          color: #52c41a;
+          vertical-align: middle;
+          margin-top: -2px;
+        }
+        .am-icon-down {
+          color: #f5222d;
+          vertical-align: middle;
+          margin-top: -1px;
+        }
+      }
+    }
+  }
+}
+.numberInfolight {
+  .numberInfoValue {
+    & > span {
+      color: @color-text-base;
+    }
+  }
+}

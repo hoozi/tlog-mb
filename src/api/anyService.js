@@ -19,7 +19,7 @@ export async function anyLogin() {
   const response = await queryToken({
     tenantid: 'next',
     user: 'guest',
-    password: '1234567',
+    password: '<@#Q>c!W#l<2019&>',
     //accountId: '733974411840848896',
     logintype: '2'
   });

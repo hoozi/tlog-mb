@@ -10,7 +10,8 @@ const whiteList = [
   'anon_pallet',
   'anon_transport',
   'app_token',
-  'login.do'
+  'login.do',
+  'getAnnouncements'
 ]
 
 const codeMessage = {

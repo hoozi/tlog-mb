@@ -17,6 +17,7 @@ import RouteName from '@/component/RouteName';
 import Empty from '@/component/Empty';
 import StandardCard from '@/component/StandardCard';
 import CenterLoading from '@/component/CenterLoading';
+import NumberInfo from '@/component/NumberInfo';
 import styles from './index.module.less';
 import { mapEffects, mapLoading, getMenuFromStorage } from '@/utils';
 import { BRAND_COLOR } from '@/constants/color';
@@ -289,6 +290,34 @@ class Home extends PureComponent {
                 }
               </LoginCheckArea>
             </div>
+          </div> 
+          <div className='pl16 pr16 mt16 mb16'>
+            <Flex className='mb8'>
+              <Flex.Item className={styles.chartItem}>
+                <NumberInfo
+                  subTitle={<span>今日进口船</span>}
+                  total={'13000'}
+                  suffix={'艘次'}
+                  status='up'
+                  subTotal={'同比17.1'}
+                  gap={6}
+                />
+              </Flex.Item>
+              <Flex.Item className={styles.chartItem}>
+                <NumberInfo
+                  subTitle={<span>今日出口船</span>}
+                  total={'100'}
+                  suffix={'艘次'}
+                  status='down'
+                  subTotal={'同比13.1'}
+                  gap={6}
+                />
+              </Flex.Item>
+            </Flex>
+            <Flex>
+              <Flex.Item className={styles.chartItem}>3</Flex.Item>
+              <Flex.Item className={styles.chartItem}>4</Flex.Item>
+            </Flex>
           </div>
           <div className={styles.indexCard}>
             <div className={styles.indexCardHeader}>

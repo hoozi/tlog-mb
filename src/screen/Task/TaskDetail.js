@@ -30,14 +30,17 @@ export default connect(mapStateToProps)(props => {
     },
     {
       title: '船长',
+      dataIndex: 'shipLength',
       extra: () => 'm'
     },
     {
       title: '吃水',
+      dataIndex: 'shipDraught',
       extra: () => 'm'
     },
     {
       title: '载重吨',
+      dataIndex: 'shipLoad',
       extra: () => '吨'
     },
     {
