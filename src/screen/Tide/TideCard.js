@@ -4,6 +4,7 @@ import { Icon } from 'antd-mobile';
 import styles from './index.module.less';
 import Empty from '@/component/Empty';
 import { BRAND_COLOR } from '@/constants/color';
+import { PIXEL_RATIO } from '@/constants';
 
 const defs = [
   {
@@ -17,8 +18,6 @@ const defs = [
     min: 0,
   },
 ];
-
-const pixelRatio = window.devicePixelRatio * 2;
 
 const showTooltip = e => {
   const { items } = e;
@@ -35,7 +34,7 @@ function formatLabel() {
 const TideChart = ({data}) => (
   <div className='pt16'>
     <span className={styles.tideUnit}>单位:cm</span>
-    <Chart width='100%' data={data.map(item => ({...item, value: parseInt(item.value)}))} defs={defs} pixelRatio={pixelRatio} >
+    <Chart padding='auto' data={data.map(item => ({...item, value: parseInt(item.value)}))} defs={defs} pixelRatio={PIXEL_RATIO} >
       <Axis dataKey='time' label={formatLabel}/>
       <Axis dataKey='value'/>
       <Tooltip 

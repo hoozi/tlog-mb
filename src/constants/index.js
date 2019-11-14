@@ -5,3 +5,5 @@ export const FORM_ID = 'nbg_task_trace';
 export const APP_ID = '107247';
 
 export const APP_SECRET = '123456789';
+
+export const PIXEL_RATIO = window.devicePixelRatio * 2;

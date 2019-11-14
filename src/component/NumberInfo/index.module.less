@@ -3,7 +3,7 @@
 .numberInfo {
   .suffix {
     color: @color-text-base;
-    font-size: 16px;
+    font-size: 12px;
     font-style: normal;
     margin-left: 4px;
   }
@@ -32,32 +32,46 @@
       color: @color-text-base;
      /*  line-height: 32px;
       height: 32px; */
-      font-size: 18px;
-      /* margin-right: 32px; */
+      font-size: 20px;
+      //margin-right: 24px;
     }
-    .subTotal {
-      color: @color-text-secondary;
-      font-size: 12px;
-      margin-right: 0;
-      svg {
-        font-size: 12px;
-        transform: scale(0.82);
+    
+  }
+  .subTotalContainer {
+    display: flex;
+    justify-content: space-between;
+  }
+  .subTotal {
+    span {
+      display: inline-block;
+    }
+    &:first-child {
+      
+    }
+    span:nth-child(2) {
+      color: @color-text-base; 
+    }
+    color: @color-text-secondary;
+    font-size: 13px;
+    margin-top: 12px;
+    svg {
+      transform: scale(0.82);
+    }
+    :global {
+      .am-icon-_up {
+        color: #52c41a;
+        vertical-align: middle;
+        margin-top: -2px;
       }
-      :global {
-        .am-icon-up {
-          color: #52c41a;
-          vertical-align: middle;
-          margin-top: -2px;
-        }
-        .am-icon-down {
-          color: #f5222d;
-          vertical-align: middle;
-          margin-top: -1px;
-        }
+      .am-icon-_down {
+        color: #f5222d;
+        vertical-align: middle;
+        margin-top: -2px;
       }
     }
   }
 }
+
 .numberInfolight {
   .numberInfoValue {
     & > span {

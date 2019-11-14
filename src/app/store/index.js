@@ -17,6 +17,7 @@ import task from './models/task';
 import congestion from './models/congestion';
 import tide from './models/tide';
 import sso from './models/sso';
+import analysis from './models/analysis';
 
 const history = createHashHistory();
 
@@ -44,7 +45,8 @@ const store = init({
     task,
     congestion,
     tide,
-    sso
+    sso,
+    analysis
   },
   redux,
   plugins: [loading]

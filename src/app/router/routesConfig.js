@@ -26,6 +26,7 @@ const TransportSockDetailAsync = LoadingComponent('TransportSock/Sock')
 const AttachmentsAsync = LoadingComponent('Attachments');
 const WharfCongestionAsync = LoadingComponent('WharfCongestion');
 const TideAsync = LoadingComponent('Tide');
+const AnalysisAsync = LoadingComponent('Analysis');
 
 const routesConfig = [
   {
@@ -234,6 +235,15 @@ const routesConfig = [
     path: '/tide',
     component: TideAsync,
     title: '潮汐信息',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/analysis',
+    component: AnalysisAsync,
+    title: '统计分析',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

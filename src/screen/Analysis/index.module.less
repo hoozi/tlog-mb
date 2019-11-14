@@ -1,0 +1,106 @@
+@import '../../theme.less';
+
+.analysisCardContainer {
+  overflow:visible;
+}
+.analysisCard {
+  width: 100%;
+  background-color: #fff;
+  padding: 16px;
+}
+.tag {
+  position: relative;
+  padding-left: 1px;
+  svg {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    top:-14px;
+    left:-18px;
+    transform: rotate(-90deg);
+    color: @brand-primary;
+  }
+}
+.analysisCardBody {
+  padding:0;
+  &:before {
+    background-color: #ccc !important;
+  }
+  .analysisContainer {
+    padding:16px;
+    position: relative;
+    height: 200px;
+    //padding-right: 64%;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .polarContainer {
+    //width: 100%;
+    canvas {
+      margin-left: -66px;
+    }
+  }
+}
+
+.analysisCardContainer,.analysisCardVContainer {
+  .analysisCardTitle {
+    position: relative;
+    display: block;
+    padding-left: 12px;
+    &.bg1{
+      //color: #1890FF;
+      &:before {
+        background-color: #1890FF;
+      }
+    }
+    &.bg2{
+      //color: #13C2C2; 
+      &:before {
+        background-color: #13C2C2;
+      }
+    }
+    &:before {
+      content:'';
+      position: absolute;
+      left:0;
+      top: 50%;
+      margin-top: -3px;
+      width: 6px;
+      height: 6px;
+      background-color: #ccc;
+      border-radius: 100px;
+    }
+  }
+  position: relative;
+  /* &:before {
+    .scale-hairline-common(@border-color-secondary, 0, auto, auto, 0);
+    width: 100%;
+    height: 1px;
+    transform-origin: 50% 50%;
+    transform: scaleY(0.33);
+  } */
+  :global {
+    .am-flexbox-item {
+      padding: 16px;
+      &:last-child {
+        position: relative;
+        margin-left: 0;
+        /* &:before {
+          .scale-hairline-common(rgba(235,237,240,.5), 0, auto, auto, 0);
+          width: 1px;
+          height: 500%;
+          transform-origin: 0 0;
+          transform: scaleY(0.2);
+        } */
+      }
+    }
+  }
+}
+
+.analysisCardVContainer {
+  margin-top: 2px;
+  width: 100%;
+  margin-left: -50px;
+}

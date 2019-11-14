@@ -75,7 +75,13 @@ const menus = [{
   icon: <Icon type='yongdu' size='f' color='#f15a4a'/>,
   text: '拥堵情况',
   url: '/wharf-congestion'
+}, {
+  icon: <Icon type='tongji' size='f' color='#f39927'/>,
+  text: '统计分析',
+  url: '/analysis'
 }];
+
+const AnalysisCard = () => null;
 
 const ProductCard = ({item, history}) => (
   <StandardCard
@@ -177,9 +183,10 @@ const AccountCard = props => {
   return <div className={styles.accountCard}><h1>全程物流</h1></div>
 }
 
-const mapStateToProps = ({ product, cargo, transport }) => {
+const mapStateToProps = ({ product, cargo, transport, analysis }) => {
   return {
     product,
+    analysis,
     cargo,
     transport,
     ...mapLoading('product',{
@@ -193,14 +200,18 @@ const mapStateToProps = ({ product, cargo, transport }) => {
     }),
     ...mapLoading('user', {
       fetchCurrentMenuing: 'fetchCurrentMenu'
+    }),
+    ...mapLoading('analysis', {
+      fetchYMWAnalysising: 'fetchYMWAnalysis'
     })
   }
 }
 
-const mapDispatchToProps = ({ product, cargo, transport, sso }) => ({
+const mapDispatchToProps = ({ product, cargo, transport, sso, analysis }) => ({
   ...mapEffects(product, ['fetchProduct']),
   ...mapEffects(cargo, ['fetchAnyCargo']),
   ...mapEffects(transport, ['fetchAnyTransport']),
+  ...mapEffects(analysis, ['fetchYMWAnalysis']),
   loginSSO: sso.loginSSO
 })
 @connect(mapStateToProps, mapDispatchToProps)
@@ -229,6 +240,7 @@ class Home extends PureComponent {
       ticket && this.props.loginSSO(ticket);
     }
     this.getIndexList();
+    this.props.fetchYMWAnalysis();
   }
   handleLinkTo = el => {
     const { history } = this.props;
@@ -290,35 +302,8 @@ class Home extends PureComponent {
                 }
               </LoginCheckArea>
             </div>
-          </div> 
-          <div className='pl16 pr16 mt16 mb16'>
-            <Flex className='mb8'>
-              <Flex.Item className={styles.chartItem}>
-                <NumberInfo
-                  subTitle={<span>今日进口船</span>}
-                  total={'13000'}
-                  suffix={'艘次'}
-                  status='up'
-                  subTotal={'同比17.1'}
-                  gap={6}
-                />
-              </Flex.Item>
-              <Flex.Item className={styles.chartItem}>
-                <NumberInfo
-                  subTitle={<span>今日出口船</span>}
-                  total={'100'}
-                  suffix={'艘次'}
-                  status='down'
-                  subTotal={'同比13.1'}
-                  gap={6}
-                />
-              </Flex.Item>
-            </Flex>
-            <Flex>
-              <Flex.Item className={styles.chartItem}>3</Flex.Item>
-              <Flex.Item className={styles.chartItem}>4</Flex.Item>
-            </Flex>
           </div>
+          <AnalysisCard/> 
           <div className={styles.indexCard}>
             <div className={styles.indexCardHeader}>
               <h2 className={styles.indexCardTitle}><span>物流产品</span></h2>

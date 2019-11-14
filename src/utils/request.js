@@ -11,7 +11,8 @@ const whiteList = [
   'anon_transport',
   'app_token',
   'login.do',
-  'getAnnouncements'
+  'getAnnouncements',
+  'statistics_year_month_week'
 ]
 
 const codeMessage = {
