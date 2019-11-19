@@ -15,7 +15,7 @@ const defs = [
   {
     dataKey: 'value',
     tickCount: 5,
-    min: 0,
+    min: 0
   },
 ];
 
@@ -34,7 +34,7 @@ function formatLabel() {
 const TideChart = ({data}) => (
   <div className='pt16'>
     <span className={styles.tideUnit}>单位:cm</span>
-    <Chart padding='auto' data={data.map(item => ({...item, value: parseInt(item.value)}))} defs={defs} pixelRatio={PIXEL_RATIO} >
+    <Chart height='200' padding='auto' data={data.map(item => ({...item, value: parseInt(item.value)}))} defs={defs} pixelRatio={PIXEL_RATIO} >
       <Axis dataKey='time' label={formatLabel}/>
       <Axis dataKey='value'/>
       <Tooltip 

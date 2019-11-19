@@ -1,106 +1,125 @@
 @import '../../theme.less';
 
-.analysisCardContainer {
-  overflow:visible;
-}
-.analysisCard {
-  width: 100%;
-  background-color: #fff;
-  padding: 16px;
-}
-.tag {
-  position: relative;
-  padding-left: 1px;
-  svg {
-    display: block;
-    position: absolute;
-    z-index: 1;
-    top:-14px;
-    left:-18px;
-    transform: rotate(-90deg);
-    color: @brand-primary;
-  }
-}
-.analysisCardBody {
-  padding:0;
-  &:before {
-    background-color: #ccc !important;
-  }
-  .analysisContainer {
-    padding:16px;
-    position: relative;
-    height: 200px;
-    //padding-right: 64%;
-    overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .polarContainer {
-    //width: 100%;
-    canvas {
-      margin-left: -66px;
-    }
-  }
-}
-
-.analysisCardContainer,.analysisCardVContainer {
-  .analysisCardTitle {
-    position: relative;
-    display: block;
-    padding-left: 12px;
-    &.bg1{
-      //color: #1890FF;
-      &:before {
-        background-color: #1890FF;
-      }
-    }
-    &.bg2{
-      //color: #13C2C2; 
-      &:before {
-        background-color: #13C2C2;
-      }
-    }
-    &:before {
-      content:'';
-      position: absolute;
-      left:0;
-      top: 50%;
-      margin-top: -3px;
-      width: 6px;
-      height: 6px;
-      background-color: #ccc;
-      border-radius: 100px;
-    }
-  }
-  position: relative;
-  /* &:before {
-    .scale-hairline-common(@border-color-secondary, 0, auto, auto, 0);
-    width: 100%;
-    height: 1px;
-    transform-origin: 50% 50%;
-    transform: scaleY(0.33);
-  } */
+.analysisScreen {
   :global {
-    .am-flexbox-item {
-      padding: 16px;
-      &:last-child {
-        position: relative;
-        margin-left: 0;
-        /* &:before {
-          .scale-hairline-common(rgba(235,237,240,.5), 0, auto, auto, 0);
-          width: 1px;
-          height: 500%;
-          transform-origin: 0 0;
-          transform: scaleY(0.2);
-        } */
+    .am-tabs {
+      height: 43px;
+      overflow: hidden;
+      //background-color: @brand-primary;
+    }
+    .am-tabs-default-bar-tab {
+      transition: all .2s ease;
+      overflow: hidden;
+      &:after {
+        display: none !important;
+       /*  transform: scaleY(1) !important;
+        height: 3px !important;
+        bottom: 2px !important;
+        width: 20px !important;
+        left: 50% !important;
+        border-radius: 100px;
+        margin-left: -10px;
+        background-color: #fff !important; */
+      }
+    }
+    .am-tabs-default-bar-tab-active {
+      font-size: 16px;
+      font-weight: 600;
+      /* &:after {
+        display: block !important;
+      } */
+    }
+    .am-tabs-content-wrap {
+      display: none;
+    }
+    .am-tabs-default-bar-underline {
+      display: none;
+    }
+  }
+}
+
+.numberCard {
+  display: flex;
+  background-color: @brand-primary;
+  padding:24px 32px 32px;
+  color: #fff;
+  overflow: hidden;
+  :global {
+    .am-flexbox {
+      overflow: visible;
+    }
+  }
+  .numberTitle {
+    color:#a5bef8;
+    font-size: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .numberItem {
+    width: 50%;
+    text-align: center;
+    position: relative;
+    &.numberItemActive {
+      b {
+        color: #fff;
+      }
+      &:after {
+        display: block;
+      }
+    }
+    &:after {
+      content: '';
+      display: none;
+      width: 10px;
+      height: 10px;
+      background-color: #fff;
+      position: absolute;
+      left: 50%;
+      bottom: -37px;
+      margin-left: -5px;
+      transform:rotate(45deg);
+      z-index: 10
+    }
+    b {
+      font-size: 28px;
+    }
+    span {
+      color:#a5bef8;
+     // margin-top: 6px;
+      font-weight: 500;
+    }
+    &:last-child {
+      //margin-right: 0;
+     // margin-left: 32px;
+     // text-align: left;
+    }
+  }
+}
+
+.splitText {
+  color: @color-text-secondary;
+  display: inline-block;
+  margin:0 8px;
+}
+
+.workList {
+  :global {
+    .am-list-item .am-list-line .am-list-brief {
+      margin-top: 4px;
+      line-height: 1;
+    }
+    .am-list-body {
+      &:before {
+        display:none !important;
       }
     }
   }
 }
 
-.analysisCardVContainer {
-  margin-top: 2px;
-  width: 100%;
-  margin-left: -50px;
+.analysisFullHeight {
+  height: calc(100% - 45px);
+}
+
+.analysisComponentContainer {
+  min-height: calc(100% - 43px);
 }

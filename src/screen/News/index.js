@@ -154,7 +154,7 @@ class News extends PureComponent {
             <span><Icon type='leixing' size='xxs'/>{typeMap[item.type]}</span>
           </div>
         </Flex>
-        <div className={styles.newsItemImg}><img src={item.img ? item.img : emptyImg} alt={item.title}/></div>
+        <div className={styles.newsItemImg}><img src={item.accessoryid ? item.accessoryid : emptyImg} alt={item.title}/></div>
       </Link>
     )
   }
@@ -179,6 +179,7 @@ class News extends PureComponent {
           loading={loading}
           firstLoading={firstLoading}
           hasMore={hasMore}
+          useBodyScroll={false}
           renderListCard = { this.renderListCard }
           onScroll={this.handleLsScroll}
           pullToRefresh={false}

@@ -1,231 +1,134 @@
-import React, { Component } from 'react';
-import { NavBar, Icon, Card, Flex, SegmentedControl, Picker } from 'antd-mobile';
-import { Chart, Geom, Coord, Legend, Guide } from 'bizgoblin';
+import React, { Component, lazy, Suspense } from 'react';
+import { NavBar, Icon, Tabs } from 'antd-mobile';
+import { connect } from 'react-redux';
+import { StickyContainer, Sticky } from 'react-sticky';
 import Screen from '@/component/Screen';
-import NumberInfo from '@/component/NumberInfo';
-import numeral from 'numeral';
 import styles from './index.module.less';
+import { mapEffects, mapLoading } from '@/utils';
+import color from '@/constants/color';
+import Empty from '@/component/Empty';
 
-
-const pixelRatio = window.devicePixelRatio * 2;
-
-
-const data = [
+const { tabsStyle } = color;
+const WorkAsync = lazy(() => import('./Work'));
+const tabsData = [
   {
-    'name': '煤炭',
-    percent: 13444,
-    a: '1',
-  }, {
-    'name': '铁矿石',
-    percent: 1340,
-    a: '1',
+    title: <><Icon type='zongji' size='xs' className='mr4'/> 当前</>,
+    key: 'work'
+  },
+  {
+    title: <><Icon type='kehu' size='xs' className='mr4'/> 客户</>,
+    key: 'customer'
+  },
+  {
+    title: <><Icon type='fuwushang' size='xs' className='mr4'/> 服务商</>,
+    key: 'service'
+  },
+  {
+    title: <><Icon type='yunjia' size='xs' className='mr4'/> 运价</>,
+    key: 'price'
   }
 ];
+const workTabs = [{
+  title: '进行中的订单',
+  count: 334,
+  key: 0
+},{
+  title: '进行中的任务',
+  count: 54,
+  key: 1
+}]
 
-const data2 = [
-  {
-    'name': '煤炭',
-    percent: 33,
-    a: '1',
-  }, {
-    'name': '铁矿石',
-    percent: 50,
-    a: '1',
+const CurrentComponent = props => {
+  const analysis = {
+    'work': <WorkAsync tabs={workTabs}/>,
+    'customer': <Empty/>,
+    'service': <Empty/>,
+    'price': <Empty/>
   }
-]
+  return analysis[props.is];
+}
 
-export default class Analysis extends Component {
+const mapStateToProps = ({ analysis }) => {
+  return {
+    analysis,
+    ...mapLoading('analysis', {
+      fetchYMWAnalysising: 'fetchYMWAnalysis'
+    })
+  }
+}
+
+const mapDispatchToProps = ({ analysis }) => mapEffects(analysis, ['fetchYMWAnalysis']);
+
+@connect(mapStateToProps, mapDispatchToProps)
+class Analysis extends Component {
+  state = {
+    current: 'work'
+  }
+  getCurrentCustomer(id) {
+    const { analysis: { customers } } = this.props;
+    const findedCurrentCustomer = customers.filter(item => item.value === id)[0];
+    const currentCustomer = {
+      customer: findedCurrentCustomer.label,
+      customerId: findedCurrentCustomer.value
+    }
+    this.setState({
+      currentCustomer
+    })
+  }
+  componentDidMount() {
+   /*  this.props.fetchYMWAnalysis(customers => {
+      this.getCurrentCustomer(customers[0].value)
+    }); */
+  }
+  handleCustomerChange = value => {
+    this.getCurrentCustomer(value[0])
+  }
+  handleAnalysisTabChange = tab => {
+    const { key:current } = tab;
+    this.setState({
+      current
+    })
+  }
   render() {
-    const { history } = this.props
+    const { history } = this.props;
     return (
       <Screen
-        header={() =>(
-          <NavBar   
+        className={styles.analysisScreen}
+        header={() => (
+          <NavBar
             mode='dark'
-            icon={<Icon type='left' size='lg'/>}
+            icon={<Icon type='left' size='lg' />}
             onLeftClick={() => history.goBack()}
           >
             统计分析
           </NavBar>
         )}
       >
-        <div className='p16'>
-          <SegmentedControl values={['周', '月', '年']} style={{height: 26}}/>
+      <StickyContainer className={styles.analysisFullHeight}>
+        <Sticky>
+          {
+            ({style}) => (
+              <div style={{...style, zIndex: 10,height: 43}}>
+                <Tabs 
+                  initialPage={0} 
+                  tabs={tabsData} 
+                  {...tabsStyle} 
+                  renderTabBar={props => <Tabs.DefaultTabBar {...props} page={4} />}
+                  onChange={this.handleAnalysisTabChange}
+                />
+              </div>
+            )
+          }
+        </Sticky>
+        <div className={styles.analysisComponentContainer}>
+          <Suspense fallback='加载中'>
+            <CurrentComponent is={this.state.current}/>
+          </Suspense>
         </div>
-        <Card full className='pb0'>
-          <Picker
-            cols={1}
-            data={[
-              {
-                lable:'测试',
-                value: 1
-              }
-            ]}
-            extra={<Icon type='xiayiyeqianjinchakangengduo' style={{verticalAlign: 'middle'}}/>}
-          >
-            <Card.Header
-              title={<div className={styles.tag}><Icon type='huozhu' size='lg'/>马钢股份</div>}
-              
-            />
-          </Picker>
-          <Card.Body className={styles.analysisCardBody}>
-            <div className={styles.analysisContainer}>
-              <div className={styles.polarContainer}>
-                <Chart width='280' height='280' data={data} pixelRatio={pixelRatio}>
-                  <Coord type="polar" transposed radius={0.65} innerRadius={0.6}/>
-                  <Geom
-                    geom="interval"
-                    position="a*percent"
-                    color={['name', ['#1890FF', '#13C2C2']]}
-                    adjust="stack"
-                    style={{
-                      lineWidth: 1,
-                      stroke: '#fff',
-                      lineJoin: 'round',
-                      lineCap: 'round',
-                    }}
-                  />
-                  {/* <Legend 
-                    position='right'
-                    offsetX={-32}
-                    itemFormatter={value => `${value} ${numeral(map[value]).format('0,0')}吨`}
-                    nameStyle={{
-                      fontSize: 13
-                    }}
-                  /> */}
-                  <Guide
-                    type='html'
-                    position= {['50%', '50%']}
-                    alignX='middle'
-                    alignY='middle'
-                    html={
-                      `<div style="color:#8c8c8c;width:120px;font-size:12px;text-align: center;line-height:21px;">
-                        总计(吨)<br/>
-                        <span style="color:#060606;font-size:18px;">
-                          ${numeral(13444+1340).format('0,0')}
-                        </span>
-                      </div>`
-                    }
-                  />
-                </Chart>
-              </div>
-              <div className={styles.analysisCardVContainer}>
-                <div className='mb16'>
-                  <NumberInfo
-                    subTitle={<span className={`${styles.analysisCardTitle} ${styles.bg1}`}>本周货量(煤炭)</span>}
-                    total={numeral(13444).format('0,0')}
-                    suffix='吨'
-                    subTotal1={17.2}
-                    status1='up'
-                    subTotal2={17.2}
-                    status2='down'
-                  />
-                </div>
-                <div>
-                  <NumberInfo
-                    subTitle={<span className={`${styles.analysisCardTitle} ${styles.bg2}`}>本周货量(铁矿石)</span>}
-                    total={numeral(1340).format('0,0')}
-                    suffix='吨' 
-                    subTotal1={17.2}
-                    status1='up' 
-                    subTotal2={17.3}
-                    status2='down'
-                  />
-                </div>
-              </div>
-            </div>
-            <div className={styles.analysisContainer}>
-              <div className={styles.polarContainer}>
-                <Chart width='280' height='280' data={data2} pixelRatio={pixelRatio}>
-                  <Coord type="polar" transposed radius={0.65} innerRadius={0.6}/>
-                  <Geom
-                    geom="interval"
-                    position="a*percent"
-                    color={['name', ['#1890FF', '#13C2C2']]}
-                    adjust="stack"
-                    style={{
-                      lineWidth: 1,
-                      stroke: '#fff',
-                      lineJoin: 'round',
-                      lineCap: 'round',
-                    }}
-                  />
-                  {/* <Legend 
-                    position='right'
-                    offsetX={-32}
-                    itemFormatter={value => `${value} ${numeral(map[value]).format('0,0')}吨`}
-                    nameStyle={{
-                      fontSize: 13
-                    }}
-                  /> */}
-                  <Guide
-                    type='html'
-                    position= {['50%', '50%']}
-                    alignX='middle'
-                    alignY='middle'
-                    html={
-                      `<div style="color:#8c8c8c;width:120px;font-size:12px;text-align: center;line-height:21px;">
-                        总计(艘次)<br/>
-                        <span style="color:#060606;font-size:18px;">
-                          ${numeral(50+33).format('0,0')}
-                        </span>
-                      </div>`
-                    }
-                  />
-                </Chart>
-              </div>
-              <div className={styles.analysisCardVContainer}>
-                <div className='mb16'>
-                  <NumberInfo
-                    subTitle={<span className={`${styles.analysisCardTitle} ${styles.bg1}`}>本周船(煤炭)</span>}
-                    total={numeral(50).format('0,0')}
-                    suffix='艘次'
-                    subTotal1={17.2}
-                    status1='up'
-                    subTotal2={17.2}
-                    status2='down'
-                  />
-                </div>
-                <div>
-                  <NumberInfo
-                    subTitle={<span className={`${styles.analysisCardTitle} ${styles.bg2}`}>本周船(铁矿石)</span>}
-                    total={numeral(33).format('0,0')}
-                    suffix='艘次' 
-                    subTotal1={17.2}
-                    status1='up' 
-                    subTotal2={17.3}
-                    status2='down'
-                  />
-                </div>
-              </div>
-            </div>
-            {/* <Flex className={styles.analysisCardContainer}>
-              <Flex.Item>
-                <NumberInfo
-                  subTitle={<span className={`${styles.analysisCardTitle} ${styles.bg1}`}>本周船(煤炭)</span>}
-                  total={numeral(13444).format('0,0')}
-                  suffix='艘次'
-                  subTotal1={17.2}
-                  status1='up'
-                  subTotal2={17.2}
-                  status2='down'
-                />
-              </Flex.Item>
-              <Flex.Item>
-                <NumberInfo
-                  subTitle={<span className={`${styles.analysisCardTitle} ${styles.bg2}`}>本周船(铁矿石)</span>}
-                  total={numeral(134).format('0,0')}
-                  suffix='艘次' 
-                  subTotal1={17.2}
-                  status1='up' 
-                  subTotal2={17.3}
-                  status2='down'
-                />
-              </Flex.Item>
-            </Flex> */}
-          </Card.Body>
-        </Card>
+        </StickyContainer>
       </Screen>
     )
   }
 }
+
+export default Analysis;

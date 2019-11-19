@@ -17,17 +17,16 @@ import RouteName from '@/component/RouteName';
 import Empty from '@/component/Empty';
 import StandardCard from '@/component/StandardCard';
 import CenterLoading from '@/component/CenterLoading';
-import NumberInfo from '@/component/NumberInfo';
 import styles from './index.module.less';
 import { mapEffects, mapLoading, getMenuFromStorage } from '@/utils';
 import { BRAND_COLOR } from '@/constants/color';
 import LoginCheckArea from '@/hoc/LoginCheckArea';
 
-const menus = [{
+const menus = [/* {
   icon: <Icon type='huopanshenhe' size='f' color={BRAND_COLOR}/>,
   text: '货盘审核',
   url: '/cargo?status=40'
-}, {
+}, */ {
   icon: <Icon type='huopan' size='f' color={BRAND_COLOR}/>,
   text: '货盘信息',
   url: '/cargo?type=all'
@@ -200,9 +199,6 @@ const mapStateToProps = ({ product, cargo, transport, analysis }) => {
     }),
     ...mapLoading('user', {
       fetchCurrentMenuing: 'fetchCurrentMenu'
-    }),
-    ...mapLoading('analysis', {
-      fetchYMWAnalysising: 'fetchYMWAnalysis'
     })
   }
 }
@@ -211,7 +207,6 @@ const mapDispatchToProps = ({ product, cargo, transport, sso, analysis }) => ({
   ...mapEffects(product, ['fetchProduct']),
   ...mapEffects(cargo, ['fetchAnyCargo']),
   ...mapEffects(transport, ['fetchAnyTransport']),
-  ...mapEffects(analysis, ['fetchYMWAnalysis']),
   loginSSO: sso.loginSSO
 })
 @connect(mapStateToProps, mapDispatchToProps)
@@ -240,7 +235,6 @@ class Home extends PureComponent {
       ticket && this.props.loginSSO(ticket);
     }
     this.getIndexList();
-    this.props.fetchYMWAnalysis();
   }
   handleLinkTo = el => {
     const { history } = this.props;
