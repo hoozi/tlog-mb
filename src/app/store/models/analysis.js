@@ -1,9 +1,25 @@
-import { queryYMWAnalysis } from '@/api/analysis';
-import uniqBy from 'lodash/uniqBy';
+import { queryBarAnalysis,queryPieAnalysis,queryOrderTaskAnalysis } from '@/api/analysis';
+import flatten from 'lodash/flatten';
+
+const temp = {};
+const histogramItemList = [];
+
+const parsePieData = data => ( 
+  data.length ? data.map((item, index) => {
+    const {customer: name, quantity: x} = item;
+    return {
+      name: name || `未知${index}`,
+      x,
+      y: 1
+    }
+  }) : []
+)
 
 const state = {
-  analysisList: [],
-  customers: []
+  barData: [],
+  picker: [],
+  pieData: [],
+  orderTask: []
 }
 
 const reducers = {
@@ -13,32 +29,96 @@ const reducers = {
 }
 
 const effects = {
-  async fetchYMWAnalysis(payload, rootState, callback) {
-    if(typeof callback === 'undefined') {
-      callback = payload;
-      payload = {};
-    }
-    const response = await queryYMWAnalysis({
+  async fetchBarAnalysis(payload, rootState, callback) {
+    const response = await queryBarAnalysis({
       crudType: 'retrieve',
       ...payload
     });
     if(!response) return;
-    const customerToPickerData = response.data.map(item => {
+    const picker = response.data.map(item => {
       const { customer:label, customerId:value } = item;
       return {
         label,
         value
       }
-    })
-    const customers = uniqBy(customerToPickerData, 'value');
-    this.save({
-      analysisList: [...response.data],
-      customers
     });
-    callback && callback(customers);
+    const barData = response.data.map(item => {
+      const histogramItemList = item.histogramItemList.map(item=> {
+        const { year:name, month, quantity:y } = item;
+        return {
+          name,
+          x:`${month}月`,
+          y
+        }
+      })
+      return {
+        ...item,
+        histogramItemList
+      }
+    });
+    const mappedHistogramItemList = response.data.map(item => {
+      return [...item.histogramItemList.map(item=>{
+        return {
+          [`${item.year}_${item.month}`]: item.quantity
+        }
+      })]
+    });
+    flatten(mappedHistogramItemList).forEach(item => {
+      const key = Object.keys(item)[0];
+      temp[key] = temp.hasOwnProperty(key) ? temp[key]+item[key] : item[key]
+    });
+    Object.keys(temp).forEach(item => {
+      const splited = item.split('_');
+      const name = splited[0];
+      const x = splited[1];
+      const y = temp[item];
+      const allItem = {
+        name,
+        x:`${x}月`,
+        y
+      }
+      histogramItemList.push(allItem);
+    })
+    barData.push({
+      customer: 'all',
+      customerId: -1,
+      histogramItemList
+    });
+    picker.unshift({
+      label: '全部',
+      value: -1
+    })
+    this.save({
+      barData,
+      picker
+    });
+    callback && callback(barData);
+  },
+  async fetchPieAnalysis(payload, rootState, callback) {
+    const response = await queryPieAnalysis({
+      crudType: 'retrieve',
+      ...payload
+    });
+    if(!response) return;
+    const pieData = response.data.map(item => {
+      return parsePieData(item)
+    })
+    this.save({
+      pieData
+    });
+    callback && callback(pieData);
+  },
+  async fetchOrderTaskAnalysis(callback) {
+    const response = await queryOrderTaskAnalysis({
+      crudType: 'retrieve'
+    });
+    if(!response) return;
+    this.save({
+      orderTask: [...response.data]
+    });
+    callback && callback(response.data)
   }
 }
-
 
 export default {
   state,

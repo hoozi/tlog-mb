@@ -92,3 +92,7 @@ export function getMenuFromStorage(staticMenus) {
     }
   }).filter(item => item) : [];
 }
+
+export function toFixed2(number) {
+  return Number(number.toString().match(/^\d+(?:\.\d{0,2})?/));
+}

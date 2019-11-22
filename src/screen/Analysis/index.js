@@ -3,13 +3,18 @@ import { NavBar, Icon, Tabs } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { StickyContainer, Sticky } from 'react-sticky';
 import Screen from '@/component/Screen';
+import CenterLoading from '@/component/CenterLoading';
 import styles from './index.module.less';
 import { mapEffects, mapLoading } from '@/utils';
 import color from '@/constants/color';
-import Empty from '@/component/Empty';
 
 const { tabsStyle } = color;
+
 const WorkAsync = lazy(() => import('./Work'));
+const CustomerAsync = lazy(() => import('./Customer'));
+const ServiceAsync = lazy(() => import('./Service'));
+const PriceAsync = lazy(() => import('./Price'));
+
 const tabsData = [
   {
     title: <><Icon type='zongji' size='xs' className='mr4'/> 当前</>,
@@ -28,22 +33,13 @@ const tabsData = [
     key: 'price'
   }
 ];
-const workTabs = [{
-  title: '进行中的订单',
-  count: 334,
-  key: 0
-},{
-  title: '进行中的任务',
-  count: 54,
-  key: 1
-}]
 
 const CurrentComponent = props => {
   const analysis = {
-    'work': <WorkAsync tabs={workTabs}/>,
-    'customer': <Empty/>,
-    'service': <Empty/>,
-    'price': <Empty/>
+    'work': <WorkAsync/>,
+    'customer': <CustomerAsync/>,
+    'service': <ServiceAsync/>,
+    'price': <PriceAsync/>
   }
   return analysis[props.is];
 }
@@ -121,7 +117,7 @@ class Analysis extends Component {
           }
         </Sticky>
         <div className={styles.analysisComponentContainer}>
-          <Suspense fallback='加载中'>
+          <Suspense fallback={<CenterLoading text='加载中...'/>}>
             <CurrentComponent is={this.state.current}/>
           </Suspense>
         </div>

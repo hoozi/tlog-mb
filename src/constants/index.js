@@ -6,4 +6,4 @@ export const APP_ID = '107247';
 
 export const APP_SECRET = '123456789';
 
-export const PIXEL_RATIO = window.devicePixelRatio * 2;
+export const PIXEL_RATIO = window.devicePixelRatio;
