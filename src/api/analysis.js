@@ -17,3 +17,9 @@ export async function queryOrderTaskAnalysis(params) {
     data: params
   })
 }
+
+export async function queryPriceAnalysis(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/app_statistics_freight_rate`, {
+    data: params
+  })
+}

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import find from 'lodash/find';
 
 export default props => {
-  const { analysis } = props
+  const { analysis, operation } = props;
   const [barData, setBarData] = useState([]);
   const [pieData, setPieData] = useState([]);
   const years = [
@@ -17,8 +17,8 @@ export default props => {
     }
   ]
   useEffect(() => {
-    props.fetchBarAnalysis({}, analysisBarCallback);
-    props.fetchPieAnalysis({}, analysisPieCallback);
+    props.fetchBarAnalysis({operation}, analysisBarCallback);
+    props.fetchPieAnalysis({operation}, analysisPieCallback);
   }, []);
   const analysisBarCallback = data => {
     getCurrentBarData(data, -1);

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Flex, Card, Picker, Icon } from 'antd-mobile';
+import { connect } from 'react-redux';
+import { mapEffects, mapLoading } from '@/utils';
 import Bar from '@/component/Charts/Bar';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
@@ -22,6 +24,9 @@ const data = [
 
 
 const Price = props => {
+  useEffect(() => {
+    props.fetchPriceAnalysis();
+  }, [])
   return (
     <div className={styles.priceWrapper}>
       <Picker
@@ -73,4 +78,12 @@ const Price = props => {
   )
 }
 
-export default Price;
+const mapStateToProps = ({analysis}) => ({
+  analysis,
+  ...mapLoading('analysis', {
+    fetchPriceAnalysising: 'fetchPriceAnalysis'
+  })
+});
+const mapDispatchToProps = ({analysis}) => mapEffects(analysis, ['fetchPriceAnalysis'])
+
+export default connect(mapStateToProps, mapDispatchToProps)(Price);

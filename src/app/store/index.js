@@ -18,6 +18,7 @@ import congestion from './models/congestion';
 import tide from './models/tide';
 import sso from './models/sso';
 import analysis from './models/analysis';
+import vovage from './models/vovage';
 
 const history = createHashHistory();
 
@@ -46,7 +47,8 @@ const store = init({
     congestion,
     tide,
     sso,
-    analysis
+    analysis,
+    vovage
   },
   redux,
   plugins: [loading]

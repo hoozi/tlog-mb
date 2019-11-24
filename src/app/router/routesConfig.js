@@ -27,6 +27,7 @@ const AttachmentsAsync = LoadingComponent('Attachments');
 const WharfCongestionAsync = LoadingComponent('WharfCongestion');
 const TideAsync = LoadingComponent('Tide');
 const AnalysisAsync = LoadingComponent('Analysis');
+const VovageAsync = LoadingComponent('Vovage');
 
 const routesConfig = [
   {
@@ -244,6 +245,15 @@ const routesConfig = [
     path: '/analysis',
     component: AnalysisAsync,
     title: '统计分析',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/vovage',
+    component: VovageAsync,
+    title: '船期信息',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

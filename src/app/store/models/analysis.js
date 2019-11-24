@@ -1,8 +1,5 @@
-import { queryBarAnalysis,queryPieAnalysis,queryOrderTaskAnalysis } from '@/api/analysis';
+import { queryBarAnalysis,queryPieAnalysis,queryOrderTaskAnalysis, queryPriceAnalysis } from '@/api/analysis';
 import flatten from 'lodash/flatten';
-
-const temp = {};
-const histogramItemList = [];
 
 const parsePieData = data => ( 
   data.length ? data.map((item, index) => {
@@ -19,7 +16,9 @@ const state = {
   barData: [],
   picker: [],
   pieData: [],
-  orderTask: []
+  orderTask: [],
+  price: [],
+  place: []
 }
 
 const reducers = {
@@ -30,6 +29,8 @@ const reducers = {
 
 const effects = {
   async fetchBarAnalysis(payload, rootState, callback) {
+    const temp = {};
+    const histogramItemList = [];
     const response = await queryBarAnalysis({
       crudType: 'retrieve',
       ...payload
@@ -115,6 +116,16 @@ const effects = {
     if(!response) return;
     this.save({
       orderTask: [...response.data]
+    });
+    callback && callback(response.data)
+  },
+  async fetchPriceAnalysis(callback) {
+    const response = await queryPriceAnalysis({
+      crudType: 'retrieve'
+    });
+    if(!response) return;
+    this.save({
+      price: [...response.data]
     });
     callback && callback(response.data)
   }
