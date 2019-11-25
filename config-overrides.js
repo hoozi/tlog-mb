@@ -1,4 +1,7 @@
-const { override, fixBabelImports, addLessLoader, addWebpackAlias, addBabelPlugins } = require('customize-cra');
+const { override, fixBabelImports, addLessLoader, addWebpackAlias, addBabelPlugins, addWebpackPlugin } = require('customize-cra');
+const WebpackZipPlugin = require('webpack-zip-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const moment = require('moment');
 const { resolve } = require('path');
 
 module.exports = { 
@@ -15,6 +18,17 @@ module.exports = {
     addWebpackAlias({
       '@': resolve(__dirname, './src')
     }),
+    addWebpackPlugin(
+      process.env.NODE_ENV === 'production' && 
+      new WebpackZipPlugin({
+        initialFile: './build',
+        endPath: './',
+        zipName: `${moment().format('YYYYMMDDHHmmss')}.zip`
+      }),
+      new CleanWebpackPlugin({
+        cleanOnceBeforeBuildPatterns:['build','*.zip']
+      })
+    ),
     config => {
       return {
         ...config,

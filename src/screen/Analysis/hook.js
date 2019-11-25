@@ -21,13 +21,13 @@ export default props => {
     props.fetchPieAnalysis({operation}, analysisPieCallback);
   }, []);
   const analysisBarCallback = data => {
-    getCurrentBarData(data, -1);
+    getCurrentBarData(data, data.length-1);
   }
   const analysisPieCallback = data => {
     getCurrentPieData(data, 0);
   }
-  const getCurrentBarData = (data,customerId) => {
-    const current = find(data, item => item.customerId === customerId);
+  const getCurrentBarData = (data,index) => {
+    const current = data[index];
     setBarData(current)
   }
   const getCurrentPieData = (data, index) => {

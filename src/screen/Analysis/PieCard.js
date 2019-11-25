@@ -45,6 +45,7 @@ export default props => {
             {
               pieColor.map((item, index) => {
                 return (
+                  index <= pieData.length-1 &&
                   <div key={item} className={styles.pieLegendItem}>
                     <span className={styles.pieLegendDot} style={{backgroundColor: item}}></span>
                     <div className={styles.pieLegendName}>{pieData[index].name}</div>

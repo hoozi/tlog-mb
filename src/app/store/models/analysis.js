@@ -1,5 +1,7 @@
 import { queryBarAnalysis,queryPieAnalysis,queryOrderTaskAnalysis, queryPriceAnalysis } from '@/api/analysis';
 import flatten from 'lodash/flatten';
+import isEmpty from 'lodash/isEmpty';
+import { toFixed2 } from '@/utils'
 
 const parsePieData = data => ( 
   data.length ? data.map((item, index) => {
@@ -15,6 +17,7 @@ const parsePieData = data => (
 const state = {
   barData: [],
   picker: [],
+  placePicker:[],
   pieData: [],
   orderTask: [],
   price: [],
@@ -36,11 +39,11 @@ const effects = {
       ...payload
     });
     if(!response) return;
-    const picker = response.data.map(item => {
-      const { customer:label, customerId:value } = item;
+    const picker = response.data.map((item, index) => {
+      const { customer:label } = item;
       return {
         label,
-        value
+        value: index
       }
     });
     const barData = response.data.map(item => {
@@ -49,7 +52,7 @@ const effects = {
         return {
           name,
           x:`${month}月`,
-          y
+          y: toFixed2(y)
         }
       })
       return {
@@ -72,7 +75,7 @@ const effects = {
       const splited = item.split('_');
       const name = splited[0];
       const x = splited[1];
-      const y = temp[item];
+      const y = toFixed2(temp[item]/10000);
       const allItem = {
         name,
         x:`${x}月`,
@@ -87,7 +90,7 @@ const effects = {
     });
     picker.unshift({
       label: '全部',
-      value: -1
+      value: 0
     })
     this.save({
       barData,
@@ -124,8 +127,29 @@ const effects = {
       crudType: 'retrieve'
     });
     if(!response) return;
+    const data = response.data.filter(item => !isEmpty(item));
+    const placePicker = data.map((item, index) => {
+      return {
+        label: `${item.starting} 到 ${item.destination}`,
+        value: index,
+        start: item.starting,
+        end: item.destination
+      }
+    })
+    const price = data.map(item => {
+      const priceList = item.priceList.map(item => ({
+        name: '运价',
+        x: `${item.month}月`,
+        y: item.cost
+      }));
+      return {
+        ...item,
+        priceList
+      }
+    })
     this.save({
-      price: [...response.data]
+      placePicker,
+      price
     });
     callback && callback(response.data)
   }

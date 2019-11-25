@@ -25,6 +25,9 @@ const effects = {
     callback && callback(response.data);
   },
   async fetchAisAlone(payload, rootState, callback) {
+    this.save({
+      ais: {}
+    })
     const { chineseName, ...restPayload } = payload;
     const mmsiResponse = await queryMMSI({
       crudType: 'retrieve',

@@ -6,8 +6,8 @@ import CenterLoading from '@/component/CenterLoading';
 import Empty from '@/component/Empty';
 
 export default props => {
-  const [selected, setSelected] = useState(-1)
   const { data=[], pickerData=[], onOk, title='', loading } = props;
+  const [selected, setSelected] = useState(0);
   const handleOk = value => {
     setSelected(value[0]);
     onOk && onOk(value[0]);

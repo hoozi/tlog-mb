@@ -37,7 +37,7 @@ const Service = props => {
         data={barData.histogramItemList}
         pickerData={analysis.picker}
         onOk={handleCustomerChange}
-        title='服务商月度统计'
+        title='服务商月度统计(万吨)'
       />
     </>
   )

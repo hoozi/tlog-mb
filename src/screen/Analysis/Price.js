@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Flex, Card, Picker, Icon } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { mapEffects, mapLoading } from '@/utils';
 import Bar from '@/component/Charts/Bar';
+import CenterLoading from '@/component/CenterLoading';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
 import styles from './index.module.less';
@@ -24,21 +25,45 @@ const data = [
 
 
 const Price = props => {
+  const { analysis, fetchPriceAnalysising } = props;
+  const [place, setPlace] = useState({value:0});
+  const [priceBar, setPriceBar] = useState([]);
   useEffect(() => {
-    props.fetchPriceAnalysis();
-  }, [])
+    props.fetchPriceAnalysis(data => {
+      getCurrentData(0);
+      getCurrentPlace(0);
+    });
+  }, []);
+  const handleOk = value => {
+    const index = value[0];
+    getCurrentPlace(index);
+    getCurrentData(index);
+  }
+  const getCurrentPlace = index => {
+    const currentPlace = analysis.placePicker[index];
+    setPlace(currentPlace);
+  }
+  const getCurrentData = index => {
+    const current = analysis.price[index];
+    setPriceBar(current);
+  }
   return (
-    <div className={styles.priceWrapper}>
+    fetchPriceAnalysising ? 
+    <CenterLoading text='加载中...'/> : 
+    analysis.placePicker.length && <div className={styles.priceWrapper}>
       <Picker
-        data={[]}
+        value={[place.value]}
+        cols={1}
+        data={analysis.placePicker}
+        onOk={handleOk}
       >
         <Flex justify='start' className={styles.selectPlace}>
           <Flex.Item className={styles.placeItem}>
-            <b>北仑</b>
+            <b>{place.start}</b>
             <span>出发地</span>
           </Flex.Item>
           <Flex.Item className={styles.placeItem}>
-            <b>鼠浪湖</b>
+            <b>{place.end}</b>
             <span>目的地</span>
           </Flex.Item>
           <Icon type='xiayiyeqianjinchakangengduo' color='#fff'/>
@@ -48,15 +73,15 @@ const Price = props => {
         <Card.Body>
           <Flex className={styles.priceContainer}>
             <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{maxBy(data, 'y').y}</b>
+              <b><em>¥</em>{maxBy(priceBar.priceList, 'y').y || '-'}</b>
               <span>全年最高</span>
             </Flex.Item>
             <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{minBy(data, 'y').y}</b>
+              <b><em>¥</em>{minBy(priceBar.priceList, 'y').y || '-'}</b>
               <span>全年最低</span>
             </Flex.Item>
             <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{(data.reduce((cur, pre) => cur+pre.y,0)/data.length).toFixed(1)}</b>
+              <b><em>¥</em>{(priceBar.priceList.reduce((cur, pre) => cur+pre.y,0)/data.length).toFixed(1) || '-'}</b>
               <span>全年平均</span>
             </Flex.Item>
           </Flex>
@@ -65,12 +90,12 @@ const Price = props => {
       
       <Card full className='mt8'>
         <Card.Header
-          title='月度运价走势'
+          title='月度运价走势(元)'
           className='pt16 pb16'
         />
         <Card.Body>
           <div>
-            <Bar data={data} polyline/>
+            <Bar data={priceBar.priceList} polyline/>
           </div>
         </Card.Body>
       </Card>

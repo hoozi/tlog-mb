@@ -78,6 +78,10 @@ const menus = [/* {
   icon: <Icon type='tongji' size='f' color='#f39927'/>,
   text: '统计分析',
   url: '/analysis'
+}, {
+  icon: <Icon type='chuanqi' size='f' color='#f15a4a'/>,
+  text: '船期信息',
+  url: '/vovage'
 }];
 
 const AnalysisCard = () => null;
