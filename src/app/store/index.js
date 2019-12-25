@@ -19,6 +19,7 @@ import tide from './models/tide';
 import sso from './models/sso';
 import analysis from './models/analysis';
 import vovage from './models/vovage';
+import message from './models/message';
 
 const history = createHashHistory();
 
@@ -48,7 +49,8 @@ const store = init({
     tide,
     sso,
     analysis,
-    vovage
+    vovage,
+    message
   },
   redux,
   plugins: [loading]

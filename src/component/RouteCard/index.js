@@ -2,10 +2,10 @@ import React, {forwardRef} from 'react';
 import { Flex } from 'antd-mobile';
 import styles from './index.module.less';
 
-export default forwardRef(({from, fromText, to, toText, centerText, ...props}, ref) => (
+export default forwardRef(({from, justify='center', fromText, to, toText, centerText, ...props}, ref) => (
   <div className={styles.routeCard} {...props} ref={ref}>
     <div className={styles.routeName}>
-      <Flex justify='center'> 
+      <Flex justify={justify}> 
         <span>
           <b>{from}</b>
           <i>{fromText || '装货地'}</i>

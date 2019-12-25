@@ -145,7 +145,7 @@ class PriceReplyDetail extends PureComponent {
             <>
               <Sticky>
                 {
-                  ({style}) => <RouteCard from={detail.originName} to={detail.terminalName} style={{...style, zIndex: 20}}/>
+                  ({style}) => <RouteCard justify='between' from={detail.originName} to={detail.terminalName} style={{...style, zIndex: 20}}/>
                 }
               </Sticky>
               <Fields

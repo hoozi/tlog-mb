@@ -121,7 +121,7 @@ class WharfCongestion extends Component {
                             return (
                               <div key={index} className={styles.congestionCol} onClick={() => this.handleSelectedCongestionItem(item.shipQueue)}>
                                 <span style={{backgroundColor: exponent>=1 ? '#ff5b05' : '#6abf47'}}>{loadOrUnload ? '装' : '卸'}</span>
-                                <span>{exponent}</span>
+                                <span style={{color: exponent>=1 ? '#ff5b05' : '#6abf47'}}>{exponent}</span>
                               </div>
                             )
                           })

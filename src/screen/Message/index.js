@@ -1,27 +1,34 @@
 import React, { PureComponent } from 'react';
-import { NavBar } from 'antd-mobile';
+import { NavBar, List, Badge } from 'antd-mobile';
+import LoginCheckArea from '@/hoc/LoginCheckArea';
+import { connect } from 'react-redux';
+import { mapEffects, mapLoading } from '@/utils';
 import Screen from '@/component/Screen';
-
+import CenterLoading from '@/component/CenterLoading';
 import Empty from '@/component/Empty';
 import styles from './index.module.less';
-/* 
-const mapStateToProps = ({ news }) => {
+
+const mapStateToProps = ({ message }) => {
   return {
-    ...news,
-    ...mapLoading('news',{
-      fetchNewing: 'fetchNews'
+    message,
+    ...mapLoading('message',{
+      fetchMessageing: 'fetchMessage'
     })
   }
 }
 
-const mapDispatchToProps = ({ news }) => ({
-  ...mapEffects(news, ['fetchNews'])
+const mapDispatchToProps = ({ message }) => ({
+  ...mapEffects(message, ['fetchMessage'])
 });
 
 
-@connect(mapStateToProps, mapDispatchToProps) */
+@connect(mapStateToProps, mapDispatchToProps)
 class Message extends PureComponent {
+  componentDidMount() {
+    this.props.fetchMessage();
+  }
   render() {
+    const { message:{messages}, fetchMessageing } = this.props
     return (
       <Screen
         className={styles.messageScreen}
@@ -33,8 +40,22 @@ class Message extends PureComponent {
           </NavBar>
         )}
       >
-        
-        <Empty/>
+        <LoginCheckArea>
+          {
+            fetchMessageing ? 
+            <CenterLoading text='消息加载中...'/> :
+            messages.length > 0 ? 
+            <List>
+              {
+                messages.map(item => {
+                  const { title, message: {text} } = item;
+                  return <List.Item multipleLine wrap>{text}<List.Item.Brief><Badge text={title} style={{ padding: '0 3px', backgroundColor: '#21b68a', borderRadius: 2 }} /></List.Item.Brief></List.Item>
+                })
+              }
+            </List> :
+            <Empty/>
+          }
+        </LoginCheckArea>
       </Screen>
     )
   }

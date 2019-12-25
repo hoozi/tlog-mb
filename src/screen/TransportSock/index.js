@@ -129,7 +129,7 @@ class TransportSock extends Component {
               key={`lng${item.longitude}_lat${item.latitude}`} 
               extra={
                 <span className='text-primary'>
-                  <b>{item.weight || '0'}</b>吨
+                  <b>{item.feeWeight || '0'}</b>吨
                 </span>
               }
               onClick={() => this.handleTransportSeleted(item)}
@@ -158,7 +158,7 @@ class TransportSock extends Component {
       },
       {
         title: '重量',
-        dataIndex: 'weight'
+        dataIndex: 'feeWeight'
       },
       /* {
         title: '扣除损耗商检量',
@@ -237,7 +237,7 @@ class TransportSock extends Component {
                       lat: item.latitude
                     },
                     text: `运输工具: ${item.vesselExportEname || item.vesselImportEname || '未知'}/${item.exportVoyage || item.importVoyage || '未知'}`,
-                    extra:  `货物: ${item.cargoShortName},${item.weight || '0'}吨`,
+                    extra:  `货物: ${item.cargoShortName},${item.feeWeight || '0'}吨`,
                     index
                   }}
                   {...createOverlayMethods}

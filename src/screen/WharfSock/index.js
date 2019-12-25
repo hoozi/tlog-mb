@@ -38,10 +38,10 @@ class WharfSock extends Component {
     const { sock: { location } } = this.props;
     const locationIndex = e.target.dataset.index;
     // eslint-disable-next-line
-    const { code: terminalCode, name } = location[locationIndex]; 
+    const { code: terminalCode } = location[locationIndex]; 
 
-    const customerCode = 'SG';
-    this.props.history.push(`/wharf-sock-detail?customerCode=${customerCode}&terminalCode=${terminalCode}&terminalName=${name}`)
+    const customerCode = '';
+    this.props.history.push(`/wharf-sock-detail?customerCode=${customerCode}&terminalCode=${terminalCode}`)
     //this.props.fetchTerminalSock({terminalCode,customerCode});
   }
   componentWillUnmount() {
@@ -59,9 +59,11 @@ class WharfSock extends Component {
     self.map = map;
     const div = document.createElement('div');
     div.className = styles.overlay;
+    div.style.cssText='height:20px; line-height:20px; padding:0 6px';
     const span = document.createElement('span');
     span.dataset.index = self.index;
     span.appendChild(document.createTextNode(self.text));
+    
     div.appendChild(span);
     map.getPanes().labelPane.appendChild(div);
     div.addEventListener('touchstart', this.handleOverlaySelected, false)

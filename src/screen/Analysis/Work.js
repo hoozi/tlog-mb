@@ -30,7 +30,7 @@ const OrderItem = ({data}) => {
     </List.Item>
   )
 };
-const TaskItem = props => null;
+//const TaskItem = props => null;
 
 const Work = props => {
   const { analysis, fetchOrderTaskAnalysising } = props;
@@ -72,7 +72,7 @@ const Work = props => {
                 <p>
                   <b>{item.count}</b>
                 </p>
-                  <span className='mt8 db'>{item.title}</span>
+                <span className='mt8 db'>{item.title}</span>
               </div>
             )
           })

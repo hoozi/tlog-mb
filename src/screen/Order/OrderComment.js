@@ -96,7 +96,7 @@ class OrderComment extends PureComponent {
               <Sticky>
                 {
                   ({style}) => (
-                    <RouteCard from={data.loadName} to={data.unloadName} style={{...style, zIndex: 20}}/>
+                    <RouteCard justify='between' from={data.loadName} to={data.unloadName} style={{...style, zIndex: 20}}/>
                   )
                 }
               </Sticky>

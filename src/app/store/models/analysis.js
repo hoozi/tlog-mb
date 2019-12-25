@@ -52,7 +52,7 @@ const effects = {
         return {
           name,
           x:`${month}月`,
-          y: toFixed2(y)
+          y: toFixed2(y/10000)
         }
       })
       return {
@@ -90,8 +90,9 @@ const effects = {
     });
     picker.unshift({
       label: '全部',
-      value: 0
+      value: -1
     })
+    console.log(barData)
     this.save({
       barData,
       picker
@@ -151,7 +152,7 @@ const effects = {
       placePicker,
       price
     });
-    callback && callback(response.data)
+    callback && callback(price)
   }
 }
 

@@ -37,8 +37,10 @@ class Vovage extends Component {
     detail: {}
   }
   componentWillUnmount() {
-    this.div.removeEventListener('touchstart', this.handleOverlaySelected, false);
-    this.div = null;
+    try {
+      this.div.removeEventListener('touchstart', this.handleOverlaySelected, false);
+      this.div = null;
+    } catch(e) {}
   }
   handleShowModal = flag => {
     this.setState({
@@ -190,26 +192,28 @@ class Vovage extends Component {
           </div>
         </div>
         <div style={{ height: '100%', width: '100%', position: 'relative', zIndex: 1 }}>
-          <BaiduMap 
-            mapContainer={<div style={{ height: '100%', width: '100%' }} />} 
-            zoom={this.state.zoom} 
-            center={this.state.center}
-            enableScrollWheelZoom
-          >
-            {
-              fetchAisAloneing ? 
-              <CenterLoading className='center-loading' text='查询中...'/> : 
-              vovage.ais && 
-              <Overlay
-                constructorParams={{
-                  point: { lng: vovage.ais.lon, lat: vovage.ais.lat },
-                  text: this.state.chineseName,
-                  ais: vovage.ais
-                }}
-                {...createOverlayMethods}
-              />
-            }
-          </BaiduMap>
+          {
+            fetchAisAloneing ? 
+            <CenterLoading text='查询中...'/> :
+            <BaiduMap 
+              mapContainer={<div style={{ height: '100%', width: '100%' }} />} 
+              zoom={this.state.zoom} 
+              center={this.state.center}
+              enableScrollWheelZoom
+            >
+              {
+                !isEmpty(vovage.ais) &&
+                <Overlay
+                  constructorParams={{
+                    point: { lng: vovage.ais.lon, lat: vovage.ais.lat },
+                    text: this.state.chineseName,
+                    ais: vovage.ais
+                  }}
+                  {...createOverlayMethods}
+                /> 
+              }
+            </BaiduMap>
+          }
         </div>
         <Modal
           visible={this.state.visible}

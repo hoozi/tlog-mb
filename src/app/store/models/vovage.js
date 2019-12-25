@@ -35,7 +35,7 @@ const effects = {
     })
     if(!mmsiResponse || !mmsiResponse.data.length) return;
     const { mmsi='' } = mmsiResponse.data[0]
-    if(!mmsi) return;
+    if(!mmsi) return
     const response = await queryAisAlone({
       crudType: 'retrieve',
       mmsi,

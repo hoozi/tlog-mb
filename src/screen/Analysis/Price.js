@@ -27,12 +27,13 @@ const data = [
 const Price = props => {
   const { analysis, fetchPriceAnalysising } = props;
   const [place, setPlace] = useState({value:0});
-  const [priceBar, setPriceBar] = useState([]);
+  const [priceBar, setPriceBar] = useState({priceList:[]});
   useEffect(() => {
     props.fetchPriceAnalysis(data => {
       getCurrentData(0);
       getCurrentPlace(0);
     });
+    return;
   }, []);
   const handleOk = value => {
     const index = value[0];
@@ -50,7 +51,8 @@ const Price = props => {
   return (
     fetchPriceAnalysising ? 
     <CenterLoading text='加载中...'/> : 
-    analysis.placePicker.length && <div className={styles.priceWrapper}>
+    analysis.placePicker.length &&
+    <div className={styles.priceWrapper}>
       <Picker
         value={[place.value]}
         cols={1}
@@ -73,15 +75,15 @@ const Price = props => {
         <Card.Body>
           <Flex className={styles.priceContainer}>
             <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{maxBy(priceBar.priceList, 'y').y || '-'}</b>
+              <b><em>¥</em>{priceBar.priceList.length ? maxBy(priceBar.priceList, 'y').y : '-'}</b>
               <span>全年最高</span>
             </Flex.Item>
             <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{minBy(priceBar.priceList, 'y').y || '-'}</b>
+              <b><em>¥</em>{priceBar.priceList.length ? minBy(priceBar.priceList, 'y').y : '-'}</b>
               <span>全年最低</span>
             </Flex.Item>
             <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{(priceBar.priceList.reduce((cur, pre) => cur+pre.y,0)/data.length).toFixed(1) || '-'}</b>
+              <b><em>¥</em>{priceBar.priceList.length ? (priceBar.priceList.reduce((cur, pre) => cur+pre.y,0)/priceBar.priceList.length).toFixed(1) : '-'}</b>
               <span>全年平均</span>
             </Flex.Item>
           </Flex>

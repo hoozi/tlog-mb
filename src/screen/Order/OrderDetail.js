@@ -105,7 +105,7 @@ export default connect(mapStateToProps)(props => {
       {
         !isEmpty(data) ?
         <>
-          <RouteCard from={data.loadName} to={data.unloadName}/>
+          <RouteCard justify='between' from={data.loadName} to={data.unloadName}/>
           <div className={form.createForm}><Fields columns={columns} data={data}/></div>
           <div className={form.bottomButton}>
             <Link to={`/task?id=${data.id}`} className='text-center'>

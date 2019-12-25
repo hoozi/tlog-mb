@@ -19,12 +19,12 @@ module.exports = {
       '@': resolve(__dirname, './src')
     }),
     addWebpackPlugin(
-      process.env.NODE_ENV === 'production' && 
+      process.env.NODE_ENV === 'production' ?
       new WebpackZipPlugin({
         initialFile: './build',
         endPath: './',
-        zipName: `${moment().format('YYYYMMDDHHmmss')}.zip`
-      }),
+        zipName: `build_at_${moment().format('YYYYMMDDHHmmss')}.zip`
+      }) : () => null,
       new CleanWebpackPlugin({
         cleanOnceBeforeBuildPatterns:['build','*.zip']
       })
