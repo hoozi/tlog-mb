@@ -85,6 +85,7 @@ class TransportSock extends Component {
     })
   }
   handleOverlaySelected = e => {
+    e.stopPropagation();
     const target = e.target;
     const { sock: { transportSockList } } = this.props;
     const transportIndex = target.dataset.index;

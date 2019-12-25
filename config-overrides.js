@@ -22,8 +22,8 @@ module.exports = {
       process.env.NODE_ENV === 'production' ?
       new WebpackZipPlugin({
         initialFile: './build',
-        endPath: './',
-        zipName: `build_at_${moment().format('YYYYMMDDHHmmss')}.zip`
+        endPath: './_build',
+        zipName: `build_at_${moment().format('YYYYMMDD_HH-mm-ss')}.zip`
       }) : () => null,
       new CleanWebpackPlugin({
         cleanOnceBeforeBuildPatterns:['build','*.zip']
