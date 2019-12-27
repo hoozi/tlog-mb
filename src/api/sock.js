@@ -17,3 +17,9 @@ export async function queryIntransitSock(params) {
     data: params
   })
 }
+
+export async function queryTerminalSockInfo(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/terminal-stock-info`, {
+    data: params
+  })
+}

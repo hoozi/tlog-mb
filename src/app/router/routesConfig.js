@@ -20,6 +20,7 @@ const TaskTrackAsync = LoadingComponent('Task/TaskTrack');
 const ProductAsync = LoadingComponent('Product');
 const ProductDetailAsync = LoadingComponent('Product/ProductDetail');
 const WharfSockAsync = LoadingComponent('WharfSock');
+const WharfSockSearchAsync = LoadingComponent('WharfSock/Search');
 const WharfSockDetailAsync = LoadingComponent('WharfSock/Sock');
 const TransportSockAsync = LoadingComponent('TransportSock')
 const TransportSockDetailAsync = LoadingComponent('TransportSock/Sock')
@@ -253,6 +254,15 @@ const routesConfig = [
   {
     path: '/vovage',
     component: VovageAsync,
+    title: '船期信息',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/wharf-sock-search',
+    component: WharfSockSearchAsync,
     title: '船期信息',
     transitionConfig: {
       enter: 'from-right',

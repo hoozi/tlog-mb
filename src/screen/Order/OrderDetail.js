@@ -29,17 +29,17 @@ export default connect(mapStateToProps)(props => {
   const data = find(recordList.map(item => ({...item})), item => item.id === id);
   const columns = [
     {
-      title: '订单编号',
+      title: '合同号',
       dataIndex: 'orderNo',
       extra: (value, row, {status}) => {
         return <b style={{fontWeight:500, color: status === '90' ? '#6abf47' :'#3c73f0'}}>{STATUS_MAP[status]}</b>
       }
-    },
+    },/* ,
     {
       title: '合同号',
       dataIndex: 'contractNo',
       render: value => <span className='text-important'><Icon type='fujian' size='xxs' style={{verticalAlign: 'middle', margin: '-4px 2px 0 0'}}/>{value}</span>
-    },
+    }, */
     {
       title: '作业类型',
       dataIndex: 'bizTypeName'

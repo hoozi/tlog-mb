@@ -6,6 +6,7 @@ import { mapEffects, mapLoading } from '@/utils';
 import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
 import Empty from '@/component/Empty';
+import { getToken } from '@/utils/token';
 import styles from './index.module.less';
 
 const mapStateToProps = ({ message }) => {
@@ -25,7 +26,7 @@ const mapDispatchToProps = ({ message }) => ({
 @connect(mapStateToProps, mapDispatchToProps)
 class Message extends PureComponent {
   componentDidMount() {
-    this.props.fetchMessage();
+    getToken() && this.props.fetchMessage();
   }
   render() {
     const { message:{messages}, fetchMessageing } = this.props

@@ -72,7 +72,7 @@ const menus = [/* {
   url: '/transport-sock'
 }, {
   icon: <Icon type='yongdu' size='f' color='#f15a4a'/>,
-  text: '拥堵情况',
+  text: '繁忙指数',
   url: '/wharf-congestion'
 }, {
   icon: <Icon type='tongji' size='f' color='#f39927'/>,
@@ -80,8 +80,16 @@ const menus = [/* {
   url: '/analysis'
 }, {
   icon: <Icon type='chuanqi' size='f' color='#f15a4a'/>,
-  text: '船期信息',
+  text: '单船信息',
   url: '/vovage'
+}, {
+  icon: <Icon type='chuanqichaxun' size='f' color={BRAND_COLOR}/>,
+  text: '船期查询',
+  url: '/vovage-search'
+}, {
+  icon: <Icon type='matoukucunchaxun' size='f' color={BRAND_COLOR}/>,
+  text: '码头库存查询',
+  url: '/wharf-sock-search'
 }];
 
 const AnalysisCard = () => null;
