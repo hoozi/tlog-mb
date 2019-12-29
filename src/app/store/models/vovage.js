@@ -1,8 +1,15 @@
-import { queryVovage, queryAisAlone } from '@/api/vovage';
+import { queryVovage, queryAisAlone, queryVovageInfo } from '@/api/vovage';
 import { queryMMSI } from '@/api/task';
 
 const state = {
   vovage: {},
+  beginPageIndex: 1,
+  current: 1,
+  endPageIndex: 2,
+  pageCount: 0,
+  recordCount: 0,
+  recordList: [],
+  size: 10,
   ais: {}
 }
 
@@ -22,6 +29,17 @@ const effects = {
     this.save({
       vovage: response.data
     });
+    callback && callback(response.data);
+  },
+  async fetchVovageInfo(payload, rootState, callback) {
+    const response = await queryVovageInfo({
+      crudType: "retrieve",
+      current: 1,
+      size: 20,
+      ...payload
+    });
+    if(!response) return;
+    this.save({...response.data});
     callback && callback(response.data);
   },
   async fetchAisAlone(payload, rootState, callback) {

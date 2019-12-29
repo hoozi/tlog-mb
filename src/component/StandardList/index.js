@@ -71,6 +71,7 @@ export default class StandardList extends PureComponent {
       (dataSource && !dataSource.getRowCount()) ? 
       <Empty description='暂无信息'/> : 
       <ListView
+        style={{position: 'relative', zIndex: 10}}
         ref={withRef}
         dataSource={dataSource}
         renderBodyComponent={() => <ListBody/>}

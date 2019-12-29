@@ -57,6 +57,11 @@ export async function queryCurrentMenu(params) {
     data: params
   })
 }
+export async function queryCustomerByName(params) {
+  return request('/ierp/kapi/app/nbg_qcwl/customer', {
+    data: params
+  })
+}
 
 export async function upload(params) {
   return request('/ierp/attachment/uploadFile.do', {

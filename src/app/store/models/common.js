@@ -3,6 +3,7 @@ import {
   queryCargoType, 
   queryTransportName, 
   queryLocation, 
+  queryCustomerByName,
   queryDict, 
   upload, 
   queryUploadKey, 
@@ -24,7 +25,11 @@ const state = {
   transport: {},
   uploadKey: '',
   url: '',
-  attachmentInfos: []
+  attachmentInfos: [],
+  customers: [],
+  customerSlice: [],
+  servicers: [],
+  servicerSlice: []
 }
 
 const reducers = {
@@ -109,6 +114,47 @@ const effects = dispatch => ({
     this.save({
       cargoType: response.data
     })
+  },
+  
+  async fetchCustomer() {
+    const response = await queryCustomerByName({
+      "crudType":"retrieve","type":"customer"
+    });
+    if(!response) return;
+    this.save({
+      customers: response.data,
+      customerSlice: response.data.slice(0,20)
+    });
+  },
+  async findCustomerByName(payload, rootState, callback) {
+    const { name } = payload;
+    const customerSlice = rootState.common.customers.filter(item => {
+      return item.fullName.indexOf(name) > -1;
+    }).slice(0,20);
+    this.save({
+      customerSlice
+    });
+    callback && callback();
+  },
+  async findServicerByName(payload, rootState, callback) {
+    const { name } = payload;
+    const servicerSlice = rootState.common.servicers.filter(item => {
+      return item.fullName.indexOf(name) > -1;
+    }).slice(0,20);
+    this.save({
+      servicerSlice
+    });
+    callback && callback();
+  },
+  async fetchServicer() {
+    const response = await queryCustomerByName({
+      "crudType":"retrieve","type":"carrier"
+    });
+    if(!response) return;
+    this.save({
+      servicers: response.data,
+      servicerSlice: response.data.slice(0,20)
+    });
   },
   async fetchLocation(payload) {
     const response = await queryLocation(payload);

@@ -4,23 +4,30 @@ import { connect } from 'react-redux';
 import Screen from '@/component/Screen';
 import StandardList from '@/component/StandardList';
 import RouteName from '@/component/RouteName';
+import SearchModal from '@/component/SearchModal';
+import Debounce from 'lodash-decorators/debounce';
 import { Link } from 'react-router-dom';
 import { mapEffects, mapLoading } from '@/utils';
 import styles from './index.module.less';
 import list from '@/style/list.module.less';
 import card from '@/style/card.module.less';
 
-const mapStateToProps = ({ order }) => {
+const mapStateToProps = ({ order, common }) => {
   return {
     order,
+    common,
     ...mapLoading('order',{
       fetchOrdering: 'fetchOrder'
+    }),
+    ...mapLoading('common', {
+      fetchCustomering: 'fetchCustomer'
     })
   }
 }
 
-const mapDispatchToProps = ({ order }) => ({
-  ...mapEffects(order, ['fetchOrder'])
+const mapDispatchToProps = ({ order, common }) => ({
+  ...mapEffects(order, ['fetchOrder']),
+  ...mapEffects(common, ['fetchCustomer', 'findCustomerByName'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -33,6 +40,7 @@ class Order extends PureComponent {
     this.current = 1;
     this.data = []
     this.state = {
+      customerId: undefined,
       loading: true,
       refreshing: true,
       firstLoading: true,
@@ -71,29 +79,43 @@ class Order extends PureComponent {
     this.props.fetchOrder(payload, _callback)
   }
   componentDidMount() {
-    const { current } = this.state;
-    this.getOrder({current} , this.callback);
+    const { current, customerId } = this.state;
+    this.getOrder({current, customerId} , this.callback);
+    this.props.fetchCustomer();
   }
   handleRefresh = () => {
+    const { customerId } = this.state;
     this.reset();
     this.setState({
       ...this.state,
       refreshing: true,
       current: this.current
     });
-    this.getOrder({ current: 1 }, this.callback);
+    this.getOrder({ current: 1, customerId }, this.callback);
   }
   handleEndReached = () => {
-    const { loading,  hasMore } = this.state;
+    const { loading,  hasMore, customerId } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.getOrder({ current: ++this.current }, data => {
+    this.getOrder({ current: ++this.current, customerId }, data => {
       this.setState({
         ...this.state,
         current: this.current
       });
       this.callback(data);
     });
+  }
+  handleCustomerChange = customerId => {
+    this.reset();
+    this.setState({
+      customerId
+    }, () => {
+      this.getOrder({current:1, customerId}, this.callback)
+    })
+  }
+  @Debounce(200)
+  handleCustomerSearchChange = name => {
+    this.props.findServicerByName({name}, () => this.forceUpdate());
   }
   renderListCardHeader = item => (
     <RouteName
@@ -150,8 +172,18 @@ class Order extends PureComponent {
     )
   }
   render() {
-    const { refreshing, firstLoading, loading, ds, hasMore } = this.state;
-    const { history } = this.props;
+    const { refreshing, firstLoading, loading, ds, hasMore, customerId } = this.state;
+    const { history, common, fetchCustomering } = this.props;
+    const { customerSlice } = common;
+    const customers = customerSlice.length ? customerSlice.map(customer => {
+      return {
+        label: customer.fullName,
+        brief: customer.name,
+        value: customer.id,
+        key: customer.id,
+        ...customer
+      }
+    }) : [];
     const renderCardMethods = {
       renderListCardHeader: this.renderListCardHeader,
       renderListCardBody: this.renderListCardBody,
@@ -167,6 +199,18 @@ class Order extends PureComponent {
             mode='dark'
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
+            rightContent={
+              <SearchModal
+                placeholder='请输入客户名称'
+                onChange={this.handleCustomerChange}
+                data={customers}
+                value={customerId}
+                loading={fetchCustomering}
+                onSearchChange={this.handleCustomerSearchChange}
+              >
+                <span className='light-blue'>筛选</span>
+              </SearchModal>
+            }
           >
             订单查询
           </NavBar>

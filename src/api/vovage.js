@@ -11,3 +11,9 @@ export async function queryAisAlone(params) {
     data: params
   })
 }
+
+export async function queryVovageInfo(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/voyage-info`, {
+    data: params
+  })
+}

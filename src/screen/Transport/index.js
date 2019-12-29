@@ -7,6 +7,8 @@ import { parse } from 'qs';
 import indexOf from 'lodash/indexOf';
 import findIndex from 'lodash/findIndex';
 import Screen from '@/component/Screen';
+import Debounce from 'lodash-decorators/debounce';
+import SearchModal from '@/component/SearchModal';
 import { getToken } from '@/utils/token';
 import StandardList from '@/component/StandardList';
 import { mapEffects, mapLoading, checkPermissions, getButtonsByPermissions } from '@/utils';
@@ -21,12 +23,16 @@ const mapStateToProps = ({ transport, common }) => {
     ...transport,
     ...mapLoading('transport',{
       updateTransporting: 'updateTransport'
+    }),
+    ...mapLoading('common',{
+      fetchServicering: 'fetchServicer'
     })
   }
 }
 
-const mapDispatchToProps = ({ transport }) => ({
-  ...mapEffects(transport, ['fetchTransport', 'fetchAnyTransport', 'updateTransport'])
+const mapDispatchToProps = ({ transport, common }) => ({
+  ...mapEffects(transport, ['fetchTransport', 'fetchAnyTransport', 'updateTransport']),
+  ...mapEffects(common, ['fetchServicer', 'findServicerByName'])
 });
 
 const allTabs = [
@@ -53,6 +59,7 @@ class Transport extends PureComponent {
     this.current = 1;
     this.data = []
     this.state = {
+      customerId: undefined,
       loading: true,
       refreshing: true,
       firstLoading: true,
@@ -84,7 +91,7 @@ class Transport extends PureComponent {
       loading: false,
       firstLoading: false,
       hasMore: this.current !== pageCount,
-      ds: this.state.ds.cloneWithRows(this.data)
+      ds: this.state.ds.cloneWithRows(ds.length ? this.data : [])
     })
   }
   transportService(name, payload, callback) {
@@ -93,8 +100,9 @@ class Transport extends PureComponent {
     this.props[serviceName](payload, _callback)
   }
   componentDidMount() {
-    const { current, status } = this.state;
-    this.transportService('fetchTransport', {current, status} , this.callback);
+    const { current, status, customerId } = this.state;
+    this.transportService('fetchTransport', {current, status, customerId} , this.callback);
+    this.props.fetchServicer();
   }
   handleTabChange = data => {
     const { status } = data;
@@ -102,35 +110,51 @@ class Transport extends PureComponent {
       ...this.state,
       firstLoading: true,
       status
+    }, () => {
+      const { customerId } = this.state;
+      this.transportService('fetchTransport',{
+        status,
+        customerId
+      }, data => {
+        this.reset();
+        this.callback(data)
+      })
     });
-    this.transportService('fetchTransport',{
-      status
-    }, data => {
-      this.reset();
-      this.callback(data)
-    })
+    
   }
   handleRefresh = () => {
-    const { status } = this.state;
+    const { status, customerId } = this.state;
     this.reset();
     this.setState({
       ...this.state,
       refreshing: true,
       current: this.current
     });
-    this.transportService('fetchTransport', { status, current: 1 }, this.callback);
+    this.transportService('fetchTransport', { status, current: 1, customerId }, this.callback);
   }
   handleEndReached = () => {
-    const { loading, status, hasMore } = this.state;
+    const { loading, status, hasMore, customerId } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.transportService('fetchTransport', { status, current: ++this.current }, data => {
+    this.transportService('fetchTransport', { status, current: ++this.current, customerId }, data => {
       this.setState({
         ...this.state,
         current: this.current
       });
       this.callback(data);
     });
+  }
+  handleCustomerChange = customerId => {
+    this.reset();
+    this.setState({
+      customerId
+    }, () => {
+      this.transportService('fetchTransport', {current:1, status:this.state.status, customerId}, this.callback)
+    })
+  }
+  @Debounce(200)
+  handleCustomerSearchChange = name => {
+    this.props.findServicerByName({name}, () => this.forceUpdate());
   }
   showActionSheet(item) {
     const blackList = [20, 30, 70, 90];
@@ -255,9 +279,19 @@ class Transport extends PureComponent {
     </Flex>
   )
   render() {
-    const { refreshing, firstLoading, loading, status, ds, hasMore } = this.state;
-    const { history, updateTransporting, location: {search}} = this.props;
+    const { refreshing, firstLoading, loading, status, ds, hasMore, customerId } = this.state;
+    const { history, updateTransporting, location: {search}, common, fetchServicering} = this.props;
+    const { servicerSlice } = common;
     const type = parse(search.substring(1))['type'];
+    const customers = servicerSlice.length ? servicerSlice.map(customer => {
+      return {
+        label: customer.fullName,
+        brief: customer.name,
+        value: customer.id,
+        key: customer.id,
+        ...customer
+      }
+    }) : [];
     return (
       <Screen
         className={list.listScreen}
@@ -266,6 +300,18 @@ class Transport extends PureComponent {
             mode='dark'
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
+            rightContent={
+              <SearchModal
+                placeholder='请输入服务商名称'
+                onChange={this.handleCustomerChange}
+                data={customers}
+                value={customerId}
+                loading={fetchServicering}
+                onSearchChange={this.handleCustomerSearchChange}
+              >
+                <span className='light-blue'>筛选</span>
+              </SearchModal>
+            }
           >
             {`运力${!type ? '审核' : '信息'}`}
           </NavBar>

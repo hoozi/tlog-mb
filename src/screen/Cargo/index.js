@@ -5,8 +5,10 @@ import { parse } from 'qs';
 import { StickyContainer, Sticky } from 'react-sticky';
 import { getToken } from '@/utils/token';
 import findIndex from 'lodash/findIndex';
+import Debounce from 'lodash-decorators/debounce';
 import indexOf from 'lodash/indexOf';
 import Screen from '@/component/Screen';
+import SearchModal from '@/component/SearchModal';
 import RouteName from '@/component/RouteName';
 import { mapEffects, mapLoading, checkPermissions, getButtonsByPermissions } from '@/utils';
 import StandardList from '@/component/StandardList';
@@ -16,18 +18,23 @@ import color from '@/constants/color';
 
 const { tabsStyle } = color;
 
-const mapStateToProps = ({ cargo }) => {
+const mapStateToProps = ({ cargo, common }) => {
   return {
+    common,
     ...cargo,
     ...mapLoading('cargo',{
       updateCargoing: 'updateCargo',
       changeCargoToBilling: 'createCargo'
+    }),
+    ...mapLoading('common', {
+      fetchCustomering: 'fetchCustomer'
     })
   }
 }
 
-const mapDispatchToProps = ({ cargo }) => ({
-  ...mapEffects(cargo, ['fetchCargo', 'fetchAnyCargo', 'updateCargo', 'createCargo'])
+const mapDispatchToProps = ({ cargo, common }) => ({
+  ...mapEffects(cargo, ['fetchCargo', 'fetchAnyCargo', 'updateCargo', 'createCargo']),
+  ...mapEffects(common, ['fetchCustomer', 'findCustomerByName'])
 });
 
 
@@ -55,6 +62,7 @@ class Cargo extends PureComponent {
     this.current = 1;
     this.data = [];
     this.state = {
+      customerId: undefined,
       loading: true,
       refreshing: true,
       firstLoading: true,
@@ -98,6 +106,7 @@ class Cargo extends PureComponent {
   componentDidMount() {
     const { current, status } = this.state;
     this.cargoService('fetchCargo', {current, status} , this.callback);
+    this.props.fetchCustomer();
   }
   handleTabChange = data => {
     const { status } = data;
@@ -105,28 +114,32 @@ class Cargo extends PureComponent {
       ...this.state,
       firstLoading: true,
       status
+    },() => {
+      const { customerId } = this.state;
+      this.cargoService('fetchCargo',{
+        status,
+        customerId
+      }, data => {
+        this.reset();
+        this.callback(data)
+      })
     });
-    this.cargoService('fetchCargo',{
-      status
-    }, data => {
-      this.reset();
-      this.callback(data)
-    })
+    
   }
   handleRefresh = () => {
-    const { status } = this.state;
+    const { status,customerId } = this.state;
     this.reset();
     this.setState({
       refreshing: true,
       current: this.current
     });
-    this.cargoService('fetchCargo', { status, current: 1 }, this.callback);
+    this.cargoService('fetchCargo', { status, current: 1, customerId }, this.callback);
   }
   handleEndReached = () => {
-    const { loading, status, hasMore } = this.state;
+    const { loading, status, hasMore,customerId } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.cargoService('fetchCargo', { status, current: ++this.current }, data => {
+    this.cargoService('fetchCargo', { status, current: ++this.current,customerId }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -247,6 +260,18 @@ class Cargo extends PureComponent {
       })
     })
   }
+  handleCustomerChange = customerId => {
+    this.reset();
+    this.setState({
+      customerId
+    }, () => {
+      this.cargoService('fetchCargo', {current:1, status:this.state.status, customerId}, this.callback)
+    })
+  }
+  @Debounce(200)
+  handleCustomerSearchChange = name => {
+    this.props.findCustomerByName({name}, () => this.forceUpdate());
+  }
   renderListCardHeader = item => (
     <RouteName
       from={item.originName}
@@ -271,8 +296,18 @@ class Cargo extends PureComponent {
     </Flex>
   )
   render() {
-    const { refreshing, firstLoading, loading, status, ds, hasMore  } = this.state;
-    const { history, updateCargoing, changeCargoToBilling } = this.props;
+    const { refreshing, firstLoading, loading, status, ds, hasMore, customerId  } = this.state;
+    const { history, updateCargoing, changeCargoToBilling, common, fetchCustomering } = this.props;
+    const { customerSlice } = common;
+    const customers = customerSlice.length ? customerSlice.map(customer => {
+      return {
+        label: customer.fullName,
+        brief: customer.name,
+        value: customer.id,
+        key: customer.id,
+        ...customer
+      }
+    }) : [];
     return (
       <Screen
         className={list.listScreen}
@@ -281,6 +316,18 @@ class Cargo extends PureComponent {
             mode='dark'
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
+            rightContent={
+              <SearchModal
+                placeholder='请输入客户名称'
+                onChange={this.handleCustomerChange}
+                data={customers}
+                value={customerId}
+                loading={fetchCustomering}
+                onSearchChange={this.handleCustomerSearchChange}
+              >
+                <span className='light-blue'>筛选</span>
+              </SearchModal>
+            }
           >
             {`货盘${!this.type ? '审核' : '信息'}`}
           </NavBar>

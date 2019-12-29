@@ -3,6 +3,7 @@ import { Icon, Modal, Badge, Drawer, List, SearchBar } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { BaiduMap, Overlay } from 'react-baidu-maps';
 import isEmpty from 'lodash/isEmpty';
+import { parse } from 'qs';
 import Fields from '@/component/Fields';
 import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
@@ -36,6 +37,26 @@ class Vovage extends Component {
     zoom: this.zoom,
     detail: {}
   }
+  getVovage(chineseName) {
+    this.props.fetchAisAlone({chineseName}, data => {
+      const mmsi = data.mmsi;
+      this.setState({
+        chineseName,
+        zoom: 12,
+        mmsi,
+        center: {lng:data.lon,lat:data.lat}
+      })
+    });
+  }
+  componentDidMount() {
+    const { history } = this.props;
+    const { location: {search} } = history;
+    const chineseName = search ? parse(search.substring(1))['name'] : '';
+    if(chineseName) {
+      this.setState({chineseName});
+      this.getVovage(chineseName);
+    }
+  }
   componentWillUnmount() {
     try {
       this.div.removeEventListener('touchstart', this.handleOverlaySelected, false);
@@ -54,18 +75,16 @@ class Vovage extends Component {
     })
   }
   handleSearchSubmit = chineseName => {
-    this.props.fetchAisAlone({chineseName}, data => {
-      const mmsi = data.mmsi;
-      this.setState({
-        chineseName,
-        mmsi,
-        center: {lng:data.lon,lat:data.lat}
-      })
-    });
+    this.getVovage(chineseName);
   }
   handleOverlaySelected = e => {
     this.handleShowModal(true);
     this.props.fetchVovage({chineseName: this.state.chineseName});
+  }
+  handleNameChange = chineseName => {
+    this.setState({
+      chineseName
+    })
   }
   overlayConstructor = (self, params) => {
     self.point = new BMap.Point(params.point.lng, params.point.lat); // eslint-disable-line no-undef
@@ -178,6 +197,8 @@ class Vovage extends Component {
           <div className={styles.back} onClick={() => history.goBack()}><Icon type='left'/></div>
           <SearchBar
             placeholder='请输入中文船名'
+            value={this.state.chineseName}
+            onChange={this.handleNameChange}
             onSubmit={this.handleSearchSubmit}
           />
         </div>

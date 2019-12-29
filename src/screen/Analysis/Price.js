@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Card, Picker, Icon } from 'antd-mobile';
+import { Flex, Card, Picker, Icon, SegmentedControl } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { mapEffects, mapLoading } from '@/utils';
 import Bar from '@/component/Charts/Bar';
@@ -8,30 +8,18 @@ import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
 import styles from './index.module.less';
 
-const data = [
-  { x: '1月', name: '运价', y: 7 },
-  { x: '2月', name: '运价', y: 23 },
-  { x: '3月', name: '运价', y: 55 },
-  { x: '4月', name: '运价', y: 10 },
-  { x: '5月', name: '运价', y: 45 },
-  { x: '6月', name: '运价', y: 22 },
-  { x: '7月', name: '运价', y: 90 },
-  { x: '8月', name: '运价', y: 67 },
-  { x: '9月', name: '运价', y: 78 },
-  { x: '10月', name: '运价', y: 99 },
-  { x: '11月', name: '运价', y: 12 },
-  { x: '12月', name: '运价', y: 34 }
-];
-
 
 const Price = props => {
   const { analysis, fetchPriceAnalysising } = props;
   const [place, setPlace] = useState({value:0});
   const [priceBar, setPriceBar] = useState({priceList:[]});
+  const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
-    props.fetchPriceAnalysis(data => {
-      getCurrentData(0);
-      getCurrentPlace(0);
+    props.fetchPriceAnalysis({}, () => {
+      props.findPriceByIndex({index:selectedIndex}, () => {
+        getCurrentPlace(0);
+        getCurrentData(0);
+      });
     });
     return;
   }, []);
@@ -39,6 +27,14 @@ const Price = props => {
     const index = value[0];
     getCurrentPlace(index);
     getCurrentData(index);
+  }
+  const handleIndexChange = e => {
+    const index = e.nativeEvent.selectedSegmentIndex;
+    setSelectedIndex(index);
+    props.findPriceByIndex({index}, () => {
+      getCurrentPlace(0);
+      getCurrentData(0);
+    });
   }
   const getCurrentPlace = index => {
     const currentPlace = analysis.placePicker[index];
@@ -53,6 +49,9 @@ const Price = props => {
     <CenterLoading text='加载中...'/> : 
     analysis.placePicker.length &&
     <div className={styles.priceWrapper}>
+      <div className='p16 bg-white'>
+        <SegmentedControl selectedIndex={selectedIndex} values={['货主', '服务商']} style={{height: 32}} onChange={handleIndexChange}/>
+      </div>
       <Picker
         value={[place.value]}
         cols={1}
@@ -68,7 +67,7 @@ const Price = props => {
             <b>{place.end}</b>
             <span>目的地</span>
           </Flex.Item>
-          <Icon type='xiayiyeqianjinchakangengduo' color='#fff'/>
+          <Icon type='xiayiyeqianjinchakangengduo' color='#999'/>
         </Flex>
       </Picker>
       <Card full style={{minHeight:0}}>
@@ -111,6 +110,6 @@ const mapStateToProps = ({analysis}) => ({
     fetchPriceAnalysising: 'fetchPriceAnalysis'
   })
 });
-const mapDispatchToProps = ({analysis}) => mapEffects(analysis, ['fetchPriceAnalysis'])
+const mapDispatchToProps = ({analysis}) => mapEffects(analysis, ['fetchPriceAnalysis', 'findPriceByIndex'])
 
 export default connect(mapStateToProps, mapDispatchToProps)(Price);

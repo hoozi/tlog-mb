@@ -17,6 +17,7 @@ const parsePieData = data => (
 const state = {
   barData: [],
   picker: [],
+  allPriceData: [],
   placePicker:[],
   pieData: [],
   orderTask: [],
@@ -123,12 +124,9 @@ const effects = {
     });
     callback && callback(response.data)
   },
-  async fetchPriceAnalysis(callback) {
-    const response = await queryPriceAnalysis({
-      crudType: 'retrieve'
-    });
-    if(!response) return;
-    const data = response.data.filter(item => !isEmpty(item));
+  findPriceByIndex(payload, rootState, callback) {
+    const { index } = payload;
+    const data = rootState.analysis.allPriceData[index].filter(item => !isEmpty(item));
     const placePicker = data.map((item, index) => {
       return {
         label: `${item.starting} 到 ${item.destination}`,
@@ -153,6 +151,16 @@ const effects = {
       price
     });
     callback && callback(price)
+  },
+  async fetchPriceAnalysis(payload, rootState, callback) {
+    const response = await queryPriceAnalysis({
+      crudType: 'retrieve'
+    });
+    if(!response) return;
+    this.save({
+      allPriceData: response.data
+    });
+    callback && callback();
   }
 }
 

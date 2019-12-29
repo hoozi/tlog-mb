@@ -3,6 +3,7 @@
 .sockItem {
   padding: 8px 12px;
   position: relative;
+  z-index: 12;
   &:after {
     .scale-hairline-common(@border-color-base, auto, auto, 0, 0);
     width: 100%;
@@ -46,6 +47,13 @@
     line-height: 45px;
     font-size: 18px;
     background-color: #fff;
+    svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      margin-top:-13px;
+      color: #999;
+    }
   }
   .filterButtonGroup {
     background-color: #fff;

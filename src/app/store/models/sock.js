@@ -5,6 +5,9 @@ const state = {
   list: [],
   transportSockList: [],
   total: 0,
+  sockCustomer: [],
+  sockCustomerSlice: [],
+  sockDetail: [],
   terminal: {
     beginPageIndex: 1,
     current: 1,
@@ -58,6 +61,35 @@ const effects = {
     if(!response) return;
     this.save({terminal:response.data});
     callback && callback(response.data);
+  },
+  async fetchSockCustomer(payload, rootState, callback) {
+    const response = await queryTerminalSockInfo({
+      crudType: 'retrieve',
+      operateType: "getAllCustomer",
+      ...payload
+    });
+    if(!response) return;
+    this.save({sockCustomer:response.data, sockCustomerSlice: response.data.slice(0,20)});
+    callback && callback(response.data);
+  },
+  async fetchSockDetail(payload, rootState, callback) {
+    const response = await queryTerminalSockInfo({
+      crudType: 'retrieve',
+      operateType: "getStockInfoDetail",
+      ...payload
+    });
+    if(!response) return;
+    this.save({sockDetail:response.data, sockCustomerSlice: response.data.slice(0,20)});
+    callback && callback(response.data);
+  },
+  findSockCustomerByName(payload, rootState) {
+    const { name } = payload;
+    const sockCustomerSlice = rootState.sock.sockCustomer.filter(item => {
+      return item.customerName.indexOf(name) > -1;
+    }).slice(0,20);
+    this.save({
+      sockCustomerSlice
+    })
   },
   async fetchIntransitSock(payload, rootState, callback) {
     const response = await queryIntransitSock({

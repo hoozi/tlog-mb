@@ -21,6 +21,7 @@ const ProductAsync = LoadingComponent('Product');
 const ProductDetailAsync = LoadingComponent('Product/ProductDetail');
 const WharfSockAsync = LoadingComponent('WharfSock');
 const WharfSockSearchAsync = LoadingComponent('WharfSock/Search');
+const WharfSockSearchDetailAsync = LoadingComponent('WharfSock/SearchDetail');
 const WharfSockDetailAsync = LoadingComponent('WharfSock/Sock');
 const TransportSockAsync = LoadingComponent('TransportSock')
 const TransportSockDetailAsync = LoadingComponent('TransportSock/Sock')
@@ -29,6 +30,7 @@ const WharfCongestionAsync = LoadingComponent('WharfCongestion');
 const TideAsync = LoadingComponent('Tide');
 const AnalysisAsync = LoadingComponent('Analysis');
 const VovageAsync = LoadingComponent('Vovage');
+const VovageSearchAsync = LoadingComponent('Vovage/Search');
 
 const routesConfig = [
   {
@@ -261,9 +263,27 @@ const routesConfig = [
     }
   },
   {
+    path: '/vovage-search',
+    component: VovageSearchAsync,
+    title: '船期查询',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
     path: '/wharf-sock-search',
     component: WharfSockSearchAsync,
-    title: '船期信息',
+    title: '码头库存查询',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/wharf-sock-search-detail',
+    component: WharfSockSearchDetailAsync,
+    title: '码头库存详情',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

@@ -3,6 +3,8 @@ import { NavBar, Icon, ListView, Flex } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import Screen from '@/component/Screen';
+import SearchModal from '@/component/SearchModal';
+import Debounce from 'lodash-decorators/debounce';
 import StandardList from '@/component/StandardList';
 import RouteName from '@/component/RouteName';
 import { Link } from 'react-router-dom';
@@ -10,17 +12,22 @@ import { mapEffects, mapLoading } from '@/utils';
 import card from '@/style/card.module.less';
 import list from '@/style/list.module.less';
 
-const mapStateToProps = ({ task }) => {
+const mapStateToProps = ({ task, common }) => {
   return {
     task,
+    common,
     ...mapLoading('task',{
       fetchTasking: 'fetchTask'
+    }),
+    ...mapLoading('common',{
+      fetchServicering: 'fetchServicer'
     })
   }
 }
 
-const mapDispatchToProps = ({ task }) => ({
-  ...mapEffects(task, ['fetchTask'])
+const mapDispatchToProps = ({ task, common }) => ({
+  ...mapEffects(task, ['fetchTask']),
+  ...mapEffects(common, ['fetchServicer', 'findServicerByName'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -34,6 +41,7 @@ class Task extends PureComponent {
     this.data = [];
     this.orderId = -1;
     this.state = {
+      customerId: undefined,
       loading: true,
       refreshing: true,
       firstLoading: true,
@@ -70,28 +78,41 @@ class Task extends PureComponent {
     const orderId = this.orderId = parse(search.substring(1))['id'];
     const { current } = this.state;
     this.getTask({current, orderId, operateType:'lastNode'} , this.callback);
+    this.props.fetchServicer();
   }
   handleRefresh = () => {
-    const { orderId } = this.state
+    const { orderId, customerId } = this.state
     this.reset();
     this.setState({
       ...this.state,
       refreshing: true,
       current: this.current
     });
-    this.getTask({ current: 1, orderId, operateType:'lastNode'}, this.callback);
+    this.getTask({ current: 1, orderId, operateType:'lastNode', customerId}, this.callback);
   }
   handleEndReached = () => {
-    const { loading,  hasMore, orderId } = this.state;
+    const { loading,  hasMore, orderId, customerId} = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.getTask({ current: ++this.current, orderId, operateType:'lastNode' }, data => {
+    this.getTask({ current: ++this.current, orderId, operateType:'lastNode',customerId }, data => {
       this.setState({
         ...this.state,
         current: this.current
       });
       this.callback(data);
     });
+  }
+  handleCustomerChange = customerId => {
+    this.reset();
+    this.setState({
+      customerId
+    }, () => {
+      this.getTask({current:1, customerId}, this.callback)
+    })
+  }
+  @Debounce(200)
+  handleCustomerSearchChange = name => {
+    this.props.findServicerByName({name}, () => this.forceUpdate());
   }
   renderListCardHeader = item => (
     <RouteName
@@ -142,8 +163,18 @@ class Task extends PureComponent {
     return statusMap[item.status];
   }
   render() {
-    const { refreshing, firstLoading, loading, ds, hasMore } = this.state;
-    const { history } = this.props;
+    const { refreshing, firstLoading, loading, ds, hasMore, customerId } = this.state;
+    const { history, common, fetchServicering } = this.props;
+    const { servicerSlice } = common;
+    const customers = servicerSlice.length ? servicerSlice.map(customer => {
+      return {
+        label: customer.fullName,
+        brief: customer.name,
+        value: customer.id,
+        key: customer.id,
+        ...customer
+      }
+    }) : [];
     const renderCardMethods = {
       renderListCardHeader: this.renderListCardHeader,
       renderListCardBody: this.renderListCardBody,
@@ -159,6 +190,18 @@ class Task extends PureComponent {
             mode='dark'
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
+            rightContent={
+              <SearchModal
+                placeholder='请输入服务商名称'
+                onChange={this.handleCustomerChange}
+                data={customers}
+                value={customerId}
+                loading={fetchServicering}
+                onSearchChange={this.handleCustomerSearchChange}
+              >
+                <span className='light-blue'>筛选</span>
+              </SearchModal>
+            }
           >
             物流任务
           </NavBar>

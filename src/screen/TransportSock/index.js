@@ -1,26 +1,32 @@
 import React, { Component } from 'react';
-import { Icon, Modal, Badge, Drawer, List } from 'antd-mobile';
+import { Icon, Modal, Badge, Drawer, List, ActivityIndicator } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { BaiduMap, Overlay } from 'react-baidu-maps';
 import Fields from '@/component/Fields';
 import Screen from '@/component/Screen';
+import isEmpty from 'lodash/isEmpty';
 import CenterLoading from '@/component/CenterLoading';
 import { mapLoading, mapEffects } from '@/utils';
 import styles from '@/style/map.module.less';
 import { BRAND_COLOR } from '@/constants/color';
 import Empty from '@/component/Empty';
 
-const mapStateToProps = ({ sock }) => {
+const mapStateToProps = ({ sock, vovage }) => {
   return {
     sock,
+    vovage,
     ...mapLoading('sock',{
       fetchIntransitSocking: 'fetchIntransitSock'
+    }),
+    ...mapLoading('vovage',{
+      fetchAisAloneing: 'fetchAisAlone'
     })
   }
 }
 
-const mapDispatchToProps = ({ sock }) => ({
-  ...mapEffects(sock, ['fetchIntransitSock'])
+const mapDispatchToProps = ({ sock, vovage }) => ({
+  ...mapEffects(sock, ['fetchIntransitSock']),
+  ...mapEffects(vovage, ['fetchAisAlone'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -29,6 +35,7 @@ class TransportSock extends Component {
   state = {
     center: {lng:121.721133,lat:30.605635},
     visible: false,
+    currentShip: {},
     detail: {},
     list: false,
     zoom: this.zoom,
@@ -37,11 +44,7 @@ class TransportSock extends Component {
   }
   overlays = []
   componentDidMount() { 
-    this.props.fetchIntransitSock({}, data => {
-      this.setState({
-        //center: {lng:data[0].longitude,lat:data[0].latitude}
-      });
-    });
+    this.props.fetchIntransitSock();
   }
   componentWillUnmount() {
     this.overlays.forEach(div => {
@@ -86,16 +89,8 @@ class TransportSock extends Component {
   }
   handleOverlaySelected = e => {
     e.stopPropagation();
-    const target = e.target;
-    const { sock: { transportSockList } } = this.props;
-    const transportIndex = target.dataset.index;
-    let zIndex = target.style.zIndex || 1;
-    target.style.zIndex = ++zIndex;
-    console.log(1)
+    console.log(e)
     this.handleShowModal(true);
-    this.setState({
-      detail: transportSockList[transportIndex]
-    });
   }
   handleMapZoom = type => {
     const zoom = type ? (this.zoom >= 15 ? 15 : ++this.zoom) : (this.zoom <=5 ? 5 : --this.zoom);
@@ -110,14 +105,29 @@ class TransportSock extends Component {
     })
   }
   handleTransportSeleted = item => {
-    const { longitude, latitude } = item;
+    const { vesselExportName:chineseName } = item;
     this.setState({
+      list: false,
+      zIndex: 0
+    })
+    this.props.fetchAisAlone({chineseName}, data => {
+      this.setState({
+        zoom: 12,
+        center: {lng:data.lon,lat:data.lat},
+        currentShip: {
+          longitude: data.lon,
+          latitude: data.lat,
+          ...item
+        }
+      })
+    })
+    /* this.setState({
       center: {lng:longitude,lat:latitude},
       list: false,
       visible: true,
       detail: item,
       zIndex: 0
-    })
+    }) */
   }
   renderTransportList = () => {
     const { sock: {transportSockList}, fetchIntransitSocking } = this.props;
@@ -125,9 +135,9 @@ class TransportSock extends Component {
       <List style={{width: 300}}>
         {
           (!fetchIntransitSocking && transportSockList.length) ? 
-          transportSockList.map(item => (
+          transportSockList.map((item, index) => (
             <List.Item 
-              key={`lng${item.longitude}_lat${item.latitude}`} 
+              key={index} 
               extra={
                 <span className='text-primary'>
                   <b>{item.feeWeight || '0'}</b>吨
@@ -146,7 +156,8 @@ class TransportSock extends Component {
   }
   render(){
     // eslint-disable-next-line
-    const { sock: {transportSockList}, fetchIntransitSocking, history } = this.props;
+    const { currentShip } = this.state;
+    const { sock: {transportSockList}, fetchIntransitSocking, history, fetchAisAloneing } = this.props;
     const createOverlayMethods = {
       customConstructor: this.overlayConstructor,
       initialize: this.overlayInitialize,
@@ -160,6 +171,14 @@ class TransportSock extends Component {
       {
         title: '重量',
         dataIndex: 'feeWeight'
+      },
+      {
+        title: '发货人',
+        dataIndex: 'customerShortName1'
+      },
+      {
+        title: '收货人',
+        dataIndex: 'customerShortName2'
       },
       /* {
         title: '扣除损耗商检量',
@@ -207,14 +226,19 @@ class TransportSock extends Component {
                 <span onClick={() => this.handleMapZoom(false)}>-</span>
               </div>
               {
-                transportSockList && transportSockList.length && !fetchIntransitSocking ? 
-                <div className={styles.toggleList}>
-                  <span className='mt8' onClick={this.handleListOpenChange}>
-                    <Badge text={transportSockList.length}>
-                      <Icon type='liebiao' color={this.state.list ? BRAND_COLOR : ''}/>
-                    </Badge>
-                  </span>
-                </div> : null
+                 
+                <div className={`${styles.toggleList} mt8`}>
+                  {
+                    fetchIntransitSocking ?
+                    <span><ActivityIndicator size='small'/></span> : 
+                    transportSockList && transportSockList.length ?
+                    <span onClick={this.handleListOpenChange}>
+                      <Badge text={transportSockList.length}>
+                        <Icon type='liebiao' color={this.state.list ? BRAND_COLOR : ''}/>
+                      </Badge>
+                    </span> : null
+                  }
+                </div>
               }
             </div>
           </div>
@@ -227,23 +251,20 @@ class TransportSock extends Component {
             enableScrollWheelZoom
           >
             {
-              fetchIntransitSocking ? 
-              <CenterLoading className='center-loading' text='在途数据加载中...'/> :
-              transportSockList ? 
-              transportSockList.map((item, index) => (
-                <Overlay key={`lng${item.longitude}_lat${item.latitude}`} 
-                  constructorParams={{
-                    point: {
-                      lng: item.longitude,
-                      lat: item.latitude
-                    },
-                    text: `运输工具: ${item.vesselExportEname || item.vesselImportEname || '未知'}/${item.exportVoyage || item.importVoyage || '未知'}`,
-                    extra:  `货物: ${item.cargoShortName},${item.feeWeight || '0'}吨`,
-                    index
-                  }}
-                  {...createOverlayMethods}
-                />
-              )) : null
+              fetchAisAloneing ? 
+              <CenterLoading className='center-loading' text='在途数据加载中...'/> : 
+              !isEmpty(currentShip) && 
+              <Overlay 
+                constructorParams={{
+                  point: {
+                    lng: currentShip.longitude,
+                    lat: currentShip.latitude
+                  },
+                  text: `运输工具: ${currentShip.vesselExportEname || currentShip.vesselImportEname || '未知'}/${currentShip.exportVoyage || currentShip.importVoyage || '未知'}`,
+                  extra:  `货物: ${currentShip.cargoShortName},${currentShip.feeWeight || '0'}吨`
+                }}
+                {...createOverlayMethods}
+              />
             }
           </BaiduMap>
         </div>
@@ -254,10 +275,10 @@ class TransportSock extends Component {
           onClose={() => this.handleShowModal()}
           afterClose={() => document.documentElement.style.overflow=''}
         >
-          <h2 className='popup-list-title'>{this.state.detail['vesselExportEname'] || this.state.detail['vesselImportEname'] || '未知'}/{this.state.detail['exportVoyage'] || this.state.detail['importVoyage'] || '未知'}</h2>
+          <h2 className='popup-list-title'>{this.state.currentShip['vesselExportName']}{this.state.currentShip['vesselExportEname'] || this.state.currentShip['vesselImportEname'] || '未知'}/{this.state.currentShip['exportVoyage'] || this.state.currentShip['importVoyage'] || '未知'}</h2>
           <Fields
             columns={columns}
-            data={this.state.detail}
+            data={this.state.currentShip}
             labelWidth={116}
           />
         </Modal>
