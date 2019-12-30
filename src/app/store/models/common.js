@@ -8,7 +8,8 @@ import {
   upload, 
   queryUploadKey, 
   bindFile, 
-  queryOrg 
+  queryOrg,
+  queryCompany
 } from '@/api/common';
 import { Toast } from 'antd-mobile';
 
@@ -29,7 +30,9 @@ const state = {
   customers: [],
   customerSlice: [],
   servicers: [],
-  servicerSlice: []
+  servicerSlice: [],
+  companys: [],
+  companySlice: []
 }
 
 const reducers = {
@@ -78,6 +81,26 @@ const effects = dispatch => ({
       orgSplice: response.data.slice(0,20)
     });
     callback && callback(response.data);
+  },
+  findCompanyByName(payload,rootState, callback) {
+    const {name} = payload;
+    const companySlice = rootState.common.companys.filter(item => {
+      return item.companyName.indexOf(name) > -1
+    }).slice(0,20);
+    this.save({
+      companySlice
+    });
+    callback && callback();
+  },
+  async fetchCompany(payload) {
+    const response = await queryCompany({
+      crudType: 'retrieve'
+    });
+    if(!response) return;
+    this.save({
+      companys: response.data,
+      companySlice: response.data.slice(0,20)
+    })
   },
   findTransports(payload, rootState) {
     const { name } = payload;

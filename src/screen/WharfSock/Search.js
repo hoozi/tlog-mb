@@ -144,7 +144,6 @@ class Search extends PureComponent {
     this.drawerClose();
   }
   handleField = (field, changed) => {
-    console.log(changed)
     this.setState({
       filter: {
         ...this.state.filter,
@@ -276,7 +275,7 @@ class Search extends PureComponent {
             onLeftClick={() => history.goBack()}
             rightContent={<span className={styles.filterButton} onClick={this.handleOpenFilter}>筛选</span>}
           >
-            码头库存查询
+            码头库存汇总
           </NavBar>
         )}
       >

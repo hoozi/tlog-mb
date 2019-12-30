@@ -6,17 +6,21 @@ import Fields from '@/component/Fields';
 import Screen from '@/component/Screen';
 import isEmpty from 'lodash/isEmpty';
 import CenterLoading from '@/component/CenterLoading';
+import Debounce from 'lodash-decorators/debounce';
+import SearchModal from '@/component/SearchModal';
 import { mapLoading, mapEffects } from '@/utils';
 import styles from '@/style/map.module.less';
 import { BRAND_COLOR } from '@/constants/color';
 import Empty from '@/component/Empty';
+import shipPng from '@/assets/ship.png';
 
 const mapStateToProps = ({ sock, vovage }) => {
   return {
     sock,
     vovage,
     ...mapLoading('sock',{
-      fetchIntransitSocking: 'fetchIntransitSock'
+      fetchIntransitSocking: 'fetchIntransitSock',
+      fetchSockCustomering: 'fetchSockCustomer'
     }),
     ...mapLoading('vovage',{
       fetchAisAloneing: 'fetchAisAlone'
@@ -25,7 +29,7 @@ const mapStateToProps = ({ sock, vovage }) => {
 }
 
 const mapDispatchToProps = ({ sock, vovage }) => ({
-  ...mapEffects(sock, ['fetchIntransitSock']),
+  ...mapEffects(sock, ['fetchIntransitSock', 'fetchSockCustomer', 'findSockCustomerByName']),
   ...mapEffects(vovage, ['fetchAisAlone'])
 });
 
@@ -40,11 +44,13 @@ class TransportSock extends Component {
     list: false,
     zoom: this.zoom,
     zIndex: 0,
-    open: false
+    open: false,
+    customerCode: undefined
   }
   overlays = []
   componentDidMount() { 
     this.props.fetchIntransitSock();
+    this.props.fetchSockCustomer();
   }
   componentWillUnmount() {
     this.overlays.forEach(div => {
@@ -62,16 +68,13 @@ class TransportSock extends Component {
     self.map = map;
     const div = document.createElement('div');
     div.className = styles.ship;
-    div.dataset.index = div.style.zIndex = self.index;
-    const text = document.createElement('div');
-    text.className = 'loc-item';
-    text.dataset.index = self.index;
-    text.innerHTML = `${self.text}<br/>${self.extra}`;
-    div.appendChild(text);
-    map.getPanes().labelPane.appendChild(div);
+    div.style.background=`url(${shipPng}) no-repeat`;
+    div.style.width='32px';
+    div.style.height='32px';
+    map.getPanes().labelPane.appendChild(div)
     div.addEventListener('touchstart', this.handleOverlaySelected, false)
     self.div = div;
-    self.text = text;
+    //self.text = text;
     this.overlays.push(div);
     return div;
   }
@@ -79,8 +82,8 @@ class TransportSock extends Component {
     const map = self.map;
     const pixel = map.pointToOverlayPixel(self.point);
     self.div.style.left = `${pixel.x-self.div.offsetWidth/2}px`;
-    self.div.style.top = `${pixel.y-self.div.offsetHeight/2}px`;
-    self.text.style.marginLeft = `-${self.text.offsetWidth/2}px`;
+    self.div.style.top = `${pixel.y-self.div.offsetHeight}px`;
+    //self.text.style.marginLeft = `-${self.text.offsetWidth/2}px`;
   }
   handleShowModal = flag => {
     this.setState({
@@ -108,6 +111,7 @@ class TransportSock extends Component {
     const { vesselExportName:chineseName } = item;
     this.setState({
       list: false,
+      currentShip: {},
       zIndex: 0
     })
     this.props.fetchAisAlone({chineseName}, data => {
@@ -121,13 +125,15 @@ class TransportSock extends Component {
         }
       })
     })
-    /* this.setState({
-      center: {lng:longitude,lat:latitude},
-      list: false,
-      visible: true,
-      detail: item,
-      zIndex: 0
-    }) */
+  }
+  handleCustomerChange = customerCode => {
+    this.setState({
+      customerCode
+    }, () => this.props.fetchIntransitSock({customerCode}));
+  }
+  @Debounce(200)
+  handleCustomerSearchChange = name => {
+    this.props.findSockCustomerByName({name}, () => this.forceUpdate())
   }
   renderTransportList = () => {
     const { sock: {transportSockList}, fetchIntransitSocking } = this.props;
@@ -156,8 +162,14 @@ class TransportSock extends Component {
   }
   render(){
     // eslint-disable-next-line
-    const { currentShip } = this.state;
-    const { sock: {transportSockList}, fetchIntransitSocking, history, fetchAisAloneing } = this.props;
+    const { currentShip, customerCode } = this.state;
+    const { sock: {transportSockList,sockCustomerSlice}, fetchIntransitSocking, history, fetchAisAloneing, fetchSockCustomering } = this.props;
+    const customers = sockCustomerSlice.length ? sockCustomerSlice.map(customer => ({
+      label: customer.customerName,
+      brief: customer.customerCode,
+      value: customer.customerCode,
+      key: customer.customerCode
+    })) : [];
     const createOverlayMethods = {
       customConstructor: this.overlayConstructor,
       initialize: this.overlayInitialize,
@@ -226,7 +238,6 @@ class TransportSock extends Component {
                 <span onClick={() => this.handleMapZoom(false)}>-</span>
               </div>
               {
-                 
                 <div className={`${styles.toggleList} mt8`}>
                   {
                     fetchIntransitSocking ?
@@ -240,6 +251,20 @@ class TransportSock extends Component {
                   }
                 </div>
               }
+              <div className={`${styles.toggleList} mt8`}>
+                <span>
+                  <SearchModal
+                    placeholder='请输入客户名称'
+                    onChange={this.handleCustomerChange}
+                    data={customers}
+                    value={customerCode}
+                    loading={fetchSockCustomering}
+                    onSearchChange={this.handleCustomerSearchChange}
+                  >
+                    <Icon type='shaixuan' size='xs'/>
+                  </SearchModal>
+                </span>
+              </div>
             </div>
           </div>
         </div>

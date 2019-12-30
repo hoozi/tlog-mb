@@ -115,7 +115,7 @@ class Order extends PureComponent {
   }
   @Debounce(200)
   handleCustomerSearchChange = name => {
-    this.props.findServicerByName({name}, () => this.forceUpdate());
+    this.props.findCustomerByName({name}, () => this.forceUpdate());
   }
   renderListCardHeader = item => (
     <RouteName

@@ -229,7 +229,7 @@ const routesConfig = [
   {
     path: '/wharf-congestion',
     component: WharfCongestionAsync,
-    title: '拥堵情况',
+    title: '繁忙指数',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'
@@ -274,7 +274,7 @@ const routesConfig = [
   {
     path: '/wharf-sock-search',
     component: WharfSockSearchAsync,
-    title: '码头库存查询',
+    title: '码头库存汇总',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

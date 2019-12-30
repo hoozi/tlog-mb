@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
-import { NavBar, Icon, ListView, Flex } from 'antd-mobile';
+import { NavBar, Icon, ListView, Flex, Picker, List } from 'antd-mobile';
 import { connect } from 'react-redux';
 import Screen from '@/component/Screen';
 import StandardList from '@/component/StandardList';
+import Debounce from 'lodash-decorators/debounce';
+import SearchModal from '@/component/SearchModal';
 import RouteName from '@/component/RouteName';
 import { Link } from 'react-router-dom';
 import { mapEffects, mapLoading } from '@/utils';
@@ -10,17 +12,37 @@ import styles from './index.module.less';
 import list from '@/style/list.module.less';
 import card from '@/style/card.module.less';
 
-const mapStateToProps = ({ vovage }) => {
+const terminalData = [
+  {
+    label: '北仑矿石',
+    value: 'BLKS'   
+  },
+  {
+    label: '鼠浪湖矿石',
+    value: 'QHKS'
+  },
+  {
+    label: '武港矿石',
+    value: 'WGKS'
+  }
+]
+
+const mapStateToProps = ({ vovage,common }) => {
   return {
     vovage,
+    common,
     ...mapLoading('vovage',{
       fetchVovageInfoing: 'fetchVovageInfo'
+    }),
+    ...mapLoading('common', {
+      fetchCompanying: 'fetchCompany'
     })
   }
 }
 
-const mapDispatchToProps = ({ vovage }) => ({
-  ...mapEffects(vovage, ['fetchVovageInfo'])
+const mapDispatchToProps = ({ vovage, common }) => ({
+  ...mapEffects(vovage, ['fetchVovageInfo']),
+  ...mapEffects(common, ['fetchCompany','findCompanyByName'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -33,6 +55,7 @@ class Search extends PureComponent {
     this.current = 1;
     this.data = []
     this.state = {
+      operatorCompanySysId: undefined,
       loading: true,
       refreshing: true,
       firstLoading: true,
@@ -71,8 +94,9 @@ class Search extends PureComponent {
     this.props.fetchVovageInfo(payload, _callback)
   }
   componentDidMount() {
-    const { current } = this.state;
-    this.getVovageInfo({current} , this.callback);
+    const { current, operatorCompanySysId } = this.state;
+    this.getVovageInfo({current, operatorCompanySysId} , this.callback);
+    this.props.fetchCompany();
   }
   handleRefresh = () => {
     this.reset();
@@ -80,14 +104,17 @@ class Search extends PureComponent {
       ...this.state,
       refreshing: true,
       current: this.current
+    }, () => {
+      const { operatorCompanySysId } = this.state;
+      this.getVovageInfo({ current: 1, operatorCompanySysId }, this.callback);
     });
-    this.getVovageInfo({ current: 1 }, this.callback);
+    
   }
   handleEndReached = () => {
-    const { loading,  hasMore } = this.state;
+    const { loading,  hasMore, operatorCompanySysId } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.getVovageInfo({ current: ++this.current }, data => {
+    this.getVovageInfo({ current: ++this.current,  operatorCompanySysId }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -95,25 +122,24 @@ class Search extends PureComponent {
       this.callback(data);
     });
   }
+  handleCustomerChange = operatorCompanySysId => {
+    this.reset();
+    this.setState({
+      operatorCompanySysId
+    }, () => this.getVovageInfo({current:1,operatorCompanySysId}, this.callback));
+  }
+  @Debounce(200)
+  handleCustomerSearchChange = name => {
+    this.props.findCompanyByName({name}, () => this.forceUpdate())
+  }
   renderListCard = item => (
     <div className={styles.voavgeItem} onClick={() => this.props.history.push(`/vovage?name=${item.vesselName}`)}>
       <div className={styles.vovageHeader}>
         <Flex justify='between'>
-          <span>{item.vesselName}靠泊{item.berthLocationName}{item.berthNotes ? '('+item.berthNotes + ')' : ''}</span>
-          <span>{item.downloadTimestamp}</span>
+          <span>{item.vesselName}/{item.importVoyage || '-'}/{item.exportVoyage || '-'}</span>
         </Flex>
       </div>
       <div className={styles.vovageBody}>
-        <Flex justify='between' className='mb12'>
-          <div className={styles.vovageTime}>
-            <b>{item.importVoyage || '-'}</b>
-            <span>进口航次</span>
-          </div>
-          <div className={styles.vovageTime}>
-            <b>{item.exportVoyage || '-'}</b>
-            <span>出口航次</span>
-          </div>
-        </Flex>
         <Flex justify='between' className='mb12'>
           <div className={styles.vovageTime}>
             <b>{item.dependPlanTime || '-'}</b>
@@ -126,12 +152,12 @@ class Search extends PureComponent {
         </Flex>
         <Flex justify='between'>
           <div className={styles.vovageTime}>
-            <b>{item.dependActualTime || '-'}</b>
-            <span>实际靠泊</span>
-          </div>
-          <div className={styles.vovageTime}>
             <b>{item.leaveActualTime || '-'}</b>
             <span>实际离泊</span>
+          </div>
+          <div className={styles.vovageTime}>
+            <b>{item.dependActualTime || '-'}</b>
+            <span>实际靠泊</span>
           </div>
         </Flex>
       </div>
@@ -141,8 +167,14 @@ class Search extends PureComponent {
     </div>
   )
   render() {
-    const { refreshing, firstLoading, loading, ds, hasMore } = this.state;
-    const { history } = this.props;
+    const { refreshing, firstLoading, loading, ds, hasMore, operatorCompanySysId  } = this.state;
+    const { history, common: {companySlice,companys}, fetchCompanying } = this.props;
+    const customers = companySlice.length ? companySlice.map(customer => ({
+      label: customer.companyName,
+      brief: customer.companyCode,
+      value: customer.companyCode,
+      key: customer.companyCode
+    })) : [];
     return (
       <Screen
         className={list.listScreen}
@@ -158,6 +190,18 @@ class Search extends PureComponent {
           </NavBar>
         )}
       >
+        <List className='mb12'>
+          <SearchModal
+            placeholder='请输入码头名称'
+            onChange={this.handleCustomerChange}
+            data={customers}
+            value={operatorCompanySysId}
+            loading={fetchCompanying}
+            onSearchChange={this.handleCustomerSearchChange}
+          >
+            <List.Item arrow='horizontal' extra={operatorCompanySysId ? companys.filter(item => item.companyCode === operatorCompanySysId)[0]['companyName'] : '请选择'}>码头</List.Item>
+          </SearchModal>
+        </List>
         <StandardList
           dataSource={ds}
           onEndReached={this.handleEndReached}
@@ -167,7 +211,6 @@ class Search extends PureComponent {
           firstLoading={firstLoading}
           hasMore={hasMore}
           renderListCard={this.renderListCard}
-          onCardClick={item => this.props.history.push(`/order-detail?id=${item.id}`)}
           initialListSize={20}
           //{...renderCardMethods}
         />

@@ -88,7 +88,7 @@ const menus = [/* {
   url: '/vovage-search'
 }, {
   icon: <Icon type='matoukucunchaxun' size='f' color={BRAND_COLOR}/>,
-  text: '码头库存查询',
+  text: '码头库存汇总',
   url: '/wharf-sock-search'
 }];
 

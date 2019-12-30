@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { BaiduMap, Overlay } from 'react-baidu-maps';
 import Screen from '@/component/Screen';
 import CenterLoading from '@/component/CenterLoading';
+import Debounce from 'lodash-decorators/debounce';
+import SearchModal from '@/component/SearchModal';
 import { mapLoading, mapEffects } from '@/utils';
 import styles from '@/style/map.module.less';
 
@@ -12,36 +14,38 @@ const mapStateToProps = ({ sock }) => {
     sock,
     ...mapLoading('sock',{
       fetchTerminalLocationing: 'fetchTerminalLocation',
-      fetchTerminalSocking: 'fetchTerminalSock'
+      fetchTerminalSocking: 'fetchTerminalSock',
+      fetchSockCustomering: 'fetchSockCustomer'
     })
   }
 }
 
 const mapDispatchToProps = ({ sock }) => ({
-  ...mapEffects(sock, ['fetchTerminalLocation', 'fetchTerminalSock'])
+  ...mapEffects(sock, ['fetchTerminalLocation', 'fetchTerminalSock', 'fetchSockCustomer', 'findSockCustomerByName'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
 class WharfSock extends Component {
   state = {
     center: [121.84922218322755, 30.673635005950928],
-    zoom: 8
+    zoom: 8,
+    customerCode: undefined
   }
   overlays = []
-  shouldComponentUpdate(prevProps) {
+  /* shouldComponentUpdate(prevProps) {
     return this.props.fetchTerminalLocationing !== prevProps.fetchTerminalLocationing;
-  }
+  } */
   componentDidMount() { 
-    this.props.fetchTerminalLocation({customerCode: 'SG'});
+    this.props.fetchTerminalLocation();
+    this.props.fetchSockCustomer();
   }
   handleOverlaySelected = e => {
     const { sock: { location } } = this.props;
     const locationIndex = e.target.dataset.index;
     // eslint-disable-next-line
-    const { code: terminalCode } = location[locationIndex]; 
+    const { code: terminalCode, name } = location[locationIndex]; 
 
-    const customerCode = '';
-    this.props.history.push(`/wharf-sock-detail?customerCode=${customerCode}&terminalCode=${terminalCode}`)
+    this.props.history.push(`/wharf-sock-detail?customerCode=${this.state.customerCode || ''}&terminalCode=${terminalCode}&terminalName=${name}`)
     //this.props.fetchTerminalSock({terminalCode,customerCode});
   }
   componentWillUnmount() {
@@ -77,10 +81,25 @@ class WharfSock extends Component {
     self.div.style.left = `${pixel.x-self.div.offsetWidth/2}px`;
     self.div.style.top = `${pixel.y-30}px`;
   }
+  handleCustomerChange = customerCode => {
+    this.setState({
+      customerCode
+    }, () => this.props.fetchTerminalLocation({customerCode}));
+  }
+  @Debounce(200)
+  handleCustomerSearchChange = name => {
+    this.props.findSockCustomerByName({name}, () => this.forceUpdate())
+  }
   render(){
     // eslint-disable-next-line
-    const { sock: {location}, fetchTerminalLocationing, history } = this.props;
-    const { zoom } = this.state
+    const { sock: {location,sockCustomerSlice}, fetchTerminalLocationing, history, fetchSockCustomering } = this.props;
+    const { zoom, customerCode } = this.state;
+    const customers = sockCustomerSlice.length ? sockCustomerSlice.map(customer => ({
+      label: customer.customerName,
+      brief: customer.customerCode,
+      value: customer.customerCode,
+      key: customer.customerCode
+    })) : [];
     const createOverlayMethods = {
       customConstructor: this.overlayConstructor,
       initialize: this.overlayInitialize,
@@ -92,6 +111,22 @@ class WharfSock extends Component {
           <div className={styles.mapHeaderInner}>
             <div className={styles.backButton} onClick={e => history.goBack()}>
               <Icon type='left' size='f'/>
+            </div>
+            <div className={styles.mapControl}>
+              <div className={styles.toggleList}>
+                <span>
+                  <SearchModal
+                    placeholder='请输入客户名称'
+                    onChange={this.handleCustomerChange}
+                    data={customers}
+                    value={customerCode}
+                    loading={fetchSockCustomering}
+                    onSearchChange={this.handleCustomerSearchChange}
+                  >
+                    <Icon type='shaixuan' size='xs'/>
+                  </SearchModal>
+                </span>
+              </div>
             </div>
           </div>
         </div>

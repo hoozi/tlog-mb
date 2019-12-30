@@ -82,14 +82,15 @@ const effects = {
     this.save({sockDetail:response.data, sockCustomerSlice: response.data.slice(0,20)});
     callback && callback(response.data);
   },
-  findSockCustomerByName(payload, rootState) {
+  findSockCustomerByName(payload, rootState, callback) {
     const { name } = payload;
     const sockCustomerSlice = rootState.sock.sockCustomer.filter(item => {
       return item.customerName.indexOf(name) > -1;
     }).slice(0,20);
     this.save({
       sockCustomerSlice
-    })
+    });
+    callback && callback();
   },
   async fetchIntransitSock(payload, rootState, callback) {
     const response = await queryIntransitSock({

@@ -94,7 +94,7 @@ class WharfCongestion extends Component {
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
           >
-            拥堵情况
+            繁忙指数
           </NavBar>
         )}
       >
