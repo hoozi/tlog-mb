@@ -26,7 +26,7 @@ export default connect(mapStateToProps)(props => {
     {
       title: '船名/航次',
       dataIndex: '_',
-      render: (value, row, {vesselEnglishName, voyage}) => `${vesselEnglishName}/${voyage}`
+      render: (value, row, {vesselChineseName, voyage}) => `${vesselChineseName}/${voyage}`
     },
     {
       title: '船长',

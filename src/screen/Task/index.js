@@ -39,7 +39,7 @@ class Task extends PureComponent {
     });
     this.current = 1;
     this.data = [];
-    this.orderId = -1;
+    this.orderId = undefined;
     this.state = {
       customerId: undefined,
       loading: true,
@@ -107,7 +107,8 @@ class Task extends PureComponent {
     this.setState({
       customerId
     }, () => {
-      this.getTask({current:1, customerId}, this.callback)
+      const { orderId } = this.state
+      this.getTask({current:1, customerId, orderId, operateType:'lastNode'}, this.callback)
     })
   }
   @Debounce(200)

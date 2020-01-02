@@ -77,11 +77,8 @@ class Transport extends PureComponent {
     const { recordList, pageCount } = data;
     const { common: {orgs} } = this.props
     const ds = recordList.length > 0 ? recordList.map(item => {
-      const filted = orgs.filter(org => org.id === item.logisticsProviderId);
-      const logisticsProviderName = filted.length ? filted[0]['name'] : '';
       return {
         ...item,
-        logisticsProviderName
       }
     }) : [];
     this.data = [...this.data, ...ds];
@@ -264,9 +261,10 @@ class Transport extends PureComponent {
     </Flex>
   )
   renderListCardBody = item => {
+    console.log(item)
     return (
       <>
-        <p>服务商<b>{ item.logisticsProviderName || '未知'}</b></p>
+        <p>服务商<b>{item.logisticsProviderName || '未知'}</b></p>
         <p>空闲日期<b>{moment(item.freeStartTime).format('YYYY-MM-DD')} ~ {moment(item.freeEndTime).format('YYYY-MM-DD')}</b></p>
       </>
     )

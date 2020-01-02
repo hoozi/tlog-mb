@@ -7,6 +7,7 @@ import CenterLoading from '@/component/CenterLoading';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
 import styles from './index.module.less';
+import Empty from '@/component/Empty';
 
 
 const Price = props => {
@@ -47,11 +48,14 @@ const Price = props => {
   return (
     fetchPriceAnalysising ? 
     <CenterLoading text='加载中...'/> : 
-    analysis.placePicker.length &&
+    analysis.placePicker.length ?
     <div className={styles.priceWrapper}>
-      <div className='p16 bg-white'>
-        <SegmentedControl selectedIndex={selectedIndex} values={['货主', '服务商']} style={{height: 32}} onChange={handleIndexChange}/>
-      </div>
+      {
+        analysis.allPriceData.length > 1 &&
+        <div className='p16 bg-white'>
+          <SegmentedControl selectedIndex={selectedIndex} values={['货主', '服务商']} style={{height: 32}} onChange={handleIndexChange}/>
+        </div>
+      }
       <Picker
         value={[place.value]}
         cols={1}
@@ -100,7 +104,7 @@ const Price = props => {
           </div>
         </Card.Body>
       </Card>
-    </div>
+    </div> : <Empty/>
   )
 }
 
