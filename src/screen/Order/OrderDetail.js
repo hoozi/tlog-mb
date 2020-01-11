@@ -3,6 +3,7 @@ import { NavBar, Icon } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import Empty from '@/component/Empty';
@@ -27,6 +28,7 @@ export default connect(mapStateToProps)(props => {
   const { history, recordList, location:{search} } = props;
   const id = parse(search.substring(1))['id'];
   const data = find(recordList.map(item => ({...item})), item => item.id === id);
+  console.log(data)
   const columns = [
     {
       title: '合同号',
@@ -40,6 +42,16 @@ export default connect(mapStateToProps)(props => {
       dataIndex: 'contractNo',
       render: value => <span className='text-important'><Icon type='fujian' size='xxs' style={{verticalAlign: 'middle', margin: '-4px 2px 0 0'}}/>{value}</span>
     }, */
+    {
+      title: '委托日期',
+      dataIndex: 'contractDate',
+      render: value => moment(value).format('YYYY-MM-DD')
+    },
+    {
+      title: '受载日期',
+      dataIndex: '-',
+      render: (value, _, row) => `${moment(row.layDaysFrom).format('YYYY-MM-DD')} ~ ${moment(row.layDaysTo).format('YYYY-MM-DD')}`
+    },
     {
       title: '作业类型',
       dataIndex: 'bizTypeName'

@@ -85,7 +85,7 @@ const effects = dispatch => ({
   findCompanyByName(payload,rootState, callback) {
     const {name} = payload;
     const companySlice = rootState.common.companys.filter(item => {
-      return item.companyName.indexOf(name) > -1
+      return item.label.indexOf(name) > -1
     }).slice(0,20);
     this.save({
       companySlice
@@ -94,7 +94,8 @@ const effects = dispatch => ({
   },
   async fetchCompany(payload) {
     const response = await queryCompany({
-      crudType: 'retrieve'
+      crudType: 'retrieve',
+      "operateType":"getAllOperatorCompanyName"
     });
     if(!response) return;
     this.save({

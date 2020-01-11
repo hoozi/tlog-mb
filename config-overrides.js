@@ -3,7 +3,17 @@ const WebpackZipPlugin = require('webpack-zip-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const moment = require('moment');
 const { resolve } = require('path');
-
+function getPath() {
+  let path;
+  if(process.env.NODE_ENV === 'production') {
+    if(process.env.REACT_APP_ENV !== 'webapp') {
+      path = resolve(__dirname,'../www');
+    } else {
+      path = resolve(__dirname,'./build');
+    }
+  }
+  return path;
+}
 module.exports = { 
   webpack: override(
     addBabelPlugins([
@@ -19,7 +29,7 @@ module.exports = {
       '@': resolve(__dirname, './src')
     }),
     addWebpackPlugin(
-      process.env.NODE_ENV === 'production' ?
+      (process.env.NODE_ENV === 'production' && process.env.REACT_APP_ENV === 'webapp') ?
       new WebpackZipPlugin({
         initialFile: './build',
         endPath: './_build',
@@ -34,8 +44,8 @@ module.exports = {
         ...config,
         output: {
           ...config.output,
-          //path: process.env.NODE_ENV === 'production' ? resolve(__dirname,'../www') : undefined,
-          publicPath: process.env.NODE_ENV === 'production' ? '' : '/'
+          path: getPath(),
+          publicPath: (process.env.NODE_ENV === 'production' || process.env.REACT_APP_ENV === 'webapp') ? '' : '/'
         }
       }
     },

@@ -63,7 +63,7 @@ export async function queryCustomerByName(params) {
   })
 }
 export async function queryCompany(params) {
-  return request('/ierp/kapi/app/nbg_qcwl/operate-company', {
+  return request('/ierp/kapi/app/nbg_qcwl/cbos-voyage-info', {
     data: params
   })
 }

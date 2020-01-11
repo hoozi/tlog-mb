@@ -55,7 +55,7 @@ class Search extends PureComponent {
     this.current = 1;
     this.data = []
     this.state = {
-      operatorCompanySysId: undefined,
+      operatorCompanyName: undefined,
       loading: true,
       refreshing: true,
       firstLoading: true,
@@ -94,8 +94,8 @@ class Search extends PureComponent {
     this.props.fetchVovageInfo(payload, _callback)
   }
   componentDidMount() {
-    const { current, operatorCompanySysId } = this.state;
-    this.getVovageInfo({current, operatorCompanySysId} , this.callback);
+    const { current, operatorCompanyName } = this.state;
+    this.getVovageInfo({current, operatorCompanyName} , this.callback);
     this.props.fetchCompany();
   }
   handleRefresh = () => {
@@ -105,16 +105,16 @@ class Search extends PureComponent {
       refreshing: true,
       current: this.current
     }, () => {
-      const { operatorCompanySysId } = this.state;
-      this.getVovageInfo({ current: 1, operatorCompanySysId }, this.callback);
+      const { operatorCompanyName } = this.state;
+      this.getVovageInfo({ current: 1, operatorCompanyName }, this.callback);
     });
     
   }
   handleEndReached = () => {
-    const { loading,  hasMore, operatorCompanySysId } = this.state;
+    const { loading,  hasMore, operatorCompanyName } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.getVovageInfo({ current: ++this.current,  operatorCompanySysId }, data => {
+    this.getVovageInfo({ current: ++this.current,  operatorCompanyName }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -122,11 +122,11 @@ class Search extends PureComponent {
       this.callback(data);
     });
   }
-  handleCustomerChange = operatorCompanySysId => {
+  handleCustomerChange = operatorCompanyName => {
     this.reset();
     this.setState({
-      operatorCompanySysId
-    }, () => this.getVovageInfo({current:1,operatorCompanySysId}, this.callback));
+      operatorCompanyName
+    }, () => this.getVovageInfo({current:1,operatorCompanyName}, this.callback));
   }
   @Debounce(200)
   handleCustomerSearchChange = name => {
@@ -136,7 +136,7 @@ class Search extends PureComponent {
     <div className={styles.voavgeItem} onClick={() => this.props.history.push(`/vovage?name=${item.vesselName}`)}>
       <div className={styles.vovageHeader}>
         <Flex justify='between'>
-          <span>{item.vesselName}/{item.importVoyage || '-'}/{item.exportVoyage || '-'}</span>
+          <span>{item.vesselName}/{item.voyage}</span>
         </Flex>
       </div>
       <div className={styles.vovageBody}>
@@ -167,13 +167,12 @@ class Search extends PureComponent {
     </div>
   )
   render() {
-    const { refreshing, firstLoading, loading, ds, hasMore, operatorCompanySysId  } = this.state;
+    const { refreshing, firstLoading, loading, ds, hasMore, operatorCompanyName  } = this.state;
     const { history, common: {companySlice,companys}, fetchCompanying } = this.props;
     const customers = companySlice.length ? companySlice.map(customer => ({
-      label: customer.companyName,
-      brief: customer.companyCode,
-      value: customer.companyCode,
-      key: customer.companyCode
+      ...customer,
+     // brief: customer.value,
+      key: customer.value
     })) : [];
     return (
       <Screen
@@ -195,11 +194,11 @@ class Search extends PureComponent {
             placeholder='请输入码头名称'
             onChange={this.handleCustomerChange}
             data={customers}
-            value={operatorCompanySysId}
+            value={operatorCompanyName}
             loading={fetchCompanying}
             onSearchChange={this.handleCustomerSearchChange}
           >
-            <List.Item arrow='horizontal' extra={operatorCompanySysId ? companys.filter(item => item.companyCode === operatorCompanySysId)[0]['companyName'] : '请选择'}>码头</List.Item>
+            <List.Item arrow='horizontal' extra={operatorCompanyName || '请选择'}>作业单位</List.Item>
           </SearchModal>
         </List>
         <StandardList

@@ -19,7 +19,7 @@ import { createForm } from 'rc-form';
 import { Sticky, StickyContainer } from 'react-sticky';
 import moment from 'moment';
 import { parse } from 'qs';
-import { BaiduMap, Polyline, Marker } from 'react-baidu-maps';
+import { BaiduMap, Polyline, Overlay } from 'react-baidu-maps';
 import find from 'lodash/find';
 import Timeline from '@/component/Timeline';
 import Screen from '@/component/Screen';
@@ -31,8 +31,9 @@ import form from '@/style/form.module.less';
 import { FORM_ID } from '@/constants';
 import Authorized from '@/hoc/Authorized';
 import styles from './index.module.less';
-import startTag from '@/assets/start.png';
-import currentTag from '@/assets/current.png';
+import mapStyles from '@/style/map.module.less';
+/* import startTag from '@/assets/start.png';
+import currentTag from '@/assets/current.png'; */
 
 const tabs = [
   {
@@ -253,7 +254,9 @@ class TaskTrack extends Component {
       center: {lng:121.721133,lat:30.605635},
       modalVisible: false,
       startPoint: {},
-      endPoint: {}
+      endPoint: {},
+      beginTime: '',
+      endTime: ''
     }
     const id = parse(search.substring(1))['id'];
     this.task = find(recordList.map(item => ({...item})), item => item.id === id);
@@ -268,22 +271,40 @@ class TaskTrack extends Component {
     });
     this.getTaskTrack();
   }
-  componentDidMount() { 
-    const { layDaysFrom:beginTime, layDaysTo:endTime, vesselChineseName:chineseName  } = this.task;
+  componentDidMount() {
+    let currentTime = '';
+    let beginTime = '';
+    const { createTime, endTime='', vesselChineseName:chineseName  } = this.task;
+    if(moment().diff(createTime, 'days') > 29) {
+      return Toast.info('订单创建时间超过30天，无法查询历史轨迹');
+    } 
+    beginTime = moment(createTime).subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+    if(endTime) {
+      if(moment(endTime).diff(beginTime,'days') > 29) {
+        currentTime = moment(beginTime).add(29, 'days').format('YYYY-MM-DD HH:mm:ss');
+      } else {
+        currentTime = endTime;
+      }
+    } else {
+      currentTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+    }
     this.getTaskTrack();
     this.props.fetchTrackNode();
     this.props.fetchRoute({
       chineseName, 
       beginTime,
-      endTime
+      endTime:currentTime
     }, data => {
+      if(!data.length) return;
       const endPoint = data.pop();
       const startPoint = data.shift();
       const { lon:lng, lat } = endPoint;
       this.setState({
         center: {lng, lat},
         endPoint: { lng: endPoint.lon, lat: endPoint.lat },
-        startPoint: { lng: startPoint.lon, lat: startPoint.lat }
+        startPoint: { lng: startPoint.lon, lat: startPoint.lat },
+        beginTime,
+        endTime:currentTime
       });
     });
   }
@@ -329,6 +350,33 @@ class TaskTrack extends Component {
       attachmentPanels: ['attachmentpanel']
     }) */
   }
+  overlayConstructor = (self, params) => {
+    self.point = new BMap.Point(params.point.lng, params.point.lat); // eslint-disable-line no-undef
+    self.time = params.time;
+    self.type = params.type;
+  }
+  overlayInitialize = (self, map) => {
+    self.map = map;
+    const div = document.createElement('div');
+    const span = document.createElement('span');
+    const b = document.createElement('b');
+    span.innerHTML = self.time;
+    div.className = mapStyles.routeTag;
+    //b.className = `${self.type === 0 ? mapStyles.routeStart : mapStyles.routeEnd}`;
+    b.innerHTML = self.type === 0 ? '起' : '终';
+    div.appendChild(b);
+    div.appendChild(span);
+    map.getPanes().labelPane.appendChild(div)
+    self.div = div;
+    return div;
+  }
+  overlayDraw = self => {
+    const map = self.map;
+    const pixel = map.pointToOverlayPixel(self.point);
+    self.div.style.left = `${pixel.x+6}px`;
+    self.div.style.top = `${pixel.y-self.div.offsetHeight-8}px`;
+    //self.text.style.marginLeft = `-${self.text.offsetWidth/2}px`;
+  }
   render(){
     // eslint-disable-next-line
     const { 
@@ -357,6 +405,11 @@ class TaskTrack extends Component {
       onModalVisible: this.handleModalVisible,
       onNodeSubmit: this.hanndleNodeSubmit
     }
+    const createOverlayMethods = {
+      customConstructor: this.overlayConstructor,
+      initialize: this.overlayInitialize,
+      draw: this.overlayDraw
+    }
     return (
       <Screen className={styles.trackScreen}>
         <div className={map.mapHeader}>
@@ -369,7 +422,7 @@ class TaskTrack extends Component {
         <div className={styles.routeMap}>
           <BaiduMap 
             mapContainer={<div style={{ height: '100%', width: '100%' }} />}
-            zoom={6} 
+            zoom={7} 
             center={this.state.center}
             enableScrollWheelZoom
           >
@@ -377,10 +430,13 @@ class TaskTrack extends Component {
               fetchRouteing ?
               <CenterLoading className='center-loading' text='运行轨迹加载中...'/> :
               <>
-                <Marker 
-                  position={this.state.startPoint}
-                  icon={{ imageUrl: startTag, size: { width: 32, height: 32 } }} 
-                  offset={{width: -1, height: -17}}
+                <Overlay
+                  constructorParams={{
+                    point: this.state.startPoint,
+                    time: this.state.beginTime,
+                    type: 0
+                  }}
+                  {...createOverlayMethods}
                 />
                 {polyline.length && 
                   <Polyline 
@@ -390,10 +446,13 @@ class TaskTrack extends Component {
                     strokeOpacity={0.8}
                   />
                 }
-                <Marker
-                  position={this.state.endPoint}
-                  icon={{ imageUrl: currentTag, size: { width: 32, height: 32 } }}
-                  offset={{width: -1, height: -17}}
+                <Overlay
+                  constructorParams={{
+                    point: this.state.endPoint,
+                    time: this.state.endTime,
+                    type: 1
+                  }}
+                  {...createOverlayMethods}
                 />
               </>
             }

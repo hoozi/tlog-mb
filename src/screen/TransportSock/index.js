@@ -47,7 +47,8 @@ class TransportSock extends Component {
     open: false,
     customerCode: undefined
   }
-  overlays = []
+  overlays = [];
+  div = null;
   componentDidMount() { 
     this.props.fetchIntransitSock();
     this.props.fetchSockCustomer();
@@ -65,6 +66,12 @@ class TransportSock extends Component {
     self.extra = params.extra;
   }
   overlayInitialize = (self, map) => {
+    if(this.div) {
+      map.getPanes().labelPane.removeChild(this.div);
+      this.div.removeEventListener('touchstart', this.handleOverlaySelected, false)
+      this.div = null;
+    }
+    //map.clearOverlays();
     self.map = map;
     const div = document.createElement('div');
     div.className = styles.ship;
@@ -74,6 +81,7 @@ class TransportSock extends Component {
     map.getPanes().labelPane.appendChild(div)
     div.addEventListener('touchstart', this.handleOverlaySelected, false)
     self.div = div;
+    this.div = div;
     //self.text = text;
     this.overlays.push(div);
     return div;
@@ -92,7 +100,6 @@ class TransportSock extends Component {
   }
   handleOverlaySelected = e => {
     e.stopPropagation();
-    console.log(e)
     this.handleShowModal(true);
   }
   handleMapZoom = type => {
@@ -111,9 +118,13 @@ class TransportSock extends Component {
     const { vesselExportName:chineseName } = item;
     this.setState({
       list: false,
-      currentShip: {},
+      currentShip: {
+        ...item
+      },
       zIndex: 0
-    })
+    }, () => {
+      this.handleShowModal(true);
+    });
     this.props.fetchAisAlone({chineseName}, data => {
       this.setState({
         zoom: 12,
@@ -146,13 +157,13 @@ class TransportSock extends Component {
               key={index} 
               extra={
                 <span className='text-primary'>
-                  <b>{item.feeWeight || '0'}</b>吨
+                  <b>{item.weight || '0'}</b>吨
                 </span>
               }
               onClick={() => this.handleTransportSeleted(item)}
             >
               {item.cargoShortName}
-              <List.Item.Brief>{item.vesselExportEname || item.vesselImportEname || '未知'}/{item.exportVoyage || item.importVoyage || '未知'}</List.Item.Brief>
+              <List.Item.Brief>{item.vesselExportName || item.vesselImportEname || '未知'}/{item.exportVoyage || item.importVoyage || '未知'}</List.Item.Brief>
             </List.Item>
           ))
           : <Empty/>
@@ -182,7 +193,7 @@ class TransportSock extends Component {
       },
       {
         title: '重量',
-        dataIndex: 'feeWeight'
+        dataIndex: 'weight'
       },
       {
         title: '发货人',
@@ -194,7 +205,7 @@ class TransportSock extends Component {
       },
       /* {
         title: '扣除损耗商检量',
-        dataIndex: 'feeWeight'
+        dataIndex: 'weight'
       }, */
       {
         title: '上一港',
@@ -274,19 +285,19 @@ class TransportSock extends Component {
             zoom={this.state.zoom} 
             center={this.state.center}
             enableScrollWheelZoom
+            ref={map => this.map = map}
           >
             {
               fetchAisAloneing ? 
               <CenterLoading className='center-loading' text='在途数据加载中...'/> : 
-              !isEmpty(currentShip) && 
+              
               <Overlay 
+                ref={overlay => this.overlay = overlay}
                 constructorParams={{
                   point: {
                     lng: currentShip.longitude,
                     lat: currentShip.latitude
-                  },
-                  text: `运输工具: ${currentShip.vesselExportEname || currentShip.vesselImportEname || '未知'}/${currentShip.exportVoyage || currentShip.importVoyage || '未知'}`,
-                  extra:  `货物: ${currentShip.cargoShortName},${currentShip.feeWeight || '0'}吨`
+                  }
                 }}
                 {...createOverlayMethods}
               />

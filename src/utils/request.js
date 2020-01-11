@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Toast } from 'antd-mobile';
 import { getToken } from './token';
 
-let serviceUrl = /* process.env.NODE_ENV === 'production' ? 'http://169.169.171.21' :  */'';
+let serviceUrl = (process.env.NODE_ENV === 'production' && process.env.REACT_APP_ENV !=='webapp') ? 'http://tl.nbport.com.cn' : '';
 
 const whiteList = [
   'getProductInfo',

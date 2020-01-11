@@ -7,9 +7,9 @@ import {
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { ConnectedRouter } from 'connected-react-router';
 import { ActivityIndicator } from 'antd-mobile';
-/* import { connect } from 'react-redux';
+/* import { connect } from 'react-redux';*/
 import UpdateModal from '@/component/UpdateModal';
-import { getToken } from '@/utils/token';
+/*import { getToken } from '@/utils/token';
 import { parse } from 'qs'; */
 import routesConfig from './routesConfig';
 import './screenTransition.css';
@@ -69,7 +69,7 @@ class AppRouter extends PureComponent {
   render() {
     return (
       <>
-        { /* window.cordova && <UpdateModal/> */ }
+        {window.cordova && <UpdateModal/>}
         <ConnectedRouter history={this.props.history}>
           <Routes/>
         </ConnectedRouter>

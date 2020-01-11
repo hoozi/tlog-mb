@@ -199,3 +199,46 @@
     transform: scaleY(0.5);
   }
 }
+
+.routeTag {
+  position: absolute;
+  font-size: 12px;
+  height: 24px;
+  line-height: 24px;
+  &:after {
+    content: '';
+    position: absolute;
+    bottom:-12px;
+    background-color: #fff;
+    left: -6px;
+    width: 4px;
+    height: 4px;
+    border-radius: 100px;
+    border: 4px solid @brand-primary;
+  }
+  b {
+    display: block;
+    border-top-left-radius: 12px;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: @brand-primary;
+    color: #fff;
+    text-align: center;
+    line-height: 24px;
+    top:0;
+    left:0;
+    z-index: 1;
+  }
+  span {
+    height: 24px;
+    background-color: #fff;
+    white-space: nowrap;
+    margin-left: 24px;
+    padding-left: 6px;
+    padding-right: 8px;
+    display: block;
+    position: relative;
+    border-bottom-right-radius: 12px;
+  }
+}
