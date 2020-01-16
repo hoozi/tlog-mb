@@ -32,11 +32,13 @@ const effects = {
     callback && callback(response.data);
   },
   async fetchVovageInfo(payload, rootState, callback) {
+    const operatorCompanyName = payload.operatorCompanyName || undefined;
     const response = await queryVovageInfo({
       crudType: "retrieve",
       current: 1,
       size: 20,
-      ...payload
+      ...payload,
+      operatorCompanyName
     });
     if(!response) return;
     this.save({...response.data});
@@ -49,6 +51,7 @@ const effects = {
     const { chineseName, ...restPayload } = payload;
     const mmsiResponse = await queryMMSI({
       crudType: 'retrieve',
+      exact: 'true',
       chineseName
     })
     if(!mmsiResponse || !mmsiResponse.data.length) return;

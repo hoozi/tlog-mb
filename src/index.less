@@ -114,12 +114,14 @@
     color: @color-text-base;
     font-size: 14px;
     line-height: 1;
-    //-webkit-overflow-scrolling:touch;
-  }
+  }  
   .anchorBL {
     display: none;
   }
   //reset antd mobile style
+  .am-navbar {
+    //padding-top: env(safe-area-inset-top) !important;
+  }
   .am-navbar-left {
     padding-left: 9px !important;
   }
@@ -147,6 +149,10 @@
     &:before {
       display: none !important;
     }
+  }
+  .am-tabs-tab-bar-wrap {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 50px) !important;
+    background-color: #fff;
   }
   .am-list-item {
     padding-left: 16px !important;

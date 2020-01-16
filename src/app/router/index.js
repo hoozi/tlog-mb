@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { PureComponent, Suspense } from 'react';
 import {
   Route,

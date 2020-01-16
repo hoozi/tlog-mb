@@ -274,11 +274,11 @@ class TaskTrack extends Component {
   componentDidMount() {
     let currentTime = '';
     let beginTime = '';
-    const { createTime, endTime='', vesselChineseName:chineseName  } = this.task;
-    if(moment().diff(createTime, 'days') > 29) {
+    const { createTime='', contractDate='', endTime='', vesselChineseName:chineseName  } = this.task;
+    if(moment().diff(contractDate || createTime, 'days') > 29) {
       return Toast.info('订单创建时间超过30天，无法查询历史轨迹');
     } 
-    beginTime = moment(createTime).subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+    beginTime = moment(contractDate || createTime).subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
     if(endTime) {
       if(moment(endTime).diff(beginTime,'days') > 29) {
         currentTime = moment(beginTime).add(29, 'days').format('YYYY-MM-DD HH:mm:ss');
@@ -493,6 +493,10 @@ class TaskTrack extends Component {
                             <b>{item.nodeTypeName}</b>
                             <span className='text-primary' onClick={() => this.handleNodeAttachmentClick(item.id)}>查看附件</span>
                           </Flex>
+                          {
+                            item.operatorCompanyName ?
+                            <p>作业单位{item.operatorCompanyName}</p> : null
+                          }
                           <p>{item.remark}</p>
                           {
                             item.nextNodeTypeName ? 

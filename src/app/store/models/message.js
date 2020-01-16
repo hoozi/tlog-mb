@@ -15,7 +15,7 @@ const reducers = {
 const effects = {
   async fetchMessage(payload) {
     const response = await queryMessage({
-      curdType: 'retrieve',
+      crudType: 'retrieve',
       ...payload
     });
     if(!response) return;

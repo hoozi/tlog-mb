@@ -28,6 +28,7 @@ export default props => {
   }
   const getCurrentBarData = (data,index) => {
     const current = data[index];
+    console.log(current)
     setBarData(current)
   }
   const getCurrentPieData = (data, index) => {

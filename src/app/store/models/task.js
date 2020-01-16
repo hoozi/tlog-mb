@@ -43,6 +43,7 @@ const effects = {
     const { chineseName, ...restPayload } = payload;
     const mmsiResponse = await queryMMSI({
       crudType: 'retrieve',
+      exact: 'true',
       chineseName
     })
     if(!mmsiResponse || !mmsiResponse.data.length) return;

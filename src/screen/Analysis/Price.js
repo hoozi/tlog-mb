@@ -42,13 +42,16 @@ const Price = props => {
     setPlace(currentPlace);
   }
   const getCurrentData = index => {
-    const current = analysis.price[index];
-    setPriceBar(current);
+    const {priceList=[], ...reset} = analysis.price[index] ? analysis.price[index] : {};
+    setPriceBar({
+      ...reset,
+      priceList
+    });
   }
+  const filteredPrice = priceBar.priceList.length ? priceBar.priceList.filter(item=>item.y > 0) : priceBar.priceList;
   return (
     fetchPriceAnalysising ? 
     <CenterLoading text='加载中...'/> : 
-    analysis.placePicker.length ?
     <div className={styles.priceWrapper}>
       {
         analysis.allPriceData.length > 1 &&
@@ -56,55 +59,60 @@ const Price = props => {
           <SegmentedControl selectedIndex={selectedIndex} values={['货主', '服务商']} style={{height: 32}} onChange={handleIndexChange}/>
         </div>
       }
-      <Picker
-        value={[place.value]}
-        cols={1}
-        data={analysis.placePicker}
-        onOk={handleOk}
-      >
-        <Flex justify='start' className={styles.selectPlace}>
-          <Flex.Item className={styles.placeItem}>
-            <b>{place.start}</b>
-            <span>出发地</span>
-          </Flex.Item>
-          <Flex.Item className={styles.placeItem}>
-            <b>{place.end}</b>
-            <span>目的地</span>
-          </Flex.Item>
-          <Icon type='xiayiyeqianjinchakangengduo' color='#999'/>
-        </Flex>
-      </Picker>
-      <Card full style={{minHeight:0}}>
-        <Card.Body>
-          <Flex className={styles.priceContainer}>
-            <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{priceBar.priceList.length ? maxBy(priceBar.priceList, 'y').y : '-'}</b>
-              <span>全年最高</span>
-            </Flex.Item>
-            <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{priceBar.priceList.length ? minBy(priceBar.priceList, 'y').y : '-'}</b>
-              <span>全年最低</span>
-            </Flex.Item>
-            <Flex.Item className={styles.priceItem}>
-              <b><em>¥</em>{priceBar.priceList.length ? (priceBar.priceList.reduce((cur, pre) => cur+pre.y,0)/priceBar.priceList.length).toFixed(1) : '-'}</b>
-              <span>全年平均</span>
-            </Flex.Item>
-          </Flex>
-        </Card.Body>
-      </Card>
-      
-      <Card full className='mt8'>
-        <Card.Header
-          title='月度运价走势(元)'
-          className='pt16 pb16'
-        />
-        <Card.Body>
-          <div>
-            <Bar data={priceBar.priceList} polyline/>
-          </div>
-        </Card.Body>
-      </Card>
-    </div> : <Empty/>
+      {
+        analysis.placePicker.length && priceBar.priceList.length ?
+        <>
+          <Picker
+            value={[place.value]}
+            cols={1}
+            data={analysis.placePicker}
+            onOk={handleOk}
+          >
+            <Flex justify='start' className={styles.selectPlace}>
+              <Flex.Item className={styles.placeItem}>
+                <b>{place.start}</b>
+                <span>出发地</span>
+              </Flex.Item>
+              <Flex.Item className={styles.placeItem}>
+                <b>{place.end}</b>
+                <span>目的地</span>
+              </Flex.Item>
+              <Icon type='xiayiyeqianjinchakangengduo' color='#999'/>
+            </Flex>
+          </Picker>
+          <Card full style={{minHeight:0}}>
+            <Card.Body>
+              <Flex className={styles.priceContainer}>
+                <Flex.Item className={styles.priceItem}>
+                  <b><em>¥</em>{priceBar.priceList.length ? maxBy(priceBar.priceList, 'y').y.toFixed(2) : '-'}</b>
+                  <span>全年最高</span>
+                </Flex.Item>
+                <Flex.Item className={styles.priceItem}>
+                  <b><em>¥</em>{priceBar.priceList.length ? minBy(priceBar.priceList, 'y').y.toFixed(2) : '-'}</b>
+                  <span>全年最低</span>
+                </Flex.Item>
+                <Flex.Item className={styles.priceItem}>
+                  <b><em>¥</em>{filteredPrice.length ? (filteredPrice.reduce((cur, pre) => cur+pre.y,0)/filteredPrice.length).toFixed(2) : '-'}</b>
+                  <span>全年平均</span>
+                </Flex.Item>
+              </Flex>
+            </Card.Body>
+          </Card>
+          
+          <Card full className='mt8'>
+            <Card.Header
+              title='月度运价走势(元)'
+              className='pt16 pb16'
+            />
+            <Card.Body>
+              <div>
+                <Bar data={priceBar.priceList} polyline/>
+              </div>
+            </Card.Body>
+          </Card>
+        </> : <Empty/>
+      }
+    </div>
   )
 }
 

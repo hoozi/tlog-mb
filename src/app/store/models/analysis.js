@@ -44,7 +44,7 @@ const effects = {
       const { customer:label } = item;
       return {
         label,
-        value: index
+        value: index+1
       }
     });
     const barData = response.data.map(item => {
@@ -84,16 +84,16 @@ const effects = {
       }
       histogramItemList.push(allItem);
     })
-    barData.push({
+    barData.unshift({
       customer: 'all',
       customerId: -1,
       histogramItemList
     });
     picker.unshift({
       label: '全部',
-      value: -1
-    })
-    console.log(barData)
+      value: 0
+    });
+    console.log(barData, picker)
     this.save({
       barData,
       picker
@@ -126,7 +126,8 @@ const effects = {
   },
   findPriceByIndex(payload, rootState, callback) {
     const { index } = payload;
-    const data = rootState.analysis.allPriceData[index].filter(item => !isEmpty(item));
+    const currentIndexData = rootState.analysis.allPriceData[index];
+    const data = currentIndexData.filter(item => !isEmpty(item));
     const placePicker = data.map((item, index) => {
       return {
         label: `${item.starting} 到 ${item.destination}`,
@@ -157,8 +158,9 @@ const effects = {
       crudType: 'retrieve'
     });
     if(!response) return;
+    const allPriceData = response.data;
     this.save({
-      allPriceData: response.data
+      allPriceData
     });
     callback && callback();
   }
