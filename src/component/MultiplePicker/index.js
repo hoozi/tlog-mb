@@ -11,6 +11,15 @@ export default class MultiplePicker extends Component {
     visible: false,
     selected: []
   }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { value } = nextProps;
+    if(value && prevState.selected !== value) {
+      return {
+        selected: value
+      }
+    }
+    return null;
+  }
   handleShowPicker = flag => {
     this.setState({
       visible: !!flag

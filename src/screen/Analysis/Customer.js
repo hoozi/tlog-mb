@@ -21,6 +21,7 @@ const color = [
 const Customer = props => {
   const { analysis, fetchBarAnalysising, fetchPieAnalysising } = props
   const { pieData, barData, handleCustomerChange, handleYearChange, years } = useAnalysis({...props, operation: 'customer'})
+  
   return (
     <>
       <PieCard

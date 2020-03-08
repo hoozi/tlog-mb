@@ -47,7 +47,7 @@ class Search extends PureComponent {
       hasMore: true,
       current: this.current
     }
-    this.handleVesselNameChange = debounce(this.handleVesselNameChange, 200);
+    this.handleSearchInputChange = debounce(this.handleSearchInputChange, 200);
   }
   reset() {
     this.current = 1;
@@ -119,14 +119,14 @@ class Search extends PureComponent {
     this.props.findCompanyByName({name}, () => this.forceUpdate())
   }
   //@Debounce(500)
-  handleVesselNameChange = vesselName => {
+  handleSearchInputChange = (name, value) => {
     this.reset();
     this.setState({
-      vesselName
-    }, () => this.getVovageInfo({current:1,operatorCompanyName: this.state.operatorCompanyName, vesselName}, this.callback))
+      [name]: value
+    }, () => this.getVovageInfo({current:1,operatorCompanyName: this.state.operatorCompanyName, [name]: value}, this.callback))
   }
   renderListCard = item => (
-    <div className={styles.voavgeItem} onClick={() => this.props.history.push(`/vovage?name=${item.vesselName}`)}>
+    <div className={styles.voavgeItem} onClick={() => this.props.history.push(`/vovage?name=${item.vesselName ? item.vesselName.split('/')[0] : ''}`)}>
       <div className={styles.vovageHeader}>
         <Flex justify='between'>
           <span>{item.vesselName}/{item.voyage}</span>
@@ -193,7 +193,7 @@ class Search extends PureComponent {
           </NavBar>
         )}
       >
-        <List className='mb12'>
+        <List className='mb12' style={{boxShadow: '0 3px 8px -8px rgba(0,0,0,.55)'}}>
           <Picker
             cols={1}
             data={customers}
@@ -204,9 +204,14 @@ class Search extends PureComponent {
           </Picker>
           <InputItem 
             placeholder='请输入'
-            onChange={this.handleVesselNameChange}
+            onChange={value => this.handleSearchInputChange('vesselName', value)}
             clear
           >船名</InputItem>
+          <InputItem 
+            placeholder='请输入'
+            onChange={value => this.handleSearchInputChange('voyage', value)}
+            clear
+          >航次</InputItem>
         </List>
         <StandardList
           dataSource={ds}

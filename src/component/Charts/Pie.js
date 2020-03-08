@@ -3,10 +3,15 @@ import { Chart, Geom, Coord, Guide } from 'bizgoblin';
 import numeral from 'numeral';
 import { PIXEL_RATIO } from '@/constants';
 
+const defs = [{
+  dataKey: 'x'
+}];
+
 export default props => {
   const { data, color, totalTitle, total=0, width=280, height=280 } = props;
+  
   return (
-    <Chart width={width} height={height} padding='auto' data={data} pixelRatio={PIXEL_RATIO}>
+    <Chart width={width} height={height} defs={defs} padding='auto' data={data} pixelRatio={PIXEL_RATIO}>
       <Coord type='polar' transposed radius={1} innerRadius={0.5}/>
       <Geom
         geom='interval'

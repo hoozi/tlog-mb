@@ -132,7 +132,8 @@ class Order extends PureComponent {
   )
   renderListCardBody = item => (
     <>
-      <p><b>{item.skuName}</b>，<b className='text-primary'>{item.planQuantity}</b>吨</p>
+      <p><b className='text-primary'>{item.orderNo}</b>，<b>{item.contractDate}</b></p>
+      <p><b>{item.skuName}</b>，<b>{item.planQuantity}</b>吨</p>
       <p>托运人<b>{item.customerName || '未知'}</b>，服务商<b>{item.carrierName || '未知'}</b></p>
     </>
   )
@@ -145,6 +146,7 @@ class Order extends PureComponent {
   ) */
   renderListCardFlag = item => {
     const statusMap = {
+      '0': '未知|#c8c8c8',
       '00': '未知',
       '10': '已创建',
       '20': '待配载',

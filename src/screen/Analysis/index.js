@@ -31,6 +31,10 @@ const tabsData = [
   {
     title: <><Icon type='yunjia' size='xs' className='mr4'/> 运价</>,
     key: 'price'
+  },
+  {
+    title: <><Icon type='xianlu' size='xs' className='mr4'/> 市场线路</>,
+    key: 'route'
   }
 ];
 
@@ -39,7 +43,8 @@ const CurrentComponent = props => {
     'work': <WorkAsync/>,
     'customer': <CustomerAsync/>,
     'service': <ServiceAsync/>,
-    'price': <PriceAsync/>
+    'price': <PriceAsync/>,
+    'route': <PriceAsync/>
   }
   return analysis[props.is];
 }
@@ -104,7 +109,7 @@ class Analysis extends Component {
         <Sticky>
           {
             ({style}) => (
-              <div style={{...style, zIndex: 10,height: 43}}>
+              <div style={{...style, zIndex: 10,height: 43}} className='top-tab'>
                 <Tabs 
                   initialPage={0} 
                   tabs={tabsData} 

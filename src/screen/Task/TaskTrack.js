@@ -459,10 +459,13 @@ class TaskTrack extends Component {
           </BaiduMap>
         </div>
         <StickyContainer className={styles.nodeContainer}>
+          <div className={styles.panelToggle}>
+            <Icon type='zhankai' size='lg' color='#fff'/>
+          </div>
           {
             fetchTaskTracking && fetchTrackNodeing ?
             <CenterLoading/> :
-            <Tabs tabs={tabs} renderTabBar={props => (
+            <Tabs tabs={tabs} className='aaa' renderTabBar={props => (
               <Sticky topOffset={200}>
                 {({ style }) => (
                   <div style={{ ...style, zIndex: 10, backgroundColor: '#fff'}}>

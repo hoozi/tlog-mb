@@ -14,6 +14,8 @@ export default props => {
     setSelectedIndex(index);
     onYearChange && onYearChange(index);
   }
+  
+  const sliceData = pieData.slice(0,10);
   return (
     <div className={styles.pieCard}>
       {
@@ -34,10 +36,10 @@ export default props => {
             </div>
             <div className={styles.pieContainer}>
               <Pie
-                data={pieData}
+                data={sliceData}
                 width={140}
                 height={140}
-                color={['name', pieColor]}
+                color={['id', pieColor]}
               />
             </div>
           </Flex>
@@ -45,11 +47,11 @@ export default props => {
             {
               pieColor.map((item, index) => {
                 return (
-                  index <= pieData.length-1 &&
-                  <div key={item} className={styles.pieLegendItem}>
+                  index <= sliceData.length-1 &&
+                  <div key={index} className={styles.pieLegendItem}>
                     <span className={styles.pieLegendDot} style={{backgroundColor: item}}></span>
-                    <div className={styles.pieLegendName}>{pieData[index].name}</div>
-                    <div className={styles.pieLegendValue}>{toFixed2(pieData[index].x/10000)}</div>
+                    <div className={styles.pieLegendName}>{sliceData[index].name}</div>
+                    <div className={styles.pieLegendValue}>{toFixed2(sliceData[index].x/10000)}</div>
                   </div>
                 )
               })

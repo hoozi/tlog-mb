@@ -34,6 +34,7 @@ function onError(error) {
 export default class UpdateModal extends PureComponent {
   state = {
     version: '0.0.0',
+    label: 'v0',
     description: '',
     percent: 0,
     visible:false,
@@ -49,10 +50,11 @@ export default class UpdateModal extends PureComponent {
   }
   handleUpdateChecked = remotePackage => {
     if(!remotePackage) return;
-    const { appVersion: version, description = ''  } = remotePackage;
+    const { appVersion: version, description = '', label  } = remotePackage;
     this.remotePackage = remotePackage;
     this.setState({
       version,
+      label,
       description,
       visible: true
     });
@@ -71,10 +73,14 @@ export default class UpdateModal extends PureComponent {
   }
   handlePackageDownloaded = localPackage => {
     this.handleShowModal();
-    Toast.loading('正在安装...');
-    localPackage.install(this.handleInstallSuccess, error => alert(error), { installMode: InstallMode.ON_NEXT_RESUME, mandatoryInstallMode: InstallMode.ON_NEXT_RESTART });
+    Toast.loading('正在安装...', 0);
+    localPackage.install(this.handleInstallSuccess, error => {
+      Toast.hide();
+      alert(error);
+    }, { installMode: InstallMode.ON_NEXT_RESUME, mandatoryInstallMode: InstallMode.ON_NEXT_RESTART });
   }
   handleInstallSuccess = () => {
+    Toast.hide();
     Toast.success('安装成功,请重启APP');
   }
   handleProgress = downloadProgress => {
@@ -89,7 +95,7 @@ export default class UpdateModal extends PureComponent {
     });
   }
   render() {
-    const { version, description, visible, startDownload, percent } = this.state;
+    const { version, label, description, visible, startDownload, percent } = this.state;
     const percentPosition = percent/100*267-32;
     return (
       <Modal
@@ -102,7 +108,7 @@ export default class UpdateModal extends PureComponent {
       >
         <div className={styles.updateModalHeader} style={{backgroundImage: `url(${updateBg})`}}>
           <h1>APP有更新</h1>
-          <div className={styles.updateVersion}>v{version}</div>
+          <div className={styles.updateVersion}>{label}</div>
         </div>
         <div className={styles.updateModalBody}>
           {
@@ -120,7 +126,7 @@ export default class UpdateModal extends PureComponent {
             </> :
             <>
               {
-                description.split('\n').map((item, index)=><p key={index}>{item}</p>)
+                description.split('\n').map((item, index)=><p key={index} style={{lineHeight:'21px'}}>{item}</p>)
               }
               <Button type='primary' className='mt24' onClick={() => this.handlePackageDownloadStart(true)}>点击更新</Button>
             </>

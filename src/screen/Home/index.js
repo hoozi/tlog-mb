@@ -64,15 +64,15 @@ const menus = [/* {
   url: '/task'
 }, {
   icon: <Icon type='matoukucun' size='f' color={BRAND_COLOR}/>,
-  text: '码头库存',
+  text: '码头单船库存',
   url: '/wharf-sock'
 }, {
   icon: <Icon type='zaitukucun' size='f' color={BRAND_COLOR}/>,
-  text: '在途库存',
+  text: '在途船舶',
   url: '/transport-sock'
 }, {
   icon: <Icon type='yongdu' size='f' color='#f15a4a'/>,
-  text: '繁忙指数',
+  text: '码头繁忙指数',
   url: '/wharf-congestion'
 }, {
   icon: <Icon type='tongji' size='f' color='#f39927'/>,
@@ -88,7 +88,7 @@ const menus = [/* {
   url: '/vovage-search'
 }, {
   icon: <Icon type='matoukucunchaxun' size='f' color={BRAND_COLOR}/>,
-  text: '码头库存汇总',
+  text: '码头汇总库存',
   url: '/wharf-sock-search'
 }];
 
@@ -103,7 +103,7 @@ const ProductCard = ({item, history}) => (
         to={item.terminalName}
         extra={
           <>
-            <b className='text-primary'>{item.bizType || '未知'}</b>
+            <b className='text-primary'>{item.bizTypeName || '未知'}</b>
             <span>作业类型</span>
           </>
         }

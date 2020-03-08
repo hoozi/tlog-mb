@@ -3,10 +3,11 @@ import flatten from 'lodash/flatten';
 import isEmpty from 'lodash/isEmpty';
 import { toFixed2 } from '@/utils'
 
-const parsePieData = data => ( 
+const parsePieData = (data, key) => ( 
   data.length ? data.map((item, index) => {
     const {customer: name, quantity: x} = item;
     return {
+      id: `${key}_${index}`,
       name: name || `未知${index}`,
       x,
       y: 1
@@ -49,7 +50,7 @@ const effects = {
     });
     const barData = response.data.map(item => {
       const histogramItemList = item.histogramItemList.map(item=> {
-        const { year:name, month, quantity:y } = item;
+        const { year:name, month, quantity:y=0 } = item;
         return {
           name,
           x:`${month}月`,
@@ -64,14 +65,16 @@ const effects = {
     const mappedHistogramItemList = response.data.map(item => {
       return [...item.histogramItemList.map(item=>{
         return {
-          [`${item.year}_${item.month}`]: item.quantity
+          [`${item.year}_${item.month}`]: item.quantity ? item.quantity : 0
         }
       })]
     });
+    
     flatten(mappedHistogramItemList).forEach(item => {
       const key = Object.keys(item)[0];
       temp[key] = temp.hasOwnProperty(key) ? temp[key]+item[key] : item[key]
     });
+    
     Object.keys(temp).forEach(item => {
       const splited = item.split('_');
       const name = splited[0];
@@ -84,16 +87,16 @@ const effects = {
       }
       histogramItemList.push(allItem);
     })
+    
     barData.unshift({
       customer: 'all',
-      customerId: -1,
+      customerId: 0,
       histogramItemList
     });
     picker.unshift({
       label: '全部',
       value: 0
     });
-    console.log(barData, picker)
     this.save({
       barData,
       picker
@@ -106,8 +109,8 @@ const effects = {
       ...payload
     });
     if(!response) return;
-    const pieData = response.data.map(item => {
-      return parsePieData(item)
+    const pieData = response.data.map((item, index) => {
+      return parsePieData(item, index)
     })
     this.save({
       pieData

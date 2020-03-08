@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { BaiduMap, Overlay } from 'react-baidu-maps';
 import Fields from '@/component/Fields';
 import Screen from '@/component/Screen';
-import isEmpty from 'lodash/isEmpty';
+//import isEmpty from 'lodash/isEmpty';
 import CenterLoading from '@/component/CenterLoading';
 import Debounce from 'lodash-decorators/debounce';
 import SearchModal from '@/component/SearchModal';
@@ -114,7 +114,8 @@ class TransportSock extends Component {
       zIndex: !this.state.list ? 10 : 0
     })
   }
-  handleTransportSeleted = item => {
+  handleTransportSeleted = (item,e) => {
+    e.stopPropagation();
     const { vesselExportName:chineseName } = item;
     this.setState({
       list: false,
@@ -148,6 +149,12 @@ class TransportSock extends Component {
   }
   renderTransportList = () => {
     const { sock: {transportSockList}, fetchIntransitSocking } = this.props;
+    const statusMap = [
+      {}, 
+      {name:'进港', color:'#1890ff'},
+      {name:'在港', color:'#52c41a'},
+      {name:'离港', color:'#8c8c8c'}
+    ];
     return (
       <List style={{width: 300}}>
         {
@@ -156,11 +163,26 @@ class TransportSock extends Component {
             <List.Item 
               key={index} 
               extra={
-                <span className='text-primary'>
-                  <b>{item.weight || '0'}</b>吨
-                </span>
+                <>
+                  <div className='text-primary'>
+                    <b>{item.weight || '0'}</b>吨
+                  </div>
+                  <div>
+                    <span className='text-black' style={{display: 'flex', alignItems: 'center'}}>
+                      {item.direction === 'E' ? '出口' : '进口'}
+                      <Badge text={statusMap[item.status].name}
+                        style={{
+                          marginLeft: 4, 
+                          padding: '0 3px',
+                          backgroundColor: statusMap[item.status].color, 
+                          borderRadius: 2
+                        }}
+                      />
+                    </span>
+                  </div>
+                </>
               }
-              onClick={() => this.handleTransportSeleted(item)}
+              onClick={(e) => this.handleTransportSeleted(item,e)}
             >
               {item.cargoShortName}
               <List.Item.Brief>{item.vesselExportName || item.vesselImportEname || '未知'}/{item.exportVoyage || item.importVoyage || '未知'}</List.Item.Brief>

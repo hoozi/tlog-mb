@@ -129,7 +129,8 @@ class Task extends PureComponent {
   )
   renderListCardBody = item => (
     <>
-      <p>作业量<b className='text-primary'>{item.planQuantity}</b>吨</p>
+      <p><b className='text-primary'>{item.contractNo}</b>，<b>{item.contractDate}</b></p>
+      <p><b>{item.skuName}</b>,<b>{item.planQuantity}</b>吨</p>
       <p>运输工具<b>{item.vesselChineseName.trim() || '未知'}</b>，船长<b>{item.shipLength || '0'}</b>，吃水<b>{item.shipDraught || '0'}</b>，载重吨<b>{item.shipLoad || '0'}</b></p>
     </>
   )

@@ -20,8 +20,11 @@ export default connect(mapStateToProps)(props => {
   const columns = [
     {
       title: '合同号',
-      dataIndex: 'contractNo',
-      render: value => <span className='text-important'><Icon type='fujian' size='xxs' style={{verticalAlign: 'middle', margin: '-4px 2px 0 0'}}/>{value}</span>
+      dataIndex: 'contractNo'
+    },
+    {
+      title: '合同时间',
+      dataIndex: 'contractDate'
     },
     {
       title: '船名/航次',

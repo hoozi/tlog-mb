@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
-import { NavBar, Icon, Flex, Modal, List } from 'antd-mobile';
+import { NavBar, Icon, Flex, Modal, List, Badge } from 'antd-mobile';
 import { connect } from 'react-redux';
 import union from 'lodash/union';
 import classNames from 'classnames';
@@ -88,6 +88,7 @@ class WharfCongestion extends Component {
     return (
       <Screen
         className={styles.congestionScreen}
+        zIndex="12"
         header={() => (
           <NavBar
             mode='dark'
@@ -98,6 +99,15 @@ class WharfCongestion extends Component {
           </NavBar>
         )}
       >
+        <div className={styles.alert}>
+          <ul>
+            <li>
+              <span className='mr12'><Badge dot style={{backgroundColor: '#6abf47', borderRadius: 2 }} /> 正常</span> 
+              <span><Badge dot style={{backgroundColor: '#ff5b05', borderRadius: 2 }} /> 拥堵</span>
+            </li>
+            <li>拥堵指数计算规则:(当日宁波港预计抵港的船舶+发送过装船通知的船舶)/码头对应的装卸作业能力</li>
+          </ul>
+        </div>
         <div className={`${styles.scrollPage} full`} ref={this.page}>
           {
             fetchCongestioning ? 
@@ -106,7 +116,7 @@ class WharfCongestion extends Component {
             <>
               <IndexList dir='left' indexs={wharfs} transform={`translate3d(0px, -${this.state.top}px, 0px)`} style={{zIndex: 10}}/>
               <IndexList dir='top' indexs={days} transform={`translate3d(-${this.state.left}px, 0px, 0px)`} style={{zIndex: 9}}/>
-              <div className={styles.scrollInner}>
+              <div className={styles.scrollInner} style={{height: Math.ceil(congestions.length/2)*128}}>
                 {
                   congestions.map((item, index) => {
                     const { loadOrUnload, terminalCongestion } = item;

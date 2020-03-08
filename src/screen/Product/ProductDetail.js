@@ -1,5 +1,5 @@
 import React,{ PureComponent } from 'react';
-import { NavBar, Icon, List, ActivityIndicator, Modal } from 'antd-mobile';
+import { NavBar, Icon, List, ActivityIndicator, Modal, Button } from 'antd-mobile';
 import { connect } from 'react-redux';
 import { parse } from 'qs';
 import { createForm } from 'rc-form';
@@ -71,6 +71,16 @@ class PriceReplyDetail extends PureComponent {
       });
     }
   }
+  handleBooking = id => {
+    if(!getToken()) {
+      modalAlert('提示','您还未登录,请先登录',[
+        { text: '取消' },
+        { text: '登录', onPress:() => this.props.history.push('/login') }
+      ])
+    } else {
+      this.props.history.push(`/cargo-create?id=${id}&type=booking`)
+    }
+  }
   render(){
     const { history, fetchProductDetailing, productKeeping, detail } = this.props;
     const { isKeep } = this.state;
@@ -94,7 +104,7 @@ class PriceReplyDetail extends PureComponent {
       },
       {
         title: '作业类型',
-        dataIndex: 'bizType',
+        dataIndex: 'bizTypeName',
         render: value => <span className='text-primary'>{value}</span>
       },
       {
@@ -157,10 +167,14 @@ class PriceReplyDetail extends PureComponent {
                   {detail.introduction || '暂无描述'}
                 </ListItem>
               </List>
+              <div className='p16 fixed fixed-b wfull bg-white'>
+                <Button type='primary' onClick={() => this.handleBooking(detail.id)}>立即定制</Button>
+              </div>
             </> :
             <Empty/>
           }
         </StickyContainer>
+        
       </Screen>
     )
   }

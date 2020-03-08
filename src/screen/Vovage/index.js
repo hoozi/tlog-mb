@@ -100,9 +100,9 @@ class Vovage extends Component {
     const ddhs = document.createElement('span');
     const draught = document.createElement('span');
     span.appendChild(document.createTextNode(self.text));
-    rote.appendChild(document.createTextNode(`转向率: ${self.ais.rot}\n`));
-    ddhs.appendChild(document.createTextNode(`速度: ${self.ais.ddhs}`));
-    draught.appendChild(document.createTextNode(`吃水: ${self.ais.draught}`));
+    rote.appendChild(document.createTextNode(`转向率: ${self.ais.rot || '未知'}\n`));
+    ddhs.appendChild(document.createTextNode(`速度: ${self.ais.ddhs || '未知'}`));
+    draught.appendChild(document.createTextNode(`吃水: ${self.ais.draught || '未知'}`));
     fragment.appendChild(span);
     fragment.appendChild(rote);
     fragment.appendChild(ddhs);

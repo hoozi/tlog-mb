@@ -1,6 +1,9 @@
 @import './theme.less';
 
 @space:0,2,4,6,8,12,16,24,32,48,64,72,76;
+  body {
+    margin-top: env(safe-area-inset-top);
+  }
   .wfull {
     width: 100%;
   }
@@ -15,6 +18,13 @@
   }
   .bg-white {
     background-color: #fff
+  }
+  .fixed {
+    position: fixed;
+    left: 0;
+    &.fixed-b {
+      bottom: 0;
+    }
   }
   .popup-list-title {
     padding: 12px 16px;
@@ -115,6 +125,22 @@
     font-size: 14px;
     line-height: 1;
   }  
+  
+  @media only screen and (-webkit-device-pixel-ratio: 3) {
+    body {
+      /* Status bar height on iOS 11.0 */
+      padding-top: constant(safe-area-inset-top);
+      padding-bottom: constant(safe-area-inset-bottom);
+      /* Status bar height on iOS 11+ */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .am-tabs-tab-bar-wrap {
+      padding-bottom: constant(safe-area-inset-bottom) !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
+      background-color: #fff;
+    }
+  }
   .anchorBL {
     display: none;
   }
@@ -144,15 +170,25 @@
   .text-important {
     color: @brand-important;
   }
+  .text-black {
+    color: @color-text-base;
+  }
   // fix tabbar scroll
   .no-top-bor {
     &:before {
       display: none !important;
     }
   }
-  .am-tabs-tab-bar-wrap {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 50px) !important;
-    background-color: #fff;
+  .top-tab {
+    height: 44px;
+    
+      .am-tabs-default-bar-nextpage {
+        background: linear-gradient(to right, rgba(60, 114, 240, 0), #3c72f0) !important;
+      }
+      .am-tabs-default-bar-prevpage {
+        background: linear-gradient(to right, #3c72f0, rgba(60, 114, 240, 0)) !important;
+      }
+    
   }
   .am-list-item {
     padding-left: 16px !important;

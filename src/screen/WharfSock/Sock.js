@@ -93,7 +93,7 @@ class Cargo extends PureComponent {
       <div>
         <div className={list.sockListContent}>{item.cargoName}</div>
         <div className={list.sockListBrief}>
-          <span>{item.vesselEname}/{item.voyage}</span>
+          <span>{item.vesselCname}/{item.voyage}</span>
           <span><b>{item.storagePeriod}</b>天</span>
         </div>
       </div>
