@@ -31,11 +31,11 @@ const tabsData = [
   {
     title: <><Icon type='yunjia' size='xs' className='mr4'/> 运价</>,
     key: 'price'
-  },
+  }/* ,
   {
     title: <><Icon type='xianlu' size='xs' className='mr4'/> 市场线路</>,
     key: 'route'
-  }
+  } */
 ];
 
 const CurrentComponent = props => {
@@ -43,8 +43,7 @@ const CurrentComponent = props => {
     'work': <WorkAsync/>,
     'customer': <CustomerAsync/>,
     'service': <ServiceAsync/>,
-    'price': <PriceAsync/>,
-    'route': <PriceAsync/>
+    'price': <PriceAsync/>
   }
   return analysis[props.is];
 }

@@ -20,6 +20,7 @@ import sso from './models/sso';
 import analysis from './models/analysis';
 import vovage from './models/vovage';
 import message from './models/message';
+import invoice from './models/invoice';
 
 const history = createHashHistory();
 
@@ -50,7 +51,8 @@ const store = init({
     sso,
     analysis,
     vovage,
-    message
+    message,
+    invoice
   },
   redux,
   plugins: [loading]

@@ -94,7 +94,7 @@ class Transport extends PureComponent {
       to={item.terminalName}
       extra={
         <>
-          <b className='text-primary'>{item.bizType || '未知'}</b>
+          <b className='text-primary'>{item.bizTypeName || '未知'}</b>
           <span>作业类型</span>
         </>
       }

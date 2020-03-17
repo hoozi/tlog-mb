@@ -43,7 +43,7 @@ export default forwardRef((props, ref) => {
             {
               data.map(item => (
                 <RadioItem key={item.key} checked={item.value === value} onChange={e => handleChange(item.value, item)}>
-                  {item.label}<ListItem.Brief>{item.brief}</ListItem.Brief>
+                  {item.label}{/* <ListItem.Brief>{item.brief}</ListItem.Brief> */}
                 </RadioItem>
               ))
             }

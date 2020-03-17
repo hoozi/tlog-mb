@@ -90,6 +90,10 @@ const menus = [/* {
   icon: <Icon type='matoukucunchaxun' size='f' color={BRAND_COLOR}/>,
   text: '码头汇总库存',
   url: '/wharf-sock-search'
+}, {
+  icon: <Icon type='renwuguanli' size='f' color='#f39927'/>,
+  text: '发票查询',
+  url: '/invoice'
 }];
 
 const AnalysisCard = () => null;

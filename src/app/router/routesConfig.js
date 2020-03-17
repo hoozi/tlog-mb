@@ -31,6 +31,7 @@ const TideAsync = LoadingComponent('Tide');
 const AnalysisAsync = LoadingComponent('Analysis');
 const VovageAsync = LoadingComponent('Vovage');
 const VovageSearchAsync = LoadingComponent('Vovage/Search');
+const InvoiceSearchAsync = LoadingComponent('Invoice');
 
 const routesConfig = [
   {
@@ -284,6 +285,15 @@ const routesConfig = [
     path: '/wharf-sock-search-detail',
     component: WharfSockSearchDetailAsync,
     title: '码头库存详情',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/invoice',
+    component: InvoiceSearchAsync,
+    title: '发票查询',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

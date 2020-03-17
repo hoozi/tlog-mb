@@ -89,7 +89,7 @@ class TransportSock extends Component {
   overlayDraw = self => {
     const map = self.map;
     const pixel = map.pointToOverlayPixel(self.point);
-    self.div.style.left = `${pixel.x-self.div.offsetWidth/2}px`;
+    self.div.style.left = `${pixel.x-self.div.offsetWidth}px`;
     self.div.style.top = `${pixel.y-self.div.offsetHeight}px`;
     //self.text.style.marginLeft = `-${self.text.offsetWidth/2}px`;
   }
@@ -114,9 +114,10 @@ class TransportSock extends Component {
       zIndex: !this.state.list ? 10 : 0
     })
   }
-  handleTransportSeleted = (item,e) => {
+  handleTransportSelected = (item,e) => {
     e.stopPropagation();
-    const { vesselExportName:chineseName } = item;
+    const { vesselExportName='', vesselImportName='' } = item;
+    const chineseName = vesselExportName || vesselImportName;
     this.setState({
       list: false,
       currentShip: {
@@ -182,10 +183,10 @@ class TransportSock extends Component {
                   </div>
                 </>
               }
-              onClick={(e) => this.handleTransportSeleted(item,e)}
+              onClick={(e) => this.handleTransportSelected(item,e)}
             >
               {item.cargoShortName}
-              <List.Item.Brief>{item.vesselExportName || item.vesselImportEname || '未知'}/{item.exportVoyage || item.importVoyage || '未知'}</List.Item.Brief>
+              <List.Item.Brief>{item.vesselExportName || item.vesselImportName || '未知'}/{item.exportVoyage || item.importVoyage || '未知'}</List.Item.Brief>
             </List.Item>
           ))
           : <Empty/>
@@ -333,7 +334,7 @@ class TransportSock extends Component {
           onClose={() => this.handleShowModal()}
           afterClose={() => document.documentElement.style.overflow=''}
         >
-          <h2 className='popup-list-title'>{this.state.currentShip['vesselExportName']}{this.state.currentShip['vesselExportEname'] || this.state.currentShip['vesselImportEname'] || '未知'}/{this.state.currentShip['exportVoyage'] || this.state.currentShip['importVoyage'] || '未知'}</h2>
+          <h2 className='popup-list-title'>{this.state.currentShip['vesselExportName'] || this.state.currentShip['vesselImportName'] || '未知'}/{this.state.currentShip['exportVoyage'] || this.state.currentShip['importVoyage'] || '未知'}</h2>
           <Fields
             columns={columns}
             data={this.state.currentShip}

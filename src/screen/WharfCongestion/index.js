@@ -103,7 +103,7 @@ class WharfCongestion extends Component {
           <ul>
             <li>
               <span className='mr12'><Badge dot style={{backgroundColor: '#6abf47', borderRadius: 2 }} /> 正常</span> 
-              <span><Badge dot style={{backgroundColor: '#ff5b05', borderRadius: 2 }} /> 拥堵</span>
+              <span><Badge dot style={{backgroundColor: '#ff5b05', borderRadius: 2 }} /> 繁忙</span>
             </li>
             <li>拥堵指数计算规则:(当日宁波港预计抵港的船舶+发送过装船通知的船舶)/码头对应的装卸作业能力</li>
           </ul>

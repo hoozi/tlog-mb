@@ -88,7 +88,7 @@ const Price = props => {
                   <span>全年最高</span>
                 </Flex.Item>
                 <Flex.Item className={styles.priceItem}>
-                  <b><em>¥</em>{priceBar.priceList.length ? minBy(priceBar.priceList, 'y').y.toFixed(2) : '-'}</b>
+                  <b><em>¥</em>{priceBar.priceList.length ? minBy(filteredPrice, 'y').y.toFixed(2) : '-'}</b>
                   <span>全年最低</span>
                 </Flex.Item>
                 <Flex.Item className={styles.priceItem}>

@@ -40,6 +40,7 @@ class Search extends PureComponent {
     this.state = {
       operatorCompanyName: '',
       vesselName: undefined,
+      voyage: undefined,
       loading: true,
       refreshing: true,
       firstLoading: true,
@@ -111,19 +112,21 @@ class Search extends PureComponent {
     const operatorCompanyName = value[0];
     this.reset();
     this.setState({
+      ...this.state,
       operatorCompanyName
-    }, () => this.getVovageInfo({current:1,operatorCompanyName, vesselName:this.state.vesselName}, this.callback));
+    }, () => this.getVovageInfo({current:1,operatorCompanyName, vesselName:this.state.vesselName, voyage: this.state.voyage}, this.callback));
   }
   @Debounce(200)
   handleCustomerSearchChange = name => {
     this.props.findCompanyByName({name}, () => this.forceUpdate())
   }
-  //@Debounce(500)
+  //@Debounce(200)
   handleSearchInputChange = (name, value) => {
     this.reset();
     this.setState({
+      ...this.state,
       [name]: value
-    }, () => this.getVovageInfo({current:1,operatorCompanyName: this.state.operatorCompanyName, [name]: value}, this.callback))
+    }, () => this.getVovageInfo({current:1,operatorCompanyName: this.state.operatorCompanyName, vesselName:this.state.vesselName, voyage: this.state.voyage}, this.callback))
   }
   renderListCard = item => (
     <div className={styles.voavgeItem} onClick={() => this.props.history.push(`/vovage?name=${item.vesselName ? item.vesselName.split('/')[0] : ''}`)}>

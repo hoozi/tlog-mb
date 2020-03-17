@@ -276,7 +276,7 @@ class TaskTrack extends Component {
     let beginTime = '';
     const { createTime='', contractDate='', endTime='', vesselChineseName:chineseName  } = this.task;
     if(moment().diff(contractDate || createTime, 'days') > 29) {
-      return Toast.info('订单创建时间超过30天，无法查询历史轨迹');
+      Toast.info('订单创建时间超过30天，无法查询历史轨迹');
     } 
     beginTime = moment(contractDate || createTime).subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
     if(endTime) {
@@ -459,9 +459,9 @@ class TaskTrack extends Component {
           </BaiduMap>
         </div>
         <StickyContainer className={styles.nodeContainer}>
-          <div className={styles.panelToggle}>
+          {/* <div className={styles.panelToggle}>
             <Icon type='zhankai' size='lg' color='#fff'/>
-          </div>
+          </div> */}
           {
             fetchTaskTracking && fetchTrackNodeing ?
             <CenterLoading/> :
