@@ -15,25 +15,26 @@ import color from '@/constants/color';
 const { tabsStyle } = color;
 
 const tabs = [
-  { title: '回复', type: 0 },
-  { title: '历史', type: 1 }
+  { title: '待审核', status: 70 },
+  { title: '已审核', status: 90 },
+  { title: '已打回', status: 80 }
 ]
 
 const mapStateToProps = ({ priceReply }) => {
   return {
     priceReply,
     ...mapLoading('priceReply',{
-      fetchPriceReplying: 'fetchPriceReply'
+      fetchPriceReviewing: 'fetchPriceReview'
     })
   }
 }
 
 const mapDispatchToProps = ({ priceReply }) => ({
-  ...mapEffects(priceReply, ['fetchPriceReply'])
+  ...mapEffects(priceReply, ['fetchPriceReview'])
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
-class PriceReply extends PureComponent {
+class PriceReview extends PureComponent {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({
@@ -48,7 +49,7 @@ class PriceReply extends PureComponent {
       ds,
       hasMore: true,
       current: this.current,
-      type: 0
+      status: 70
     }
   }
   reset() {
@@ -70,28 +71,29 @@ class PriceReply extends PureComponent {
   }
   priceReplyService(name, payload, callback) {
     const _callback = callback ? callback : () => null;
+    console.log(this.props)
     this.props[name](payload, _callback)
   }
   componentDidMount() {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    const { current, type } = this.state;
-    this.priceReplyService('fetchPriceReply', {current, type} , this.callback);
+    const { current, status } = this.state;
+    this.priceReplyService('fetchPriceReview', {current, status} , this.callback);
   }
   handleRefresh = () => {
-    const { type } = this.state
+    const { status } = this.state
     this.reset();
     this.setState({
       ...this.state,
       refreshing: true,
       current: this.current
     });
-    this.priceReplyService('fetchPriceReply', { type, current: 1 }, this.callback);
+    this.priceReplyService('fetchPriceReview', { status, current: 1 }, this.callback);
   }
   handleEndReached = () => {
-    const { loading, hasMore, type } = this.state;
+    const { loading, hasMore, status } = this.state;
     if(loading || !hasMore) return;
     this.setState({ loading: true });
-    this.priceReplyService('fetchPriceReply', { type, current: ++this.current }, data => {
+    this.priceReplyService('fetchPriceReview', { status, current: ++this.current }, data => {
       this.setState({
         ...this.state,
         current: this.current
@@ -100,12 +102,12 @@ class PriceReply extends PureComponent {
     });
   }
   handleGoToDetail = item => {
-    const { type } = this.state;
     const query = stringify({
       id: item.id,
-      type
+      status: item.status,
+      cause: item.cause
     })
-    this.props.history.push(`/price-reply-detail?${query}`);
+    this.props.history.push(`/price-review-detail?${query}`);
   }
   renderListCardHeader = item => (
     <RouteName
@@ -114,31 +116,33 @@ class PriceReply extends PureComponent {
       extra={
         <>
           <b className='text-primary'>{item.quantity || '未知'}</b>
-          <span>货物吨位</span>
+          <span>受载量</span>
         </>
       }
     />
   )
   renderListCardBody = item => (
     <>
-      <p><b>【{item.cargoTypeName}】{item.cargoName}</b></p>
-      <p>受载日期<b>{moment(item.beginDateTime).format('YYYY-MM-DD')} ～ {moment(item.endDateTime).format('YYYY-MM-DD')}</b></p>
+      <p>货物<b>{item.cargoName}</b>，承运商<b>{item.carrierName}</b></p>
+      <p>受载日期<b>从{item.layDaysBegin ? item.layDaysBegin.substring(0,10) : '暂无'} 到 {item.layDaysEnd ? item.layDaysEnd.substring(0,10) : '暂无'}</b></p>
+      <p>报价<b>¥{item.quotedPrice}</b>，有效期<b>{item.validateDate ? item.validateDate.substring(0,10) : '暂无'}</b></p>
     </>
   )
   renderListCardExtra = item => (
+    item.cause ? 
     <Flex justify='between'>
-      <span><Icon type='beizhu' size='xxs'/> {item.remark}</span>
-    </Flex>
+      <span><Icon type='beizhu' size='xxs'/> {item.cause}</span>
+    </Flex> : null
   )
   handleTabChange = data => {
-    const { type } = data;
+    const { status } = data;
     this.setState({
       ...this.state,
       firstLoading: true,
-      type
+      status
     });
-    this.priceReplyService('fetchPriceReply',{
-      type
+    this.priceReplyService('fetchPriceReview',{
+      status
     }, data => {
       this.reset();
       this.callback(data)
@@ -156,7 +160,7 @@ class PriceReply extends PureComponent {
             icon={<Icon type='left' size='lg'/>}
             onLeftClick={() => history.goBack()}
           >
-            询价回复
+            询价审核
           </NavBar>
         )}
       >
@@ -164,7 +168,7 @@ class PriceReply extends PureComponent {
           <Sticky>
             {
               ({ style }) => (
-                <div style={{...style, zIndex:10}}>
+                <div style={{...style, zIndex:12}}>
                   <div className={list.listStatus}>
                     <Tabs initialPage={findIndex(tabs, tab => tab.type === type)} tabs={tabs} {...tabsStyle} onChange={this.handleTabChange}/>
                   </div>
@@ -191,4 +195,4 @@ class PriceReply extends PureComponent {
   }
 }
 
-export default PriceReply;
+export default PriceReview;

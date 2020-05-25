@@ -96,3 +96,11 @@ export function getMenuFromStorage(staticMenus) {
 export function toFixed2(number) {
   return Number(number.toString().match(/^\d+(?:\.\d{0,2})?/));
 }
+
+export function getImgUrlFromContent(html){
+  let data = '';
+  html.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/, function (match, capture) {
+    data =  capture;
+  });
+  return data
+}

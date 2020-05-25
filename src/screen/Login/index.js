@@ -7,9 +7,12 @@ import Screen from '@/component/Screen';
 import loginBg from '@/assets/lbg.png';
 import styles from './index.module.less';
 
+const localUser = JSON.parse(window.localStorage.getItem('user')) || null;
+
 const loginItemMap = [
   {
     name: 'user',
+    initialValue: localUser ? localUser.user : '',
     inputProps: {
       type: 'text',
       placeholder: '用户名'
@@ -21,6 +24,7 @@ const loginItemMap = [
   },
   {
     name: 'password',
+    initialValue: localUser ? localUser.password : '',
     inputProps: {
       type: 'password',
       placeholder: '密码'
@@ -34,7 +38,7 @@ const loginItemMap = [
 
 function LoginItem(props) {
   const [toggle, setToggle] = useState(true);
-  const { name, inputProps, onChange } = props;
+  const { name, inputProps, onChange, initialValue } = props;
   const iconNameMap = {
     'user': 'yonghu',
     'password': 'suoding'
@@ -46,7 +50,7 @@ function LoginItem(props) {
         <Icon type={iconNameMap[name]}/>
       </div>
       <div className={styles.loginInput}>
-        <input {...inputProps} type={ type } onChange={e => onChange(e.target.value)}/>
+        <input {...inputProps} defaultValue={initialValue} type={ type } onChange={e => onChange(e.target.value)}/>
       </div>
       { 
         inputProps.type === 'password' ?
@@ -94,7 +98,7 @@ class Login extends Component {
           <div className={styles.loginForm}>
             {
               loginItemMap.map(item => {
-                return getFieldDecorator(item.name, { rules: item.rules })(<ForwardLoginItem {...item} key={item.name}/>)
+                return getFieldDecorator(item.name, { rules: item.rules, initialValue: item.initialValue })(<ForwardLoginItem {...item} key={item.name}/>)
               })
             }
             <Button 
@@ -114,3 +118,4 @@ class Login extends Component {
 }
 
 export default Login;
+

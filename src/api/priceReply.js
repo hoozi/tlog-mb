@@ -5,3 +5,9 @@ export async function crudPriceReply(params) {
     data: params
   })
 }
+
+export async function priceReview(params) {
+  return request(`/ierp/kapi/app/nbg_qcwl/enquiry_audit`, {
+    data: params
+  })
+}

@@ -85,3 +85,9 @@ export async function bindFile(params) {
     data: params
   })
 }
+
+export async function checkUpgrade() {
+  return request('/upgrade.json', {
+    method: 'GET'
+  })
+}

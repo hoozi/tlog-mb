@@ -1,4 +1,4 @@
-import { crudPriceReply } from '@/api/priceReply';
+import { crudPriceReply, priceReview } from '@/api/priceReply';
 import { Toast } from 'antd-mobile';
 
 const state = {
@@ -8,6 +8,7 @@ const state = {
   pageCount: 0,
   recordCount: 0,
   recordList: [],
+  detail: [],
   size: 10
 }
 
@@ -30,6 +31,26 @@ const effects = {
     if(!response) return;
     this.save({...response.data});
     callback && callback(response.data);
+  },
+  async fetchPriceReview(payload, rootState, callback) {
+    const response = await priceReview({
+      crudType: 'retrieve',
+      operateType: 'listEnquiryAudits',
+      current: 1,
+      size: 10,
+      ...payload
+    });
+    if(!response) return;
+    this.save({...response.data});
+    callback && callback(response.data);
+  },
+  async updatePriceReview(payload, rootState, callback) {
+    const response = await priceReview({
+      crudType: 'update',
+      ...payload
+    });
+    if(!response) return;
+    callback && callback();
   },
   async updatePriceReply(payload, rootState, callback) {
     const response = await crudPriceReply({

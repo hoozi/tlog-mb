@@ -1,8 +1,8 @@
 import { Toast, Modal } from 'antd-mobile';
 import { push } from 'connected-react-router';
-import { queryCloudToken, queryCloudCurrentUser, bindUserFromCloud } from '@/api/sso';
+import { queryCloudToken, queryCloudCurrentUser, bindUserFromCloud } from '@/api/sso_v8';
 import { setToken, getAnyToken } from '@/utils/token';
-import { APP_ID, APP_SECRET } from '@/constants';
+import { APP_ID_v8, APP_SECRET_v8 } from '@/constants';
 import { anyLogin } from '@/api/anyService';
 
 const state = {}
@@ -11,17 +11,15 @@ const effects = dispatch => ({
   async fetchCloudToken() {
     const response = await queryCloudToken({
       grant_type:'client_credential',
-      appId: APP_ID,
-      secret: APP_SECRET,
-      timestamp: Date.now(),
-      scope: 'app'
+      appid: APP_ID_v8,
+      secret: APP_SECRET_v8
     });
     if(
       !response || 
       (response && typeof response === 'string')
     ) return false;
-    const { accessToken } = response.data;
-    return accessToken;
+    const { access_token } = response;
+    return access_token;
     //this.fetchCloudCurrentUser({ticket, access_token})
   },
   async fetchCloudCurrentUser(payload) {
@@ -29,7 +27,7 @@ const effects = dispatch => ({
     if(
       !response || 
       (response && typeof response === 'string')
-    ) return;
+    ) return false;
     return response;
   },
   async bindUserFromCloud(payload){
@@ -38,28 +36,26 @@ const effects = dispatch => ({
     }
     const response = await bindUserFromCloud(payload);
     if(!response) {
-      Modal.alert('提示', '账号绑定失败，请手动登录', 
-      [{ text: '取消' },
-      { text: '去登录', onPress:() => dispatch(push('/login')) }]);
-      return;
+      return Modal.alert('提示', '账号绑定失败，请手动登录', 
+      { text: '取消' },
+      { text: '去登录', onPress:() => dispatch(push('/login')) })
     }
-    Toast.hide();
     setToken(response.data.access_token);
     dispatch.user.fetchCurrentMenu();
     dispatch.user.fetchCurrentUser();
+    Toast.hide();
   },
   async loginSSO(ticket) {
-    Toast.loading('单点登录...',0);
-    const accessToken = await this.fetchCloudToken();
-    const currentUser = await this.fetchCloudCurrentUser({appid:APP_ID, ticket, accessToken});
-    if(!accessToken || !currentUser) {
+    Toast.loading('请稍候...');
+    const access_token = await this.fetchCloudToken();
+    const currentUser = await this.fetchCloudCurrentUser({ticket, access_token});
+    if(!access_token || !currentUser) {
       return dispatch.user.logout();
     }
     this.bindUserFromCloud({
-      appid: APP_ID,
-      version: 'v10',
       ticket,
-      accessToken
+      version: 'v8',
+      access_token
     });
   }
 })

@@ -9,7 +9,8 @@ import {
   queryUploadKey, 
   bindFile, 
   queryOrg,
-  queryCompany
+  queryCompany,
+  checkUpgrade
 } from '@/api/common';
 import { Toast } from 'antd-mobile';
 
@@ -231,6 +232,17 @@ const effects = dispatch => ({
     if(!response) return;
     this.clearAttachments();
     callback && callback(response.data.collection)
+  },
+  async checkUpgrade(payload) {
+    let callback;
+    if(typeof payload === 'function') {
+      callback = payload;
+    } else {
+      callback = () => null
+    }
+    const response = await checkUpgrade();
+    if(!response) return;
+    callback && callback(response)
   }
 })
 

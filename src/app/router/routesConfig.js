@@ -11,6 +11,8 @@ const TransportAsync = LoadingComponent('Transport');
 const TransportCreateAsync = LoadingComponent('Transport/TransportCreate');
 const PriceReplyAsync = LoadingComponent('PriceReply');
 const PriceReplyDetailAsync = LoadingComponent('PriceReply/PriceReplyDetail');
+const PriceReviewAsync = LoadingComponent('PriceReply/ReviewList');
+const PriceReviewDetailAsync = LoadingComponent('PriceReply/ReviewDetail');
 const OrderAsync = LoadingComponent('Order');
 const OrderCommentAsync = LoadingComponent('Order/OrderComment');
 const OrderDetailAsync = LoadingComponent('Order/OrderDetail');
@@ -32,6 +34,7 @@ const AnalysisAsync = LoadingComponent('Analysis');
 const VovageAsync = LoadingComponent('Vovage');
 const VovageSearchAsync = LoadingComponent('Vovage/Search');
 const InvoiceSearchAsync = LoadingComponent('Invoice');
+const PermutationPlanAsync = LoadingComponent('PermutationPlan');
 
 const routesConfig = [
   {
@@ -294,6 +297,33 @@ const routesConfig = [
     path: '/invoice',
     component: InvoiceSearchAsync,
     title: '发票查询',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/price-review',
+    component: PriceReviewAsync,
+    title: '询价审核',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/price-review-detail',
+    component: PriceReviewDetailAsync,
+    title: '审核详情',
+    transitionConfig: {
+      enter: 'from-right',
+      exit: 'to-right'
+    }
+  },
+  {
+    path: '/plan',
+    component: PermutationPlanAsync,
+    title: '码头预排计划',
     transitionConfig: {
       enter: 'from-right',
       exit: 'to-right'

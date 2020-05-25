@@ -73,7 +73,6 @@ class Invoice extends PureComponent {
     this.data = [];
   }
   callback = data => {
-    console.log(data)
     const { recordList, pageCount } = data;
     const ds = recordList.length > 0 ? recordList.map(item => ({
       ...item

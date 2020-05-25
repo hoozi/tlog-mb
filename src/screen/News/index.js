@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import isEmpty from 'lodash/isEmpty';
 import Debounce from 'lodash-decorators/debounce';
 import Screen from '@/component/Screen';
-import { mapEffects, mapLoading } from '@/utils';
+import { mapEffects, mapLoading, getImgUrlFromContent } from '@/utils';
 import StandardList from '@/component/StandardList';
 import styles from './index.module.less';
 import withCache from '@/hoc/withCache';
@@ -154,7 +154,7 @@ class News extends PureComponent {
             <span><Icon type='leixing' size='xxs'/>{typeMap[item.type]}</span>
           </div>
         </Flex>
-        <div className={styles.newsItemImg}><img src={item.accessoryid ? item.accessoryid : emptyImg} alt={item.title}/></div>
+        <div className={styles.newsItemImg}><img src={getImgUrlFromContent(item.details) || emptyImg} alt={item.title}/></div>
       </Link>
     )
   }

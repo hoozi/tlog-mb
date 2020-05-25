@@ -17,6 +17,7 @@ import task from './models/task';
 import congestion from './models/congestion';
 import tide from './models/tide';
 import sso from './models/sso';
+import sso_v8 from './models/sso_v8';
 import analysis from './models/analysis';
 import vovage from './models/vovage';
 import message from './models/message';
@@ -49,6 +50,7 @@ const store = init({
     congestion,
     tide,
     sso,
+    sso_v8,
     analysis,
     vovage,
     message,

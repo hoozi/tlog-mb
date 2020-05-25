@@ -2,15 +2,14 @@ import request from '@/utils/request';
 import { stringify } from 'qs';
 
 export async function queryCloudToken(params) {
-  return request(`/cloud/gateway/oauth2/token/getAccessToken`, {
-    data: params
+  return request(`/cloud/openauth2/api/token?${stringify(params)}&t=${Date.now()}`, {
+    method: 'GET'
   })
 }
 
 export async function queryCloudCurrentUser(params) {
-  const { accessToken, ...data } = params;
-  return request(`/cloud/gateway/ticket/user/acquirecontext?accessToken=${accessToken}`, {
-    data
+  return request(`/cloud/openauth2/api/getcontext?${stringify(params)}&t=${Date.now()}`, {
+    method: 'GET'
   })
 }
 

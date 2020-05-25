@@ -22,6 +22,10 @@ import { mapEffects, mapLoading, getMenuFromStorage } from '@/utils';
 import { BRAND_COLOR } from '@/constants/color';
 import LoginCheckArea from '@/hoc/LoginCheckArea';
 
+const search = window.location.search;
+const ticket = parse(search.substring(1))['ticket'] || '';
+const version = parse(search.substring(1))['version'] || '';
+
 const menus = [/* {
   icon: <Icon type='huopanshenhe' size='f' color={BRAND_COLOR}/>,
   text: '货盘审核',
@@ -50,6 +54,11 @@ const menus = [/* {
   icon: <Icon type='xunjiahuifu' size='f' color='#f15a4a'/>,
   text: '询价回复',
   url: '/price-reply'
+},
+{
+  icon: <Icon type='yunlishenhe' size='f' color={BRAND_COLOR}/>,
+  text: '询价审核',
+  url: '/price-review'
 }, {
   icon: <Icon type='chaoxi' size='f' color='#f39927'/>,
   text: '潮汐信息',
@@ -94,6 +103,10 @@ const menus = [/* {
   icon: <Icon type='renwuguanli' size='f' color='#f39927'/>,
   text: '发票查询',
   url: '/invoice'
+}, {
+  icon: <Icon type='yongdu' size='f' color='#29ab91'/>,
+  text: '码头预排计划',
+  url: '/plan'
 }];
 
 const AnalysisCard = () => null;
@@ -219,11 +232,11 @@ const mapStateToProps = ({ product, cargo, transport, analysis }) => {
   }
 }
 
-const mapDispatchToProps = ({ product, cargo, transport, sso, analysis }) => ({
+const mapDispatchToProps = ({ product, cargo, transport,  analysis, ...restDispatch }) => ({
   ...mapEffects(product, ['fetchProduct']),
   ...mapEffects(cargo, ['fetchAnyCargo']),
   ...mapEffects(transport, ['fetchAnyTransport']),
-  loginSSO: sso.loginSSO
+  loginSSO: restDispatch[`sso${version ? '_'+version : ''}`].loginSSO
 })
 @connect(mapStateToProps, mapDispatchToProps)
 class Home extends PureComponent {
@@ -245,8 +258,6 @@ class Home extends PureComponent {
     }); 
   }
   componentDidMount() {
-    const search = window.location.search;
-    const ticket = parse(search.substring(1))['ticket'] || '';
     if(!getToken()) {
       ticket && this.props.loginSSO(ticket);
     }

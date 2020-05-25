@@ -26,6 +26,7 @@ const effects = dispatch => ({
     });
     if(!response) return;
     const { access_token } = response.data;
+    window.localStorage.setItem('user', JSON.stringify(payload))
     setToken(access_token);
     await this.fetchCurrentUser();
     await this.fetchCurrentMenu();

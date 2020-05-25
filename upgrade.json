@@ -1,0 +1,10 @@
+{
+  "ios": {
+    "version": "1.001",
+    "description": "1.用户登录成功后，自动记住登录用户"
+  },
+  "android": {
+    "version": "1.001",
+    "description": "1.用户登录成功后，自动记住登录用户"
+  }
+}

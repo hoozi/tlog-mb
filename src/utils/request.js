@@ -1,7 +1,7 @@
 import axios from 'axios';
 //import { getToken } from './token';
 import { Toast } from 'antd-mobile';
-import { getToken } from './token';
+import { getToken, getAnyToken } from './token';
 
 let serviceUrl = (process.env.NODE_ENV === 'production' && process.env.REACT_APP_ENV !=='webapp') ? 'http://tl.nbport.com.cn' : '';
 
@@ -58,11 +58,12 @@ service.interceptors.request.use( request => {
       };
     }
   }
-  const headers = whiteList.some(item => {
+  const hasWhiteList = whiteList.some(item => {
     return request.url.indexOf(item) !== -1
-  }) ? {} : {
+  })
+  const headers = {
     api: true,
-    accessToken: getToken()
+    accessToken: hasWhiteList ? getAnyToken() : getToken()
   }
   request.headers = {
     ...request.headers,
@@ -97,12 +98,14 @@ export default function request(url, options) {
       (('state' in response) && response.state !== 'success')
     );
     if(fail) {
-      Toast.fail(response.message || response.errorMsg || response.data || '请求失败');
+      Toast.fail(response.message || response.errorMsg || response.error || response.data || '请求失败');
       throw new Error(`${serviceUrl}${url}（${response.message || response.errorMsg}）`);
     }
+
     return response;
   })
   .catch(e => {
+    Toast.hide();
     console.error(e);
   });
 }
