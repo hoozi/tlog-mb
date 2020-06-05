@@ -88,27 +88,13 @@ class PermutationPlan extends Component {
                       {
                         congestion[selectedIndex].terminalCongestion.map((item,index) => {
                           return (
+
                             <Card className={`${styles.timelineCard} mt12`} key={index}>
+                              <div className={styles.dot} style={{borderColor: index === 0 && '#52c41a'}}></div>
                               <Card.Header
-                                title={days[index]}
+                                title={`${days[index]}(总)`}
+                                extra={<><b>{item.shipQueue.length}</b>艘次 <b>{item.shipQueue.reduce((sum, ship)=>sum+(ship.exportTonTotal || ship.importTonTotal),0)}</b>吨</>}
                               />
-                              <Card.Body>
-                                <div className={styles.dot} style={{borderColor: index === 0 ? '#52c41a' : '#3c73f0'}}></div>
-                                {
-                                  item.shipQueue.length ?
-                                  item.shipQueue.map(ship => (
-                                    <div className={styles.shipList}>
-                                      <div>
-                                        <p>{ship.shipName}</p>
-                                        <p className={styles.shipListBrief}>{ship.time}</p>
-                                      </div>
-                                      <div className={styles.shipListExtra}>
-                                        {ship.exportTonTotal || ship.importTonTotal}吨
-                                      </div>
-                                    </div>
-                                  )) : <div className={styles.empty}>暂无数据</div>
-                                }
-                              </Card.Body>
                             </Card>
                           )
                         })
